@@ -10,8 +10,8 @@ interpreted per RFC 2119 and RFC 8174.
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `BitmapFont` field set, glyph storage layout, draw semantics | `rlvgl/core/src/bitmap_font.rs` (v0.2.0 @ b178cbc) | Canonical. |
-| `PackedFont` + `GlyphMetric` field set, fixed-point advance, glyph lookup | `rlvgl/core/src/packed_font.rs` (v0.2.0 @ b178cbc) | Canonical. |
+| `BitmapFont` field set, glyph storage layout, draw semantics | `rlvgl/core/src/bitmap_font.rs` (v0.2.0 @ 79f730d) | Canonical. |
+| `PackedFont` + `GlyphMetric` field set, fixed-point advance, glyph lookup | `rlvgl/core/src/packed_font.rs` (v0.2.0 @ 79f730d) | Canonical. |
 | `rlvgl-creator` font emission format | `rlvgl-creator fonts pack` output | External authority. lvglpp consumes these artifacts; do not redefine the binary layout here. |
 | C++ surface (storage discipline, lifetime tags) | this chapter | Normative for lvglpp. |
 
@@ -186,8 +186,8 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/bitmap_font.rs` (v0.2.0 @ b178cbc)
-- `rlvgl/core/src/packed_font.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/core/src/bitmap_font.rs` (v0.2.0 @ 79f730d)
+- `rlvgl/core/src/packed_font.rs` (v0.2.0 @ 79f730d)
 - `rlvgl/core/src/bitmap_font_6x10.bin` (binary — bring-up font blob)
 - `lvglpp/docs/core-renderer/00-renderer-trait.md`,
   `lvglpp/docs/core-widget/00-widget-tree.md`,

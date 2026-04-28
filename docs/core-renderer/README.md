@@ -23,6 +23,6 @@ unblocked by CORE-03 ratification.
 
 ## Cross-language pair
 
-Mirrors `rlvgl/core/src/renderer.rs` (v0.2.0 @ b178cbc) — `Renderer`
+Mirrors `rlvgl/core/src/renderer.rs` (v0.2.0 @ 79f730d) — `Renderer`
 trait. No rlvgl change is required to land lvglpp's CORE-04
 implementation.

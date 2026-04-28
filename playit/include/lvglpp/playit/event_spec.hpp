@@ -1,6 +1,6 @@
 // event_spec.hpp — wire-format event types for lvglpp::playit.
 //
-// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A — playit is the cross-language test harness, not LVGL
 //         surface. The runtime widget-tree event lives in
 //         lvglpp::core::Event (CORE-02 execution, pending).

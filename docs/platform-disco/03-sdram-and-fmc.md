@@ -17,7 +17,7 @@ Phase code: **PLAT-02c**.
   changes, JEDEC sequence ordering, MPU coverage gate) mirrors
   `rlvgl/docs/disco-platform-guide/03-sdram-and-fmc.md` and the
   `pac_sdram_init` feature path in `rlvgl/.../main.rs`
-  (v0.2.0 @ b178cbc). When the two diverge, **rlvgl is canonical**
+  (v0.2.0 @ 79f730d). When the two diverge, **rlvgl is canonical**
   and this chapter is the bug.
 - Underlying clock tree + GPIO mux: PLAT-02b.
 - Underlying typed register-block discipline: PLAT-02 §5.5.
@@ -313,7 +313,7 @@ inside `disco::sdram::init()` is:
 ## §13 Files cited
 
 - `rlvgl/docs/disco-platform-guide/03-sdram-and-fmc.md` (v0.2.0
-  @ b178cbc).
+  @ 79f730d).
 - `rlvgl/examples/stm32h747i-disco/{BOOT.md,HARDWARE.md}`.
 - `rlvgl/examples/stm32h747i-disco/src/main.rs` L1034–1132
   (`pac_sdram_init` + JEDEC sequence).
@@ -344,3 +344,24 @@ inside `disco::sdram::init()` is:
   register blocks (§5.1, §5.5), SDCR/SDTR values (§5.2, §5.3),
   JEDEC sequence + refresh count (§5.4), MPU region attributes
   (§5.5), bring-up ordering (§5.6) all frozen.
+- 2026-04-28 — **`SDCLK[1:0]` encoding correction.** Memalpha
+  verification against **RM0399 §23.9.5.1** + **RM0433 §22.9.5.1**
+  confirmed:
+  - `00` = SDCLK clock disabled
+  - `01` = **Reserved**
+  - `10` = SDCLK = `fmc_ker_ck / 2`
+  - `11` = SDCLK = `fmc_ker_ck / 3`
+  Previous chapter §5.2 + execution wrote `0b01` per rlvgl
+  Vol II Ch 3 § 2's claim that this is "Reserved per RM0399, but
+  required on this silicon." On the lvglpp/disco execution path
+  (PLLs configured + FMCSEL=PLL2_R *before* SDRAM init), `0b01`
+  produces an undefined/half-broken controller state: writes
+  reach SDRAM but column-address bit 2 is inverted (writes at
+  `0xD000_0000` read back at `0xD000_0004` and vice versa) and
+  higher offsets alias. Switching to the documented `0b10`
+  (`fmc_ker_ck / 2` → SDCLK = 75 MHz with PLL2_R = 150 MHz) is
+  the correct value per RM0399. Code change:
+  `disco::regs::sdcr::SDCLK_2` → `SDCLK_DIV2` (= `0b10 << 10`)
+  and the rlvgl-claim documented in the header comment for
+  audit trail. Hardware verification to follow once probe-rs
+  re-enumerates the ST-LINK.

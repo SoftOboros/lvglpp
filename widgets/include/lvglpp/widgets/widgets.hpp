@@ -1,6 +1,6 @@
 // widgets.hpp — module umbrella for lvglpp::widgets.
 //
-// PARITY: rlvgl/widgets/src/lib.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/lib.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/ (the upstream widget tree).
 
 #ifndef LVGLPP_WIDGETS_WIDGETS_HPP

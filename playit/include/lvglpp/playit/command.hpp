@@ -1,6 +1,6 @@
 // command.hpp — Command sum type for the playit wire protocol.
 //
-// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ b178cbc) — Command<'a>,
+// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ 79f730d) — Command<'a>,
 //         QuerySpec<'a>, DumpSpec.
 // LVGL:   N/A.
 // DELTA:  rlvgl's Command<'a> borrows tag strings as &'a str from the

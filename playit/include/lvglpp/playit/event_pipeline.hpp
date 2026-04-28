@@ -1,7 +1,7 @@
 // event_pipeline.hpp — gesture-routing seam for parsed events.
 //
 // PARITY: rlvgl/playit/src/executor.rs:56 (EventPipeline trait),
-//         :64 (NullPipeline). v0.2.0 @ b178cbc.
+//         :64 (NullPipeline). v0.2.0 @ 79f730d.
 // LVGL:   N/A.
 // DELTA:  rlvgl returns `(Option<Event>, Option<Event>)`; lvglpp
 //         returns a small POD `PipelineOutput` carrying the same

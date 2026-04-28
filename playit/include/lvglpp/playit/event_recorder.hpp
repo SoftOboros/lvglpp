@@ -1,6 +1,6 @@
 // event_recorder.hpp — fixed-capacity timed event recorder.
 //
-// PARITY: rlvgl/playit/src/recorder.rs (v0.2.0 @ b178cbc) — after
+// PARITY: rlvgl/playit/src/recorder.rs (v0.2.0 @ 79f730d) — after
 //         PLAYIT-06a (tick-delta) this is a byte-for-byte parity
 //         port: same Entry shape, same fill-and-stop semantics,
 //         same saturating delta computation.

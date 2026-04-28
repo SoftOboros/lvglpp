@@ -11,7 +11,7 @@ RFC 2119 and RFC 8174.
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `Widget` trait shape, `Rect` field set, `Color` channel order, `clear_region` semantics | `rlvgl/core/src/widget.rs` (v0.2.0 @ b178cbc) | Canonical. |
+| `Widget` trait shape, `Rect` field set, `Color` channel order, `clear_region` semantics | `rlvgl/core/src/widget.rs` (v0.2.0 @ 79f730d) | Canonical. |
 | C++ surface naming (`bounds`, `draw`, `handle_event`, `clear_region`), virtual-call dispatch | this chapter | Normative for lvglpp. |
 | Underlying widget substrate | `lvgl/src/core/lv_obj.h` | Informative. `lvglpp::core::Widget` is a higher-level abstraction that the renderer (CORE-04) and platform backends pump events into; LVGL's `lv_obj_t` lives below the renderer seam and is wrapped by `ObjectView` (CORE-01). |
 
@@ -179,7 +179,7 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/widget.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/core/src/widget.rs` (v0.2.0 @ 79f730d)
 - `rlvgl/core/src/event.rs`, `rlvgl/core/src/renderer.rs`
 - `lvgl/src/core/lv_obj.h` (informative; v9.x)
 - `lvglpp/CLAUDE.md`, `lvglpp/docs/std-mapping.md`,

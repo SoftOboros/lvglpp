@@ -10,7 +10,7 @@ The key words **MUST**, **SHOULD**, **MAY** are interpreted per RFC
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| Wire format for every Response variant | `rlvgl/playit/src/protocol.rs:466` (v0.2.0 @ b178cbc) | Canonical. Cross-language byte-for-byte parity required — playit fixtures parse responses on the rlvgl host side and expect identical text. |
+| Wire format for every Response variant | `rlvgl/playit/src/protocol.rs:466` (v0.2.0 @ 79f730d) | Canonical. Cross-language byte-for-byte parity required — playit fixtures parse responses on the rlvgl host side and expect identical text. |
 | Response value shape | PLAYIT-04 §5.1 | Inputs to the formatter. |
 
 ## §1 Purpose

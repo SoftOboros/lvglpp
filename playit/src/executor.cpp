@@ -1,6 +1,6 @@
 // executor.cpp — line accumulator + dispatch loop.
 //
-// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ 79f730d).
 
 #include "lvglpp/playit/executor.hpp"
 

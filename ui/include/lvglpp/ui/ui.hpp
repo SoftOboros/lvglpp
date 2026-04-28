@@ -1,6 +1,6 @@
 // ui.hpp — module umbrella for lvglpp::ui.
 //
-// PARITY: rlvgl/ui/src/lib.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/ui/src/lib.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/themes/, lvgl/src/layouts/, lvgl/src/draw/.
 //
 // Higher-level UI building blocks: draw helpers, event-window utilities,

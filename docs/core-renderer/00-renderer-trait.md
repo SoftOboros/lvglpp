@@ -10,7 +10,7 @@ chapter are interpreted per RFC 2119 and RFC 8174.
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `Renderer` method set, default implementations, blend/blit semantics | `rlvgl/core/src/renderer.rs` (v0.2.0 @ b178cbc) | Canonical. |
+| `Renderer` method set, default implementations, blend/blit semantics | `rlvgl/core/src/renderer.rs` (v0.2.0 @ 79f730d) | Canonical. |
 | C++ surface (virtual dispatch, signature shape) | this chapter | Normative for lvglpp. |
 | Underlying draw substrate | `lvgl/src/draw/lv_draw.h` and the LVGL display driver API | Informative. lvglpp's `Renderer` is a thin abstract base; backends translate to LVGL primitives or raw framebuffers as fits the target. |
 
@@ -152,7 +152,7 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/renderer.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/core/src/renderer.rs` (v0.2.0 @ 79f730d)
 - `rlvgl/core/src/widget.rs` (`Color`, `Rect`)
 - `lvglpp/docs/core-widget/00-widget-tree.md`,
   `lvglpp/docs/core-event/00-event-surface.md`,

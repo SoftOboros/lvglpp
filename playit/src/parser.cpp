@@ -1,6 +1,6 @@
 // parser.cpp — implementation of lvglpp::playit::parse_command.
 //
-// PARITY: rlvgl/playit/src/protocol.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/playit/src/protocol.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A.
 //
 // All helpers are local (anonymous namespace). No allocations, no

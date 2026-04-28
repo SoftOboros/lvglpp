@@ -22,7 +22,7 @@ unblocked by ratification of CORE-03a (WidgetNode) and WID-02
 ## Cross-language pair
 
 Mirrors `rlvgl/playit/src/{response.rs, executor.rs}` (v0.2.0 @
-b178cbc) for the Response shape and the dispatcher's tagged-command
+79f730d) for the Response shape and the dispatcher's tagged-command
 routing. Closes the cross-language test loop: rlvgl-side playit
 fixtures issuing `T@MyButton:50,50` now drive a real lvglpp
 WidgetNode tree.

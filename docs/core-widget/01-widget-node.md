@@ -10,7 +10,7 @@ The key words **MUST**, **SHOULD**, **MAY** are interpreted per RFC
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `WidgetNode` field set, dispatch order, draw order, `tag` shape | `rlvgl/core/src/lib.rs:104` (`pub struct WidgetNode`) (v0.2.0 @ b178cbc) | Canonical. |
+| `WidgetNode` field set, dispatch order, draw order, `tag` shape | `rlvgl/core/src/lib.rs:104` (`pub struct WidgetNode`) (v0.2.0 @ 79f730d) | Canonical. |
 | `find_by_tag` walker semantics (depth-first, first match wins) | `rlvgl/playit/src/tag.rs:5` | Canonical. lvglpp lifts this into `lvglpp::core` so consumers other than playit can reuse it. |
 | C++ ownership shape | this chapter §5.1 | Normative for lvglpp. |
 
@@ -167,8 +167,8 @@ A conforming CORE-03a execution PR MUST satisfy:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/lib.rs:100-160` (v0.2.0 @ b178cbc) — `WidgetNode`.
-- `rlvgl/playit/src/tag.rs` (v0.2.0 @ b178cbc) — `find_by_tag`.
+- `rlvgl/core/src/lib.rs:100-160` (v0.2.0 @ 79f730d) — `WidgetNode`.
+- `rlvgl/playit/src/tag.rs` (v0.2.0 @ 79f730d) — `find_by_tag`.
 - `lvglpp/docs/core-widget/00-widget-tree.md` — base `Widget` chapter.
 - `lvglpp/docs/std-mapping.md` § "Owning types", § "Freestanding subset".
 

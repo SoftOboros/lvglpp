@@ -10,9 +10,9 @@ chapter are interpreted per RFC 2119 and RFC 8174.
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `Style` field set, defaults, `StyleBuilder` chain | `rlvgl/core/src/style.rs` (v0.2.0 @ b178cbc) | Canonical. |
-| `Theme` virtual surface + `LightTheme` / `DarkTheme` | `rlvgl/core/src/theme.rs` (v0.2.0 @ b178cbc) | Canonical. |
-| `Easing` curves + `LoopMode` shape + `loop_progress` semantics | `rlvgl/core/src/animation.rs:19, :102, :114` (v0.2.0 @ b178cbc) | Canonical. |
+| `Style` field set, defaults, `StyleBuilder` chain | `rlvgl/core/src/style.rs` (v0.2.0 @ 79f730d) | Canonical. |
+| `Theme` virtual surface + `LightTheme` / `DarkTheme` | `rlvgl/core/src/theme.rs` (v0.2.0 @ 79f730d) | Canonical. |
+| `Easing` curves + `LoopMode` shape + `loop_progress` semantics | `rlvgl/core/src/animation.rs:19, :102, :114` (v0.2.0 @ 79f730d) | Canonical. |
 | Richer animation types (`Fade`, `Slide`, `Motion`, `FadeTransition`, `KeyFade`, `Timeline`) | `rlvgl/core/src/animation.rs:165+` | **Out of scope** for this chapter. Each lands in its own CORE-05a / CORE-05b / … sub-phase when the first call site needs it. |
 
 ## §1 Purpose
@@ -181,9 +181,9 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/style.rs` (v0.2.0 @ b178cbc)
-- `rlvgl/core/src/theme.rs` (v0.2.0 @ b178cbc)
-- `rlvgl/core/src/animation.rs:19-160` (v0.2.0 @ b178cbc) —
+- `rlvgl/core/src/style.rs` (v0.2.0 @ 79f730d)
+- `rlvgl/core/src/theme.rs` (v0.2.0 @ 79f730d)
+- `rlvgl/core/src/animation.rs:19-160` (v0.2.0 @ 79f730d) —
   `Easing`, `LoopMode`, `loop_progress`. Lines beyond `:160` are
   out of scope for this chapter.
 - `lvglpp/docs/core-widget/00-widget-tree.md` (`Color` definition)

@@ -7,7 +7,7 @@ Supersedes: PLAYIT-06 §5.3 (the `@<seq>` form is replaced).
 ## §0 Authority
 
 - `EventRecorder` tick semantics + `tick_delta` shape:
-  `rlvgl/playit/src/recorder.rs` (v0.2.0 @ b178cbc). Canonical.
+  `rlvgl/playit/src/recorder.rs` (v0.2.0 @ 79f730d). Canonical.
 - `dump_recording` per-entry wire form:
   `rlvgl/playit/src/executor.rs:343`. Canonical.
 - Saturating tick math:
@@ -171,8 +171,8 @@ header and `REC:END\r\n` footer (PLAYIT-06 §5.3) are unchanged.
 
 ## §13 Files cited
 
-- `rlvgl/playit/src/recorder.rs` (v0.2.0 @ b178cbc).
-- `rlvgl/playit/src/executor.rs:343` (v0.2.0 @ b178cbc).
+- `rlvgl/playit/src/recorder.rs` (v0.2.0 @ 79f730d).
+- `rlvgl/playit/src/executor.rs:343` (v0.2.0 @ 79f730d).
 - `lvglpp/docs/playit-recorder/00-event-recorder.md` (this
   chapter's predecessor).
 

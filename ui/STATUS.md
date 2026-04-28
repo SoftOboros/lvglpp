@@ -5,7 +5,7 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::ui — STATUS
 
-Tracks `rlvgl/ui` @ `v0.2.0` (commit `b178cbc`). Last reconciled:
+Tracks `rlvgl/ui` @ `v0.2.0` (commit `79f730d`). Last reconciled:
 2026-04-27.
 
 ## Roadmap intent

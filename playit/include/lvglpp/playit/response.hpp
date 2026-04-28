@@ -1,6 +1,6 @@
 // response.hpp — Response value type produced by the Dispatcher.
 //
-// PARITY: rlvgl/playit/src/response.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/playit/src/response.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A.
 // DELTA:  rlvgl uses an enum with `Error(&'a str)`; lvglpp uses
 //         std::variant + per-variant POD structs with

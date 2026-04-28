@@ -1,6 +1,6 @@
 // host_sdl.cpp — host-side SDL2 backend implementation.
 //
-// PARITY: rlvgl/platform/src/simulator.rs (v0.2.0 @ b178cbc) — host
+// PARITY: rlvgl/platform/src/simulator.rs (v0.2.0 @ 79f730d) — host
 //         simulator. lvglpp uses SDL2; the cross-language contract
 //         (Event ordering for the same physical input) is the §5.4
 //         translation table in the chapter.

@@ -19,7 +19,7 @@ Phase code: **PLAT-02b**.
   PLL3ON gap fix, the breadcrumb pattern) mirrors
   `rlvgl/docs/disco-platform-guide/02-clocks-and-plls.md` and
   `rlvgl/docs/disco-platform-guide/04-gpio-pin-mux.md` (v0.2.0
-  @ b178cbc). When the two diverge, **rlvgl is canonical** and
+  @ 79f730d). When the two diverge, **rlvgl is canonical** and
   this chapter is the bug.
 - Underlying register-block discipline: PLAT-02 §5.5.
 - Underlying toolchain / linker / vector table: PLAT-02a.
@@ -498,9 +498,9 @@ family-chapter amendment.
 ## §13 Files cited
 
 - `rlvgl/docs/disco-platform-guide/02-clocks-and-plls.md` (v0.2.0
-  @ b178cbc).
+  @ 79f730d).
 - `rlvgl/docs/disco-platform-guide/04-gpio-pin-mux.md` (v0.2.0
-  @ b178cbc).
+  @ 79f730d).
 - `rlvgl/examples/stm32h747i-disco/{HARDWARE,BOOT}.md`.
 - `rlvgl/examples/stm32h747i-disco/src/main.rs` L1569–1596
   (PLL tree + PLL3ON), L1606–1608 (GPIO split),

@@ -6,7 +6,7 @@ Phase code: **PLAYIT-04**.
 ## §0 Authority
 
 - `Response` variant set: `rlvgl/playit/src/response.rs` (v0.2.0 @
-  b178cbc). Canonical.
+  79f730d). Canonical.
 - Tagged-command routing: `rlvgl/playit/src/executor.rs` +
   `rlvgl/playit/src/tag.rs`. Canonical.
 - Underlying tree shape: `lvglpp::core::WidgetNode` (CORE-03a).
@@ -155,7 +155,7 @@ sends `Inject` (untagged) at coordinates within the tagged region.
 ## §13 Files cited
 
 - `rlvgl/playit/src/response.rs`, `executor.rs`, `tag.rs` (v0.2.0
-  @ b178cbc).
+  @ 79f730d).
 - `lvglpp/docs/playit-tagged/` (this initiative).
 - `lvglpp/docs/core-widget/01-widget-node.md`.
 - `lvglpp/docs/widgets-button/00-button.md`.

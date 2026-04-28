@@ -6,7 +6,7 @@ Phase code: **WID-02**.
 ## §0 Authority
 
 - `Button` field set, method set, click semantics: `rlvgl/widgets/src/button.rs`
-  (v0.2.0 @ b178cbc). Canonical.
+  (v0.2.0 @ 79f730d). Canonical.
 - Underlying widget tree: CORE-03 + CORE-03a.
 - Underlying text rendering: WID-01 (Label is the inner draw target).
 
@@ -127,7 +127,7 @@ that drives a button.
 
 ## §13 Files cited
 
-- `rlvgl/widgets/src/button.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/widgets/src/button.rs` (v0.2.0 @ 79f730d)
 - `lvglpp/docs/widgets-label/00-label.md`
 - `lvglpp/docs/core-event/00-event-surface.md`
 - `lvglpp/docs/core-widget/00-widget-tree.md`,

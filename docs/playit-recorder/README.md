@@ -25,7 +25,7 @@ by PLAYIT-04b (format_response) + PLAYIT-07 (Executor).
 ## Cross-language pair
 
 Mirrors `rlvgl/playit/src/recorder.rs` + the `dump_recording()`
-helper at `rlvgl/playit/src/executor.rs:343` (v0.2.0 @ b178cbc).
+helper at `rlvgl/playit/src/executor.rs:343` (v0.2.0 @ 79f730d).
 **Documented DELTA**: lvglpp v1 emits a monotonic per-entry
 sequence number (`@<seq>`) instead of rlvgl's `@<tick_delta>`.
 A future sub-phase (PLAYIT-06a) will introduce a tick-counter

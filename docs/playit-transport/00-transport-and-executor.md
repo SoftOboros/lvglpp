@@ -6,7 +6,7 @@ Phase code: **PLAYIT-07**.
 ## §0 Authority
 
 - `Transport` byte-level interface: `rlvgl/playit/src/transport.rs`
-  (v0.2.0 @ b178cbc). Canonical.
+  (v0.2.0 @ 79f730d). Canonical.
 - Line accumulation + dispatch loop: `rlvgl/playit/src/executor.rs`
   poll loop (canonical for the per-frame contract).
 - Wire format: PLAYIT-01 (parse) + PLAYIT-04b (format).
@@ -149,7 +149,7 @@ It MUST NOT:
 ## §13 Files cited
 
 - `rlvgl/playit/src/transport.rs`,
-  `rlvgl/playit/src/executor.rs` (v0.2.0 @ b178cbc).
+  `rlvgl/playit/src/executor.rs` (v0.2.0 @ 79f730d).
 - `lvglpp/docs/playit-tagged/00-tagged-queries.md`,
   `lvglpp/docs/playit-tagged/01-response-formatter.md`.
 

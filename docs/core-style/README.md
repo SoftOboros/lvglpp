@@ -26,7 +26,7 @@ unblocked.
 ## Cross-language pair
 
 Mirrors `rlvgl/core/src/style.rs`, `theme.rs`, and the `Easing` /
-`LoopMode` enums in `animation.rs` (v0.2.0 @ b178cbc). The richer
+`LoopMode` enums in `animation.rs` (v0.2.0 @ 79f730d). The richer
 animation surface (Fade / Slide / Motion / Timeline) is **out of
 scope** for this chapter; those land as CORE-05a / CORE-05b / …
 sub-phases when their first call site needs them.

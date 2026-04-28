@@ -6,7 +6,7 @@ Phase code: **PLAYIT-04a**.
 ## §0 Authority
 
 - Recogniser shapes, state machines, duration constants, tick math:
-  `rlvgl/platform/src/gesture.rs` (v0.2.0 @ b178cbc). Canonical.
+  `rlvgl/platform/src/gesture.rs` (v0.2.0 @ 79f730d). Canonical.
 - Composition shape (Tap ∘ DoubleTap):
   `rlvgl/examples/disco-sim/src/main.rs:158` (`DiscoGesturePipeline`).
   Canonical reference.
@@ -231,7 +231,7 @@ PipelineOutput tick() {
 
 ## §13 Files cited
 
-- `rlvgl/platform/src/gesture.rs` (v0.2.0 @ b178cbc).
+- `rlvgl/platform/src/gesture.rs` (v0.2.0 @ 79f730d).
 - `rlvgl/examples/disco-sim/src/main.rs:158-200` (canonical
   pipeline composition).
 - `lvglpp/docs/core-event/00-event-surface.md`,

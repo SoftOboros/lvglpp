@@ -1,6 +1,6 @@
 // dispatcher.cpp — Dispatcher::dispatch implementation.
 //
-// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ b178cbc) — per-
+// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ 79f730d) — per-
 //         command behaviour. docs/playit-tagged/00-tagged-queries.md
 //         §5.3 freezes the per-command mapping under Standards
 //         Action.

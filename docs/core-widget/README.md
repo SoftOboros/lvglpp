@@ -30,5 +30,5 @@ unblocked.
 ## Cross-language pair
 
 - **rlvgl side**: mirrors `rlvgl/core/src/widget.rs` (v0.2.0 @
-  b178cbc) — `Widget` trait + `Rect` + `Color`. No rlvgl change is
+  79f730d) — `Widget` trait + `Rect` + `Color`. No rlvgl change is
   required to land lvglpp's CORE-03 implementation.

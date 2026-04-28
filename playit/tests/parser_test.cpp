@@ -1,7 +1,7 @@
 // parser_test.cpp — parity fixtures against rlvgl/playit/src/protocol.rs.
 //
 // Every assertion below has a corresponding rlvgl behaviour at
-// rlvgl/playit/src/protocol.rs (v0.2.0 @ b178cbc). Drift between
+// rlvgl/playit/src/protocol.rs (v0.2.0 @ 79f730d). Drift between
 // these implementations is a bug — playit is the cross-language test
 // harness and the wire format is the contract.
 

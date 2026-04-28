@@ -1,6 +1,6 @@
 // checkbox.hpp — binary checkbox widget with label.
 //
-// PARITY: rlvgl/widgets/src/checkbox.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/checkbox.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/checkbox/lv_checkbox.h — informative.
 // DELTA:  rlvgl's `text()` returns &str; lvglpp returns
 //         std::string_view (`borrows`). `style.radius` is

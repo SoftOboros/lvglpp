@@ -1,6 +1,6 @@
 // switch.hpp — binary on/off switch with sliding knob.
 //
-// PARITY: rlvgl/widgets/src/switch.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/switch.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/switch/lv_switch.h — informative.
 // DELTA:  `style.radius` ignored by the CORE-04a shim until
 //         CORE-04b lands. Knob slide is non-animated.

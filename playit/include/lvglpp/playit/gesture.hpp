@@ -1,6 +1,6 @@
 // gesture.hpp — TapRecognizer + DoubleTapRecognizer + GesturePipeline.
 //
-// PARITY: rlvgl/platform/src/gesture.rs (v0.2.0 @ b178cbc) — same
+// PARITY: rlvgl/platform/src/gesture.rs (v0.2.0 @ 79f730d) — same
 //         duration constants, same FSM, same tick math.
 //         rlvgl/examples/disco-sim/src/main.rs:158
 //         (DiscoGesturePipeline) — canonical composition reference.

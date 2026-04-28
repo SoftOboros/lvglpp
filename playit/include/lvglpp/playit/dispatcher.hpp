@@ -1,6 +1,6 @@
 // dispatcher.hpp — routes parsed playit Commands into a WidgetNode tree.
 //
-// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ b178cbc) — the
+// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ 79f730d) — the
 //         per-command dispatch logic. lvglpp's Dispatcher is the
 //         minimal core of that executor: command → Response, no
 //         transport, no recorder (PLAYIT-06), no framebuffer dump

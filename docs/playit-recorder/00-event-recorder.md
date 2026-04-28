@@ -5,7 +5,7 @@ Phase code: **PLAYIT-06**.
 
 ## §0 Authority
 
-- Recorder shape: `rlvgl/playit/src/recorder.rs` (v0.2.0 @ b178cbc).
+- Recorder shape: `rlvgl/playit/src/recorder.rs` (v0.2.0 @ 79f730d).
 - Dump wire format: `rlvgl/playit/src/executor.rs:343`
   (`dump_recording()`).
 - Per-event wire format: `rlvgl/playit/src/protocol.rs:359`

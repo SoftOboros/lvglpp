@@ -1,6 +1,6 @@
 // platform.hpp — module umbrella for lvglpp::platform.
 //
-// PARITY: rlvgl/platform/src/lib.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/platform/src/lib.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/drivers/, lvgl/src/display/, lvgl/src/indev/.
 //
 // This umbrella does not pull in any backend by default. Each backend

@@ -6,7 +6,7 @@ Phase code: **WID-04**.
 ## §0 Authority
 
 - `Slider` field set, position math, draw sequence, value-mapping
-  semantics: `rlvgl/widgets/src/slider.rs` (v0.2.0 @ b178cbc).
+  semantics: `rlvgl/widgets/src/slider.rs` (v0.2.0 @ 79f730d).
   Canonical.
 - Underlying widget tree: CORE-03 + CORE-03a.
 - Underlying draw helpers: CORE-04a (`fill_rounded_rect` shim).
@@ -168,7 +168,7 @@ Inside-bounds → update value, return `true`.
 
 ## §13 Files cited
 
-- `rlvgl/widgets/src/slider.rs` (v0.2.0 @ b178cbc).
+- `rlvgl/widgets/src/slider.rs` (v0.2.0 @ 79f730d).
 - `lvglpp/docs/widgets-button/00-button.md` (parent idiom).
 - `lvglpp/docs/core-renderer/00-renderer-trait.md`,
   `lvglpp/docs/core-widget/00-widget-tree.md`,

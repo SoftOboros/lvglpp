@@ -18,6 +18,6 @@ shim.
 
 ## Cross-language pair
 
-Mirrors `rlvgl/widgets/src/slider.rs` (v0.2.0 @ b178cbc). The
+Mirrors `rlvgl/widgets/src/slider.rs` (v0.2.0 @ 79f730d). The
 radius=0 visual path matches byte-for-byte; rounded track / knob
 arrive with CORE-04b.

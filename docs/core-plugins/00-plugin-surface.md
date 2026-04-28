@@ -10,7 +10,7 @@ interpreted per RFC 2119 and RFC 8174.
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| Per-plugin gating mechanism in rlvgl | `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ b178cbc) — `#[cfg(feature = "<name>")]` blocks | Canonical for the *intent* of optional, individually gated plugins. |
+| Per-plugin gating mechanism in rlvgl | `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ 79f730d) — `#[cfg(feature = "<name>")]` blocks | Canonical for the *intent* of optional, individually gated plugins. |
 | C++ gating mechanism (CMake options + preprocessor guards) | this chapter | Normative for lvglpp. |
 | Per-plugin decoder semantics | per-plugin sub-phase concepts docs (CORE-07a, CORE-07b, …) | Out of scope for this chapter. |
 
@@ -176,7 +176,7 @@ A conforming CORE-07 execution PR MUST satisfy:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ 79f730d)
 - `rlvgl/Cargo.toml` (informative — feature set)
 - `lvglpp/core/OPTIONS.md` (planned options table)
 - `lvglpp/CLAUDE.md` § "Doc Co-Location Policy",

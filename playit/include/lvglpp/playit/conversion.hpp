@@ -1,6 +1,6 @@
 // conversion.hpp — playit-spec → core-event conversions.
 //
-// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ b178cbc) — the
+// PARITY: rlvgl/playit/src/command.rs (v0.2.0 @ 79f730d) — the
 //         `KeySpec::to_key`, `EventSpec::to_event`,
 //         `TouchStateSpec::to_core` impls.
 // LVGL:   N/A — these conversions live entirely on the lvglpp side.

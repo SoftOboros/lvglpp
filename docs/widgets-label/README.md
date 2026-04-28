@@ -19,5 +19,5 @@ and minimal landing of CORE-04a draw helpers.
 
 ## Cross-language pair
 
-Mirrors `rlvgl/widgets/src/label.rs` (v0.2.0 @ b178cbc). No rlvgl
+Mirrors `rlvgl/widgets/src/label.rs` (v0.2.0 @ 79f730d). No rlvgl
 change is required to land lvglpp's WID-01 implementation.

@@ -1,6 +1,6 @@
 // slider.hpp — horizontal value-bound slider widget.
 //
-// PARITY: rlvgl/widgets/src/slider.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/slider.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/slider/lv_slider.h — informative.
 // DELTA:  PressRelease-only (no drag-tracking — WID-04a deferred).
 //         `style.radius` ignored until CORE-04b lands.

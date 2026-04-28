@@ -1,6 +1,6 @@
 // executor.hpp — line accumulator + dispatch loop driving a Transport.
 //
-// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ b178cbc) — the
+// PARITY: rlvgl/playit/src/executor.rs (v0.2.0 @ 79f730d) — the
 //         per-frame poll() shape (read bytes / accumulate lines /
 //         dispatch / format / write).
 // LVGL:   N/A.

@@ -1,6 +1,6 @@
 // host_sdl.hpp — host-side SDL2 backend.
 //
-// PARITY: rlvgl/platform/src/simulator.rs (v0.2.0 @ b178cbc) — host
+// PARITY: rlvgl/platform/src/simulator.rs (v0.2.0 @ 79f730d) — host
 //         simulator window + event translation. lvglpp uses SDL2
 //         instead of winit/wgpu/eframe per docs/platform-host-sdl
 //         §10.

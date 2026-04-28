@@ -1,6 +1,6 @@
 // label.hpp — basic text label widget.
 //
-// PARITY: rlvgl/widgets/src/label.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/label.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/label/lv_label.h — informative.
 //         lvglpp::widgets::Label does not wrap lv_label; it sits at
 //         the lvglpp::core::Widget layer and uses Renderer::draw_text

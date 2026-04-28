@@ -14,8 +14,8 @@ This chapter is the normative artifact. The initiative
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| Event variant set, payload field shapes, dispatch ordering | `rlvgl/core/src/event.rs` (v0.2.0 @ b178cbc) | Canonical for the value-level shape. lvglpp mirrors 1:1. |
-| Wire-format event types (`EventSpec`, `KeySpec`, `TouchPointSpec`, `TouchStateSpec`) | `rlvgl/playit/src/command.rs` (v0.2.0 @ b178cbc) | Used by `lvglpp::playit`; convertible to `lvglpp::core::Event` via `to_event()` at the boundary. |
+| Event variant set, payload field shapes, dispatch ordering | `rlvgl/core/src/event.rs` (v0.2.0 @ 79f730d) | Canonical for the value-level shape. lvglpp mirrors 1:1. |
+| Wire-format event types (`EventSpec`, `KeySpec`, `TouchPointSpec`, `TouchStateSpec`) | `rlvgl/playit/src/command.rs` (v0.2.0 @ 79f730d) | Used by `lvglpp::playit`; convertible to `lvglpp::core::Event` via `to_event()` at the boundary. |
 | C++ surface naming, ownership tags, freestanding-subset rules | this chapter + `docs/std-mapping.md` | Normative for lvglpp. |
 | Underlying widget-tree event substrate | `lvgl/src/core/lv_obj_event.h` | Informative only. `lv_event_t` does not shadow `lvglpp::core::Event`; see §10. |
 
@@ -203,9 +203,9 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/core/src/event.rs` (v0.2.0 @ b178cbc)
-- `rlvgl/playit/src/command.rs` (v0.2.0 @ b178cbc)
-- `rlvgl/playit/src/protocol.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/core/src/event.rs` (v0.2.0 @ 79f730d)
+- `rlvgl/playit/src/command.rs` (v0.2.0 @ 79f730d)
+- `rlvgl/playit/src/protocol.rs` (v0.2.0 @ 79f730d)
 - `lvgl/src/core/lv_obj_event.h` (informative; v9.x)
 - `lvglpp/CLAUDE.md` § "Strict and Explicit Ownership",
   § "Spec-Before-Code Planning Discipline",

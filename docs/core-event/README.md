@@ -38,7 +38,7 @@ unblocked and pending an implementation PR.
 ## Cross-language pair
 
 - **rlvgl side**: this chapter mirrors an already-implemented surface
-  in `rlvgl/core/src/event.rs` (v0.2.0 @ b178cbc). No rlvgl change
+  in `rlvgl/core/src/event.rs` (v0.2.0 @ 79f730d). No rlvgl change
   is required to land lvglpp's CORE-02 implementation.
 - **Future change ordering**: any extension to the Event variant set
   is a **Standards Action** (CLAUDE.md § "Frozen enumerations").

@@ -10,7 +10,7 @@ The key words **MUST**, **SHOULD**, **MAY** are interpreted per RFC
 
 | Vocabulary owner | Source | Notes |
 | --- | --- | --- |
-| `Label` field set, method set, draw sequence | `rlvgl/widgets/src/label.rs` (v0.2.0 @ b178cbc) | Canonical. |
+| `Label` field set, method set, draw sequence | `rlvgl/widgets/src/label.rs` (v0.2.0 @ 79f730d) | Canonical. |
 | `draw_widget_bg` body | `rlvgl/core/src/draw.rs:480` | Canonical. lvglpp ports a minimal version under CORE-04a (no rounded corners — deferred). |
 | `Renderer::draw_text` for the text glyph rendering | `rlvgl/core/src/renderer.rs:17` | rlvgl Label delegates text rendering to the renderer; lvglpp does the same. |
 
@@ -153,7 +153,7 @@ A conforming PR MAY:
 
 ## §13 Files cited
 
-- `rlvgl/widgets/src/label.rs` (v0.2.0 @ b178cbc)
+- `rlvgl/widgets/src/label.rs` (v0.2.0 @ 79f730d)
 - `rlvgl/core/src/draw.rs:480` (`draw_widget_bg`)
 - `rlvgl/core/src/renderer.rs:17` (`Renderer::draw_text`)
 - `lvglpp/docs/core-event/00-event-surface.md`,

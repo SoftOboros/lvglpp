@@ -1,7 +1,7 @@
 // format.hpp — wire-format Response → ASCII serialiser.
 //
 // PARITY: rlvgl/playit/src/protocol.rs:466 (format_response).
-//         v0.2.0 @ b178cbc.
+//         v0.2.0 @ 79f730d.
 // LVGL:   N/A.
 // DELTA:  rlvgl uses an internal BufWriter that silently truncates;
 //         lvglpp uses std::span<char> directly with the same

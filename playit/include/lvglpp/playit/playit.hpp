@@ -1,6 +1,6 @@
 // playit.hpp — module umbrella for lvglpp::playit.
 //
-// PARITY: rlvgl/playit/src/lib.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/playit/src/lib.rs (v0.2.0 @ 79f730d).
 // PROTOCOL: rlvgl/playit/README.md — single-line newline-terminated
 //           commands, identical wire format. lvglpp re-implements the
 //           parser in C++; it does not depend on the Rust crate.

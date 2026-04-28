@@ -5,7 +5,7 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::widgets — STATUS
 
-Tracks `rlvgl/widgets` @ `v0.2.0` (commit `b178cbc`). Last reconciled:
+Tracks `rlvgl/widgets` @ `v0.2.0` (commit `79f730d`). Last reconciled:
 2026-04-27.
 
 ## Roadmap intent

@@ -22,6 +22,6 @@ unblocked by WID-01 Label, WID-02 Button, and CORE-04a (with the
 ## Cross-language pair
 
 Mirrors `rlvgl/widgets/src/checkbox.rs` and
-`rlvgl/widgets/src/switch.rs` (v0.2.0 @ b178cbc). The radius=0
+`rlvgl/widgets/src/switch.rs` (v0.2.0 @ 79f730d). The radius=0
 visual path matches byte-for-byte; rounded corners arrive with
 CORE-04b.

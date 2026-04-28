@@ -24,5 +24,5 @@ by PLAYIT-04b (Response formatter).
 ## Cross-language pair
 
 Mirrors `rlvgl/playit/src/{transport.rs, executor.rs}` (v0.2.0 @
-b178cbc). Cross-language closure: a single `cat fixtures.txt | …`
+79f730d). Cross-language closure: a single `cat fixtures.txt | …`
 pipe drives lvglpp targets identically to rlvgl targets.

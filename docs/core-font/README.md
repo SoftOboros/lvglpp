@@ -23,4 +23,4 @@ unblocked by CORE-04 ratification.
 ## Cross-language pair
 
 Mirrors `rlvgl/core/src/bitmap_font.rs` and `packed_font.rs` (v0.2.0
-@ b178cbc).
+@ 79f730d).

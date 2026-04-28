@@ -14,7 +14,7 @@ Phase code: **PLAT-02** (family chapter).
   **STMicroelectronics ES0392**.
 - Bring-up sequence intent (clock tree, JEDEC SDRAM init, LTDC/DSI
   ordering, DMA2D admission, ERIF holdoff) mirrors
-  `rlvgl/docs/disco-platform-guide/` (v0.2.0 @ b178cbc). When the
+  `rlvgl/docs/disco-platform-guide/` (v0.2.0 @ 79f730d). When the
   two diverge, **rlvgl is canonical** and this family is the bug.
 - The toolchain floor is `arm-none-eabi-gcc >= 11.0` with C++20
   (`-std=c++20 -fno-exceptions -fno-rtti`) per
@@ -272,7 +272,7 @@ configuration error (`message(FATAL_ERROR)`).
 ## §13 Files cited
 
 - `rlvgl/docs/disco-platform-guide/README.md` (Vol II index,
-  v0.2.0 @ b178cbc).
+  v0.2.0 @ 79f730d).
 - `rlvgl/examples/stm32h747i-disco/{HARDWARE,MEMORY,BOOT,BRINGUP}.md`.
 - `rlvgl/examples/stm32h747i-disco/memory.x`.
 - `rlvgl/examples/stm32h747i-disco/src/main.rs` (line ranges per

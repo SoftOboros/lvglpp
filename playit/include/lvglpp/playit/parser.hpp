@@ -1,6 +1,6 @@
 // parser.hpp — text wire-protocol parser for lvglpp::playit.
 //
-// PARITY: rlvgl/playit/src/protocol.rs (v0.2.0 @ b178cbc) —
+// PARITY: rlvgl/playit/src/protocol.rs (v0.2.0 @ 79f730d) —
 //         parse_command() and the per-prefix parse_t/p/k/d/q/m/r
 //         helpers.
 // LVGL:   N/A.

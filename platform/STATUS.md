@@ -5,8 +5,8 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::platform — STATUS
 
-Tracks `rlvgl/platform` @ `v0.2.0` (commit `b178cbc`). Last reconciled:
-2026-04-27.
+Tracks `rlvgl/platform` @ `v0.2.0` (commit `79f730d`). Last reconciled:
+2026-04-28.
 
 ## Roadmap intent
 
@@ -184,6 +184,21 @@ Stubbed:
   PLAT-02a..f (§5.1), CM7-only posture (§5.3), bare-metal
   cooperative posture (§5.4), register-block discipline (§5.5),
   embedded-posture-mandatory rule (§5.6) all frozen.
+- 2026-04-28 — rlvgl pin advanced on `v0.2.0`:
+  `b178cbc` → `79f730d` (1 commit). Upstream `DISCO-03: SDCLK
+  0b01 → 0b10 — fix SDRAM column-aliasing` lands the same fix
+  lvglpp identified via memalpha (RM0399 Rev 4 §23.9.5.1):
+  `FMC_SDCR1.SDCLK[1:0] = 0b01` is **Reserved**, not the
+  silicon-required value the original CubeMX-derived comment
+  claimed. The documented `/2` divider is `0b10`. Touches
+  `rlvgl/examples/stm32h747i-disco/src/main.rs:1192-1193` +
+  `rlvgl/docs/disco-platform-guide/03-sdram-and-fmc.md`. Per
+  CLAUDE.md § "Cross-language change ordering": rlvgl
+  amendment (`79f730d`) lands first; lvglpp's
+  `disco/regs/fmc.hpp::sdcr::SDCLK_DIV2 = 0b10 << 10` (already
+  applied 2026-04-28 with memalpha-cited audit comment) is the
+  mirror. Bulk SHA refresh across 64 lvglpp files
+  (`b178cbc` → `79f730d`).
 - 2026-04-27 — PLAT-02c chapter ratified
   (`docs/platform-disco/03-sdram-and-fmc.md`) and execution
   landed (`disco/regs/{fmc,mpu}.hpp` + `disco/sdram.{hpp,cpp}` +
@@ -221,7 +236,7 @@ Stubbed:
   DSI + first pixels) is **blocked** on this — without
   reliable SDRAM addressing, framebuffer storage is unsound.
 - 2026-04-27 — rlvgl pin advanced on `v0.2.0`:
-  `d99f793` → `b178cbc` (4 commits). Upstream changes are
+  `d99f793` → `79f730d` (4 commits). Upstream changes are
   rlvgl-internal: APP-00 Application Schema chapters
   (`docs/app-schema/00..03.md` + sample `app.yaml` for
   beetle-esp32c3 — does not affect any contract lvglpp mirrors

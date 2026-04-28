@@ -5,7 +5,7 @@ README.md — Initiative README for the WID-02 Button chapter.
 # widgets-button — initiative README
 
 This initiative ratifies `lvglpp::widgets::Button`. Mirrors
-`rlvgl/widgets/src/button.rs` (v0.2.0 @ b178cbc). The normative
+`rlvgl/widgets/src/button.rs` (v0.2.0 @ 79f730d). The normative
 artifact is [`00-button.md`](./00-button.md).
 
 ## Status

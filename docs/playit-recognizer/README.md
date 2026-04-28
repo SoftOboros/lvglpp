@@ -29,7 +29,7 @@ variants).
 
 ## Cross-language pair
 
-Mirrors `rlvgl/platform/src/gesture.rs` (v0.2.0 @ b178cbc) — same
+Mirrors `rlvgl/platform/src/gesture.rs` (v0.2.0 @ 79f730d) — same
 duration constants, same algorithm, same tick-based timer. The
 `DiscoGesturePipeline` composition shape from
 `rlvgl/examples/disco-sim/src/main.rs:158` is the canonical

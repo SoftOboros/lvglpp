@@ -31,4 +31,4 @@ CORE-04 ratification.
 
 ## Cross-language pair
 
-Mirrors `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ b178cbc).
+Mirrors `rlvgl/core/src/plugins/mod.rs` (v0.2.0 @ 79f730d).

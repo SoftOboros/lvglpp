@@ -1,6 +1,6 @@
 // button.hpp — interactive button widget.
 //
-// PARITY: rlvgl/widgets/src/button.rs (v0.2.0 @ b178cbc).
+// PARITY: rlvgl/widgets/src/button.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/button/lv_button.h — informative.
 // DELTA:  rlvgl uses Box<dyn FnMut(&mut Button)> for the click
 //         handler; lvglpp uses std::function<void(Button&)>. Both

@@ -6,9 +6,9 @@ Phase code: **WID-03**.
 ## §0 Authority
 
 - `Checkbox` field set, draw sequence, toggle semantics:
-  `rlvgl/widgets/src/checkbox.rs` (v0.2.0 @ b178cbc). Canonical.
+  `rlvgl/widgets/src/checkbox.rs` (v0.2.0 @ 79f730d). Canonical.
 - `Switch` field set, draw sequence, toggle semantics:
-  `rlvgl/widgets/src/switch.rs` (v0.2.0 @ b178cbc). Canonical.
+  `rlvgl/widgets/src/switch.rs` (v0.2.0 @ 79f730d). Canonical.
 - Underlying widget tree: CORE-03 + CORE-03a.
 - Underlying draw helpers: CORE-04a (with the `fill_rounded_rect`
   shim — radius is currently ignored, CORE-04b deferred).
@@ -134,7 +134,7 @@ behaviour to Button.
 
 ## §13 Files cited
 
-- `rlvgl/widgets/src/checkbox.rs`, `switch.rs` (v0.2.0 @ b178cbc).
+- `rlvgl/widgets/src/checkbox.rs`, `switch.rs` (v0.2.0 @ 79f730d).
 - `lvglpp/docs/widgets-button/00-button.md` (the parent chapter
   that established the toggle-by-PressRelease idiom).
 - `lvglpp/docs/core-renderer/00-renderer-trait.md`
