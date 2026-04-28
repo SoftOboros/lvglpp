@@ -1,0 +1,10 @@
+[submodule "lvgl"]
+	path = lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "rlvgl"]
+	path = rlvgl
+	url = git@github.com:SoftOboros/rlvgl.git
+	branch = v0.2.0
+	fetchRecurseSubmodules = false
+	update = checkout
+	ignore = dirty

@@ -1,0 +1,243 @@
+# =============================================================================
+# lvglpp — embedded C++ / CMake .gitignore
+# =============================================================================
+# Submodules (lvgl/, rlvgl/) bring their own .gitignore entries; this file
+# governs only top-level lvglpp tooling output.
+
+# -----------------------------------------------------------------------------
+# Build output
+# -----------------------------------------------------------------------------
+build/
+build-*/
+cmake-build-*/
+out/
+bin/
+lib/
+install/
+_deps/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+CTestTestfile.cmake
+cmake_install.cmake
+Testing/
+*.cmake
+!cmake/**/*.cmake
+!CMakeLists.txt
+CMakeUserPresets.json
+
+# Ninja / Make
+build.ninja
+.ninja_deps
+.ninja_log
+Makefile
+!**/Makefile.in
+*.mk.user
+
+# -----------------------------------------------------------------------------
+# Compiler / linker artifacts
+# -----------------------------------------------------------------------------
+*.o
+*.obj
+*.lo
+*.slo
+*.ko
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exp
+*.lib
+*.pdb
+*.idb
+*.ilk
+
+# Embedded toolchain output
+*.elf
+*.bin
+*.hex
+*.srec
+*.map
+*.lss
+*.lst
+*.list
+*.sym
+*.disasm
+*.dump
+*.su          # GCC stack usage
+*.gcno        # gcov instrumentation
+*.gcda
+*.gcov
+coverage/
+*.profraw
+*.profdata
+
+# Precompiled headers / module caches
+*.gch
+*.pch
+*.ifc
+*.pcm
+
+# Dependency-tracking files
+*.d
+*.dep
+*.dot
+
+# -----------------------------------------------------------------------------
+# Debug / core dumps
+# -----------------------------------------------------------------------------
+*.dSYM/
+core
+core.*
+vgcore.*
+*.stackdump
+
+# -----------------------------------------------------------------------------
+# Toolchain / cache layers
+# -----------------------------------------------------------------------------
+.cache/
+.ccache/
+.sccache/
+.cache-*/
+compile_commands.json
+
+# clang tooling
+.clangd/
+.clang-tidy.cache
+.clang-format.cache
+
+# clang-tidy / static analysis output
+*.plist
+*.tidy
+clang-tidy.log
+cppcheck-*.xml
+scan-build-*/
+infer-out/
+
+# Sanitizer / fuzzer output
+*.asan
+*.ubsan
+*.msan
+*.tsan
+crash-*
+oom-*
+timeout-*
+fuzz-*.log
+
+# -----------------------------------------------------------------------------
+# Embedded debug / flash tooling
+# -----------------------------------------------------------------------------
+# OpenOCD / GDB
+.gdb_history
+.gdbinit.local
+*.gdb
+openocd.log
+*.cfg.user
+
+# Probe-rs / J-Link / ST-Link
+probe-rs.log
+JLink*.log
+SEGGER_RTT_*
+*.jflash
+*.jlink
+*.svd.lock
+
+# STM32 / STMCubeIDE / STMCubeProgrammer
+.metadata/
+.settings/
+*.ioc.bak
+.mxproject
+Debug/
+Release/
+*.cyclo
+*.elf.txt
+
+# Renesas / Nordic / NXP / Microchip / ESP-IDF intermediates
+sdkconfig.old
+sdkconfig.local
+managed_components/
+dependencies.lock
+
+# -----------------------------------------------------------------------------
+# IDE / editor
+# -----------------------------------------------------------------------------
+# VS Code (keep shareable settings under .vscode/, ignore per-user files)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.shared.json
+!.vscode/tasks.json
+*.code-workspace
+
+# JetBrains (CLion, IntelliJ)
+.idea/
+*.iml
+cmake-build-debug/
+cmake-build-release/
+
+# Visual Studio
+.vs/
+*.sln.docstates
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+*.opendb
+*.VC.db
+*.VC.opendb
+
+# Eclipse / CDT
+.cproject
+.project
+.settings/
+.autotools
+
+# Qt Creator
+CMakeLists.txt.user*
+*.autosave
+
+# Vim / Emacs / Sublime / Kate / nano
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+*.bak
+*.orig
+*.rej
+*.sublime-workspace
+*.sublime-project
+.kateconfig
+
+# -----------------------------------------------------------------------------
+# OS junk
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# Local-only project state
+# -----------------------------------------------------------------------------
+.envrc
+.envrc.local
+.env.local
+.local/
+TODO.local.md
+NOTES.local.md
+scratch/
+tmp/
