@@ -60,6 +60,7 @@ Makefile
 # Embedded toolchain output
 *.elf
 *.bin
+!core/src/fonts/font*.bin
 *.hex
 *.srec
 *.map
