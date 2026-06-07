@@ -95,6 +95,7 @@ coverage/
 core
 !core/
 core.*
+!core.h*
 vgcore.*
 *.stackdump
 
