@@ -59,8 +59,14 @@ namespace sdcr {
     inline constexpr std::uint32_t MWID_32  = 0b10u <<  4;  // 32-bit data
     inline constexpr std::uint32_t NB_4     = 1u    <<  6;  // 4 internal banks
     inline constexpr std::uint32_t CAS_3    = 0b11u <<  7;  // CAS = 3 cycles
-    inline constexpr std::uint32_t SDCLK_2  = 0b01u << 10;  // silicon-required
-                                                            // (rlvgl Vol II Ch 3 §2)
+    // SDCLK[1:0] encoding per RM0399 §22.9.5.1:
+    //   00 = SDCLK disabled
+    //   01 = Reserved (rlvgl writes this; observed broken at PLL2_R kernel)
+    //   10 = fmc_ker_ck / 2  ← documented /2 divider, what we use
+    //   11 = fmc_ker_ck / 3
+    // Memalpha verification 2026-04-28 against RM0399 Rev 4 + RM0433 Rev 8.
+    inline constexpr std::uint32_t SDCLK_DIV2 = 0b10u << 10;
+    inline constexpr std::uint32_t SDCLK_DIV3 = 0b11u << 10;
     inline constexpr std::uint32_t RBURST   = 1u    << 12;
 }
 

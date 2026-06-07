@@ -66,7 +66,7 @@ void init() noexcept {
     // configure_fmc_sdram exactly: bank-shape duplication in SDCR1
     // is a chapter-prose hazard that doesn't reflect rlvgl's
     // shipped values.
-    FMC->sdcr1 = sdcr::SDCLK_2 | sdcr::RBURST;
+    FMC->sdcr1 = sdcr::SDCLK_DIV2 | sdcr::RBURST;
     FMC->sdcr2 = sdcr::NC_9 | sdcr::NR_12 | sdcr::MWID_32
                | sdcr::NB_4 | sdcr::CAS_3;
 
