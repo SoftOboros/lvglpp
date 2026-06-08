@@ -27,8 +27,9 @@ where applicable):
    - **PLAT-02a:** Toolchain + memory map + reset vector
      (`docs/platform-disco/01-toolchain-and-reset.md`).
    - **PLAT-02b:** Clocks, PLLs, GPIO pin mux.
-   - **PLAT-02c:** SDRAM (FMC Bank 1).
-   - **PLAT-02d:** LTDC + DSI + OTM8009A.
+   - **PLAT-02c:** SDRAM (FMC Bank 1). **Done — hardware-verified
+     2026-06-08** (full address/data/range memtest PASS).
+   - **PLAT-02d:** LTDC + DSI + OTM8009A. **Unblocked** (SDRAM live).
    - **PLAT-02e:** DMA2D + ERIF gating.
    - **PLAT-02f:** FT5336 touch + USART1 playit transport.
 3. **PLAT-03:** BeagleBone Black + NHD cape (Linux DRM). Mirrors the
@@ -107,9 +108,14 @@ Implemented (PLAT-02a — landed 2026-04-27):
   `0x08000319` (Reset). FLASH = 828 B, RAM = 0 B, BSS = 0 B —
   inside the §12 sanity bound.
 
+- PLAT-02b clocks + GPIO pinmux (`disco/clocks.{hpp,cpp}` +
+  `disco/pinmux.{hpp,cpp}`), hardware-verified 2026-04-27.
+- PLAT-02c SDRAM (`disco/sdram.{hpp,cpp}` + `disco/regs/{fmc,mpu}.hpp`),
+  hardware-verified 2026-06-08 (full memtest PASS).
+
 Stubbed:
 
-- PLAT-02b..f (clocks/SDRAM/LTDC/DSI/DMA2D/touch/USART). Each has
+- PLAT-02d..f (LTDC/DSI/OTM8009A/DMA2D/touch/USART). Each has
   its own concepts doc placeholder under `docs/platform-disco/`.
 - PLAT-03 (BBB Linux DRM), PLAT-04 (ESP32 LCD).
 
@@ -224,6 +230,24 @@ Stubbed:
   applied 2026-04-28 with memalpha-cited audit comment) is the
   mirror. Bulk SHA refresh across 64 lvglpp files
   (`b178cbc` → `79f730d`).
+- 2026-06-08 — **PLAT-02c SDRAM hardware-verified; column-bit-2 bug
+  RESOLVED.** The SDCLK `0b01`→`0b10` correction (in
+  `disco/regs/fmc.hpp` `SDCLK_DIV2 = 0b10<<10`, so the live
+  `SDCR1 = 0x1800`, not the `0x1400` recorded in the 2026-04-27 entry
+  below) was applied in code 2026-04-28 but never run on the board.
+  Flashed `lvglpp_stm32h747i_disco_sdram` to the attached DISCO via
+  probe-rs 0.29.1 + ST-LINK V3 and read the D3-SRAM relay at
+  `0x3800_0300`: breadcrumb `a11c0009`, and the previously-broken
+  `0xD000_0000`↔`0xD000_0004` pair now reads back correctly
+  (`deadbeef`/`cafebabe`, no swap). Replaced the 4-canary smoke in
+  `main_sdram.cpp` with a rigorous memtest — address-line walk over
+  byte-offset bits 2–24 (full 32 MiB, catches swapped/stuck/shorted
+  address lines), data-line walk (32-bit walking ones + complement),
+  and a 512-point range sweep — relay status `0x600D_0000` (PASS),
+  fail-offset `0xFFFF_FFFF` (none). The earlier "bring-up order /
+  early-FMC-at-HSI" hypothesis is moot: clocks-then-SDRAM at
+  FMCSEL=PLL2_R (SDCLK 75 MHz) works with the correct `0b10` divider.
+  **PLAT-02d (LTDC + DSI + first pixels) is now unblocked.**
 - 2026-04-27 — PLAT-02c chapter ratified
   (`docs/platform-disco/03-sdram-and-fmc.md`) and execution
   landed (`disco/regs/{fmc,mpu}.hpp` + `disco/sdram.{hpp,cpp}` +
