@@ -32,3 +32,9 @@ add_executable(lvglpp_widgets_slider_test slider_test.cpp)
 target_link_libraries(lvglpp_widgets_slider_test
     PRIVATE lvglpp::widgets lvglpp_warnings)
 add_test(NAME lvglpp_widgets_slider COMMAND lvglpp_widgets_slider_test)
+
+# DEMO-01 acceptance (disco-demo prerequisite).
+add_executable(lvglpp_widgets_container_test container_test.cpp)
+target_link_libraries(lvglpp_widgets_container_test
+    PRIVATE lvglpp::widgets lvglpp_warnings)
+add_test(NAME lvglpp_widgets_container COMMAND lvglpp_widgets_container_test)

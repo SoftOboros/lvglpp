@@ -182,6 +182,16 @@ Local glossary. Forms follow `CLAUDE.md` §
 - **`EventKind`, `Widget`, `WidgetNode`, `Renderer`, `Theme`,
   `Style`, `Animation`** — Owned by chapter CORE-03 / CORE-04 /
   CORE-05; do not exist in repo yet.
+- **`rle::Error`, `rle::ParsedBlob`, `rle::parse_blob`,
+  `rle::decode_into`, `rle::consts::*`** — As defined in
+  `rlvgl/rlvgl-decomp/src/lib.rs:42` (`Error`), `:341`
+  (`parse_rle_blob`), `:382` (`decode_argb_into`), `:27` (`mod
+  consts`); mirrored here as `core/include/lvglpp/core/rle.hpp`.
+  Consume-only: the encoder side (`write_rle_blob`, `encode_rgba`,
+  lib.rs:201/:318) is deliberately NOT mirrored. DELTA: decode target
+  is `std::span<core::Color>` (RGB565 palette converted at decode
+  time, a=255) instead of a native-u32 buffer. Frozen constants are
+  Standards Action (must agree with rlvgl).
 
 ## Change log
 
@@ -232,3 +242,17 @@ Local glossary. Forms follow `CLAUDE.md` §
   above the CORE-03 Widget abstract base. `find_by_tag` lifted
   from rlvgl playit into core. Test target
   `lvglpp_core_widget_node` green; embedded posture clean.
+- 2026-06-07 — DEMO-04 (consume-only RLE icon decoder) landed.
+  `core/include/lvglpp/core/rle.hpp` + `core/src/rle.cpp` mirror the
+  rlvgl-decomp parser (`parse_rle_blob`) and ARGB decode loop
+  (`decode_argb_into`) from `rlvgl/rlvgl-decomp/src/lib.rs` (v0.2.0 @
+  79f730d), decoding into a `std::span<core::Color>` buffer. The
+  encoder (`write_rle_blob` / `encode_rgba`) is explicitly OUT OF
+  SCOPE per the chapter's consume-only boundary (CLAUDE.md §
+  "`creator-cpp` is deferred"). Zero-alloc, `-fno-exceptions` clean.
+  Added an `expected<void, E>` partial specialization to the
+  `third_party/lvglpp_expected` polyfill (frozen `decode_into`
+  signature is `expected<void, Error>`). `core.hpp` re-exports
+  `rle.hpp`. Test target `lvglpp_core_rle` (index / short-repeat /
+  inline single+double / long-repeat decode, four frozen error paths,
+  plus a real `file.rle` asset decode); 20/20 ctest entries green.

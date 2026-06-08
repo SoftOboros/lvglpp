@@ -56,7 +56,7 @@ unexpected(E) -> unexpected<E>;
 //
 // Constraints (deliberate, see README):
 //   - T and E must be distinct, complete object types.
-//   - No void / reference T specialization.
+//   - No reference T specialization (void T IS supported, see below).
 //   - No monadic ops (and_then/or_else/transform/transform_error).
 template <class T, class E>
 class expected {
@@ -169,6 +169,96 @@ private:
         ~Storage() {}
         T val;
         E err;
+    };
+
+    Storage storage_;
+    bool    has_value_;
+};
+
+// expected<void, E> — partial specialization for value-less success.
+//
+// Mirrors std::expected<void, E>: a successful state carries no payload
+// (value() returns void), an error state owns an E. Added for DEMO-04's
+// `decode_into`, whose frozen signature is `expected<void, Error>`. Stays
+// within the README scope rule: it is a single, std-faithful specialization,
+// exercised through a parity-shaped use in core/tests/rle_test.cpp.
+template <class E>
+class expected<void, E> {
+    static_assert(!std::is_void_v<E>, "expected<void, void> not supported");
+
+public:
+    using value_type      = void;
+    using error_type      = E;
+    using unexpected_type = unexpected<E>;
+
+    // Default-construct in the success state (no value payload).
+    constexpr expected() noexcept : has_value_(true) {}
+
+    // Args: u: owns unexpected<E>; consumed.
+    constexpr expected(const unexpected<E>& u) : has_value_(false) {
+        ::new (static_cast<void*>(&storage_.err)) E(u.error());
+    }
+    constexpr expected(unexpected<E>&& u)
+        noexcept(std::is_nothrow_move_constructible_v<E>)
+        : has_value_(false) {
+        ::new (static_cast<void*>(&storage_.err)) E(std::move(u).error());
+    }
+
+    // In-place error construction: lvglpp::expected<void,E>(lvglpp::unexpect, e).
+    template <class... Args>
+    constexpr expected(unexpect_t, Args&&... args) : has_value_(false) {
+        ::new (static_cast<void*>(&storage_.err)) E(std::forward<Args>(args)...);
+    }
+
+    constexpr expected(const expected& other) : has_value_(other.has_value_) {
+        if (!has_value_) ::new (static_cast<void*>(&storage_.err)) E(other.storage_.err);
+    }
+    constexpr expected(expected&& other)
+        noexcept(std::is_nothrow_move_constructible_v<E>)
+        : has_value_(other.has_value_) {
+        if (!has_value_) ::new (static_cast<void*>(&storage_.err)) E(std::move(other.storage_.err));
+    }
+
+    constexpr expected& operator=(const expected& other) {
+        if (this == &other) return *this;
+        destroy();
+        has_value_ = other.has_value_;
+        if (!has_value_) ::new (static_cast<void*>(&storage_.err)) E(other.storage_.err);
+        return *this;
+    }
+    constexpr expected& operator=(expected&& other)
+        noexcept(std::is_nothrow_move_constructible_v<E>) {
+        if (this == &other) return *this;
+        destroy();
+        has_value_ = other.has_value_;
+        if (!has_value_) ::new (static_cast<void*>(&storage_.err)) E(std::move(other.storage_.err));
+        return *this;
+    }
+
+    ~expected() { destroy(); }
+
+    constexpr bool has_value() const noexcept { return has_value_; }
+    constexpr explicit operator bool() const noexcept { return has_value_; }
+
+    // No-op success accessor, matching std::expected<void, E>::value().
+    constexpr void value() const& noexcept {}
+    constexpr void value() &&     noexcept {}
+
+    constexpr E&       error() &      noexcept { return storage_.err; }
+    constexpr const E& error() const& noexcept { return storage_.err; }
+    constexpr E&&      error() &&     noexcept { return std::move(storage_.err); }
+
+private:
+    void destroy() noexcept {
+        if (!has_value_) storage_.err.~E();
+    }
+
+    union Storage {
+        // owns E only in the error state; lifetime managed by destroy().
+        Storage() {}
+        ~Storage() {}
+        char dummy;
+        E    err;
     };
 
     Storage storage_;

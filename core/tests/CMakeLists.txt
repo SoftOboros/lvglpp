@@ -42,3 +42,21 @@ target_link_libraries(lvglpp_core_widget_node_test
         lvglpp_warnings
 )
 add_test(NAME lvglpp_core_widget_node COMMAND lvglpp_core_widget_node_test)
+
+# DEMO-04 acceptance (consume-only RLEC decoder).
+add_executable(lvglpp_core_rle_test rle_test.cpp)
+target_link_libraries(lvglpp_core_rle_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+# Point the test at a real rlvgl icon asset when the (non-recursive) rlvgl
+# submodule is checked out; otherwise the test skips that sub-case. The
+# decoder itself is fully covered by the hand-built fixtures.
+set(LVGLPP_RLE_ASSET
+    "${CMAKE_SOURCE_DIR}/rlvgl/examples/stm32h747i-disco/assets/icons/file.rle")
+if(EXISTS "${LVGLPP_RLE_ASSET}")
+    target_compile_definitions(lvglpp_core_rle_test
+        PRIVATE LVGLPP_RLE_ASSET_PATH="${LVGLPP_RLE_ASSET}")
+endif()
+add_test(NAME lvglpp_core_rle COMMAND lvglpp_core_rle_test)

@@ -93,6 +93,11 @@ Stubbed:
   `widgets/include/lvglpp/widgets/slider.hpp`. Mirrors
   `rlvgl/widgets/src/slider.rs:9`. Authoritative chapter:
   `docs/widgets-slider/00-slider.md`.
+- **`Container`** — As defined in
+  `widgets/include/lvglpp/widgets/container.hpp`. Mirrors
+  `rlvgl/widgets/src/container.rs:9`; used without modification.
+  Authoritative chapter: `docs/disco-demo/01-container-widget.md`
+  (DEMO-01).
 - **`LV_USE_*` gating** — As defined in
   `lvgl/src/lv_conf_internal.h`; future lvglpp widget headers will
   `#error` if their required `LV_USE_*` is undefined or zero.
@@ -135,3 +140,12 @@ Stubbed:
   degenerate `min == max` handled. Test target
   `lvglpp_widgets_slider` (11 fixtures) green; embedded posture
   clean. PressRelease-only (no drag-tracking — WID-04a deferred).
+- 2026-06-07 — DEMO-01 chapter ratified
+  (`docs/disco-demo/01-container-widget.md`) and execution landed.
+  `lvglpp::widgets::Container` (bounds + public `style`) is the
+  passive grouping/background widget the disco-demo root and panels
+  parent into. `draw` delegates to `core::draw_widget_bg`;
+  `handle_event` always returns `false`. Pulled forward from the
+  original WID-05 slot as a disco-demo (DEMO) prerequisite. Test
+  target `lvglpp_widgets_container` (5 fixtures) green; `-Werror`
+  + embedded posture clean. **DELTA**: none vs `container.rs`.

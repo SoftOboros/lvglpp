@@ -90,3 +90,13 @@ else()
 endif()
 
 add_library(lvglpp::platform ALIAS lvglpp_platform)
+
+# ---------------------------------------------------------------------------
+# Tests — SDL-independent (Screen value type, etc.). Gated only on
+# LVGLPP_BUILD_TESTS, never on a backend option, so they run on a plain
+# host configure. enable_testing() is called by the top-level CMakeLists
+# before this directory is added.
+# ---------------------------------------------------------------------------
+if(LVGLPP_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

@@ -162,9 +162,34 @@ Stubbed:
   directly instead of calling newlib's `__libc_init_array` so we
   don't pull `_init`. Default fault handler loops on `bkpt 0`,
   matching rlvgl `BOOT.md` § "Fault trapping".
+- **`Screen` / `Rotation` / `ColorFormat` / `DEFAULT_FRAME_HZ`** — As
+  defined in `rlvgl/platform/src/screen.rs:142,40,77,137`; mirrored here
+  as `platform/include/lvglpp/platform/screen.hpp`. Full five-field
+  descriptor (`width`, `height`, `rotation`, `color_format`, `frame_hz`).
+  `color_format` / `frame_hz` are host-advisory for this initiative.
+  DELTA: Rust `new`/builders → C++ `static make` + `const` builder
+  methods; enums → `enum class`; `ColorFormat` is the DEMO-0S frozen
+  4-variant set (rlvgl's `Rgb444`/`L8` out of scope here);
+  `ColorFormat::quantize` deferred until a consumer needs it.
+  Authoritative chapter: `docs/disco-demo/0S-screen-descriptor.md`.
 
 ## Change log
 
+- 2026-06-07 — DEMO-0S execution landed. Mirrored the rlvgl `Screen`
+  display descriptor into `platform/include/lvglpp/platform/screen.hpp`
+  as a header-only `constexpr` trivially-copyable value type plus the
+  `Rotation` and `ColorFormat` `enum class`es and `DEFAULT_FRAME_HZ`.
+  `Screen::make` / `landscape` static factories + `with_color_format` /
+  `with_frame_hz` `const` builders; defaulted `constexpr operator==`.
+  Builds without SDL and under embedded posture (no LVGL/SDL include).
+  `ColorFormat::quantize` deferred (no consumer yet). New
+  `platform/tests/` dir wired via `add_subdirectory(tests)` gated on
+  `LVGLPP_BUILD_TESTS` only (not on `LVGLPP_PLATFORM_HOST_SDL`); the
+  SDL-independent test links the INTERFACE umbrella `lvglpp::platform`
+  for its include path. New ctest `lvglpp_platform_screen` (20/20 green).
+  `platform.hpp` umbrella now includes `screen.hpp` unconditionally.
+  Per DEMO-0S §2: `Rotation` + `ColorFormat` variant sets and
+  `DEFAULT_FRAME_HZ` are FROZEN (Standards Action — cross-language).
 - 2026-04-27 — Initial scaffold. INTERFACE target only; no backends.
 - 2026-04-27 — PLAT-01 chapter ratified at
   `docs/platform-host-sdl/00-host-sdl-backend.md`. Backend ownership

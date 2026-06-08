@@ -53,6 +53,7 @@ target_sources(lvglpp_core
     PRIVATE
         src/runtime.cpp
         src/fonts/font_6x10.cpp
+        src/rle.cpp
 )
 
 target_include_directories(lvglpp_core

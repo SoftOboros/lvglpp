@@ -194,7 +194,9 @@ if(LVGLPP_HOST_BUILD)
     target_link_libraries(lvglpp_core      PUBLIC    lvglpp_posture)
     target_link_libraries(lvglpp_playit    PUBLIC    lvglpp_posture)
     target_link_libraries(lvglpp_widgets   PUBLIC    lvglpp_posture)
-    target_link_libraries(lvglpp_ui        INTERFACE lvglpp_posture)
+    # DEMO-02: lvglpp_ui is now a compiled STATIC library (was INTERFACE),
+    # so posture flags apply to its own translation units via PUBLIC.
+    target_link_libraries(lvglpp_ui        PUBLIC    lvglpp_posture)
 
     get_target_property(_lvglpp_platform_type lvglpp_platform TYPE)
     if(_lvglpp_platform_type STREQUAL "INTERFACE_LIBRARY")

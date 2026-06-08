@@ -34,6 +34,10 @@ The polyfill implements **only** the subset lvglpp uses today:
 - `has_value()`, `operator bool()`
 - `value()` / `error()` accessors (lvalue, const lvalue, rvalue)
 - `value_or(U&&)`
+- The `expected<void, E>` partial specialization (success carries no
+  payload; `value()` returns `void`). Added for DEMO-04's `decode_into`,
+  whose frozen signature is `expected<void, Error>`. Faithful to
+  `std::expected<void, E>` for the subset above.
 
 It deliberately does not implement:
 
@@ -41,7 +45,7 @@ It deliberately does not implement:
   — add only when a real call site needs them, with a parity test against
   `std::expected`.
 - The `T == E` disambiguation tags. Don't instantiate `expected<X, X>`.
-- Reference / `void` `T` specializations.
+- Reference `T` specializations (`void` `T` is now supported, see above).
 
 If a richer surface is needed before `<expected>` is universal, swap this
 file for upstream `tl::expected`

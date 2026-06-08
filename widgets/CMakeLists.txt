@@ -10,6 +10,7 @@ target_sources(lvglpp_widgets
     PRIVATE
         src/button.cpp
         src/checkbox.cpp
+        src/container.cpp
         src/label.cpp
         src/slider.cpp
         src/switch.cpp

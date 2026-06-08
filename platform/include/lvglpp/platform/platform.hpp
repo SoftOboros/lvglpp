@@ -11,6 +11,10 @@
 #ifndef LVGLPP_PLATFORM_PLATFORM_HPP
 #define LVGLPP_PLATFORM_PLATFORM_HPP
 
+// DEMO-0S display descriptor — backend-independent value type. Builds
+// without SDL and under embedded posture; always available.
+#include "lvglpp/platform/screen.hpp"
+
 // PLAT-01 host SDL backend is opt-in via LVGLPP_PLATFORM_HOST_SDL.
 // Pull in the header only when that option is on (the header itself
 // `#error`s under embedded posture).

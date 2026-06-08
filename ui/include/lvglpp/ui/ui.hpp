@@ -9,8 +9,9 @@
 #ifndef LVGLPP_UI_UI_HPP
 #define LVGLPP_UI_UI_HPP
 
+#include "lvglpp/ui/draw_helpers.hpp"  // PARITY: rlvgl/ui/src/draw_helpers.rs
+
 // Future per-concept headers (added as they land):
-//   #include "lvglpp/ui/draw_helpers.hpp"   // PARITY: rlvgl/ui/src/draw_helpers.rs
 //   #include "lvglpp/ui/event_window.hpp"   // PARITY: rlvgl/ui/src/event_window.rs
 
 #endif  // LVGLPP_UI_UI_HPP
