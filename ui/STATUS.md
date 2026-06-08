@@ -39,10 +39,14 @@ Implemented:
   (`lvglpp_ui_draw_helpers`).
 - README / OPTIONS / STATUS docs.
 
+- `EventWindow` + `EventWindowBuilder` (DEMO-03) in
+  `include/lvglpp/ui/event_window.hpp` / `src/event_window.cpp`;
+  app-relevant surface, board-render telemetry deferred. Test
+  `lvglpp_ui_event_window`.
+
 Stubbed:
 
-- Event window, theming surface, layout helpers (UI-02..UI-04) — not
-  yet ported.
+- Theming surface, layout helpers (UI-03..UI-04) — not yet ported.
 
 ## Blockers
 
@@ -64,9 +68,17 @@ Stubbed:
 - **`kPanelPadding` / `kCloseSize`** — As defined in
   `rlvgl/ui/src/draw_helpers.rs:27,29` (`PANEL_PADDING` = 20,
   `CLOSE_SIZE` = 48); used without modification.
-- **Event window, theme** — Owned by chapters UI-02 / UI-03; do not
-  exist in repo yet. Will mirror the corresponding rlvgl surfaces with
-  `external` ownership tags on every `lv_obj_t*` they hold.
+- **`EventWindow` / `EventWindowBuilder`** — As defined in
+  `rlvgl/ui/src/event_window.rs:34,279`; mirrored here as
+  `ui/include/lvglpp/ui/event_window.hpp` (DEMO-03). App-relevant
+  surface only; board-render telemetry (`dma2d_mode`, `frozen`,
+  `diag_state`, `draw_seq`, …) deferred to a PLAT-02e-era chapter.
+  `String` → `std::string`; `&'static BitmapFont` →
+  `const core::BitmapFont&` (borrows). Authoritative chapter:
+  `docs/disco-demo/03-event-window.md`.
+- **theme** — Owned by chapter UI-03; does not exist in repo yet. Will
+  mirror the rlvgl surface with `external` ownership tags on every
+  `lv_obj_t*` it holds.
 
 ## Change log
 
@@ -75,3 +87,10 @@ Stubbed:
   from `rlvgl/ui/src/draw_helpers.rs`. `ui/` moved from INTERFACE stub
   to a compiled STATIC library; top-level CMake posture link switched
   INTERFACE → PUBLIC accordingly.
+- 2026-06-07 — DEMO-03: ported `EventWindow` + `EventWindowBuilder`
+  from `rlvgl/ui/src/event_window.rs` (second compiled unit
+  `src/event_window.cpp`). App-relevant surface (builder, `push_event`,
+  visibility, Tick-aging expiry, `clear_region`); board DMA2D/telemetry
+  hooks deferred. Bg via `core::fill_rounded_rect`, border via
+  `core::detail::draw_border_straight` (rounded corners deferred to
+  CORE-04b). Test `lvglpp_ui_event_window`; embedded-posture clean.

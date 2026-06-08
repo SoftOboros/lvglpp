@@ -46,10 +46,10 @@ chapter 00 §5 and is the spine of every later chapter.
 | [00 — App-shell contract & ownership model](./00-app-shell-contract.md) | DEMO-00 | **ratified** 2026-06-07 | Vocabulary, source-of-truth map, ownership model, FSM, command/capability enums, prerequisite gaps |
 | [Container widget](./01-container-widget.md) | DEMO-01 | ratified | `widgets/container` (mirror `rlvgl/widgets/src/container.rs`) |
 | [UI draw helpers](./02-ui-draw-helpers.md) | DEMO-02 | ratified | `panel header` / `close-hit` into `ui/` |
-| EventWindow | DEMO-03 | planned | `ui/event_window` (mirror `rlvgl/ui/src/event_window.rs`) |
+| [EventWindow](./03-event-window.md) | DEMO-03 | ratified | `ui/event_window` (mirror `rlvgl/ui/src/event_window.rs`) |
 | [RLE icons](./04-rle-icons.md) | DEMO-04 | ratified | RLE decoder (consume-only) + `assets/icons/*.rle` |
 | [Screen descriptor](./0S-screen-descriptor.md) | DEMO-0S | ratified | `platform/screen` (mirror `rlvgl/platform/src/screen.rs`) |
-| Composite widgets | DEMO-05 | planned | `IconStrip`/`Wing`/`DashboardPanel`/`ActionHotspot` |
+| [Composite widgets](./05-composite-widgets.md) | DEMO-05 | ratified | `IconStrip`/`Wing`/`DashboardPanel`/`ActionHotspot` + app module |
 | Controller + host target | DEMO-06 | planned | `DiscoController`/`ControllerState` + host-SDL + parity tests |
 
 Dependency waves (chapter 00 §14): **A** = 01/02/04/0S (parallel) →

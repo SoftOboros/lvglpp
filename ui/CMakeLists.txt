@@ -13,6 +13,7 @@ add_library(lvglpp::ui ALIAS lvglpp_ui)
 target_sources(lvglpp_ui
     PRIVATE
         src/draw_helpers.cpp
+        src/event_window.cpp
 )
 
 target_include_directories(lvglpp_ui
