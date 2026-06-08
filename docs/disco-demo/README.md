@@ -50,7 +50,7 @@ chapter 00 §5 and is the spine of every later chapter.
 | [RLE icons](./04-rle-icons.md) | DEMO-04 | ratified | RLE decoder (consume-only) + `assets/icons/*.rle` |
 | [Screen descriptor](./0S-screen-descriptor.md) | DEMO-0S | ratified | `platform/screen` (mirror `rlvgl/platform/src/screen.rs`) |
 | [Composite widgets](./05-composite-widgets.md) | DEMO-05 | ratified | `IconStrip`/`Wing`/`DashboardPanel`/`ActionHotspot` + app module |
-| Controller + host target | DEMO-06 | planned | `DiscoController`/`ControllerState` + host-SDL + parity tests |
+| [Controller + host target](./06-controller-and-host-target.md) | DEMO-06 | ratified | `DiscoController`/`ControllerState` + host-SDL + parity tests |
 
 Dependency waves (chapter 00 §14): **A** = 01/02/04/0S (parallel) →
 **B** = 03, 05 → **C** = 06. Each chapter needs its own ratified

@@ -79,6 +79,7 @@ target_sources(lvglpp_app_disco_demo
         src/wing.cpp
         src/dashboard_panel.cpp
         src/hotspot.cpp
+        src/disco_controller.cpp
 )
 
 target_include_directories(lvglpp_app_disco_demo
@@ -94,6 +95,7 @@ target_link_libraries(lvglpp_app_disco_demo
         lvglpp::core
         lvglpp::ui
         lvglpp::widgets
+        lvglpp::platform  # DEMO-06: DiscoController::make takes platform::Screen.
     PRIVATE
         lvglpp_warnings
 )

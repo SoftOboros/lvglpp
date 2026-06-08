@@ -18,6 +18,12 @@ if(LVGLPP_PLATFORM_HOST_SDL)
     add_subdirectory(host_sdl_label)
 endif()
 
+# DEMO-06 host-SDL disco simulator — wires DiscoController into an SDL
+# window + playit stdin. Same gate as host_sdl_label.
+if(LVGLPP_PLATFORM_HOST_SDL)
+    add_subdirectory(disco-sim)
+endif()
+
 # PLAT-02 STM32H747I-DISCO. Gated on LVGLPP_PLATFORM_DISCO; requires
 # the arm-none-eabi cross-toolchain. The example's own CMakeLists
 # raises a FATAL_ERROR if invoked under a host toolchain.

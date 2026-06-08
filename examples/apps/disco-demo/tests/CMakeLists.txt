@@ -29,3 +29,11 @@ target_link_libraries(lvglpp_app_disco_demo_hotspot_test
     PRIVATE lvglpp::app_disco_demo lvglpp_warnings)
 add_test(NAME lvglpp_app_disco_demo_hotspot
          COMMAND lvglpp_app_disco_demo_hotspot_test)
+
+# DEMO-06 — controller + FSM parity suite (SDL-free; mirrors the rlvgl
+# #[cfg(test)] suite in lib.rs).
+add_executable(lvglpp_app_disco_demo_controller_test disco_controller_test.cpp)
+target_link_libraries(lvglpp_app_disco_demo_controller_test
+    PRIVATE lvglpp::app_disco_demo lvglpp_warnings)
+add_test(NAME lvglpp_app_disco_demo_controller
+         COMMAND lvglpp_app_disco_demo_controller_test)
