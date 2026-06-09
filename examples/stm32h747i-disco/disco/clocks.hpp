@@ -30,12 +30,16 @@ struct Plan {
     std::uint8_t  pll2_p   = 2;
     std::uint8_t  pll2_q   = 2;
     std::uint8_t  pll2_r   = 2;
-    // PLL3: VCO = 800, R→LTDC pixel ≈ 32 MHz.
+    // PLL3: VCO = 660, R→LTDC pixel = 27.5 MHz. Matches rlvgl's required
+    // pixel clock (HSE/5 * 132 / 24; display_init.rs:625 — the DSI
+    // adapted-command-mode pixel rate the NT35510 link is timed for).
+    // Was 32 MHz (n=160,r=25); 32 MHz over-clocked the DSI pixel feed →
+    // rainbow snow over otherwise-correct geometry (PLAT-02d bench iter).
     std::uint8_t  pll3_m   = 5;
-    std::uint16_t pll3_n   = 160;
+    std::uint16_t pll3_n   = 132;
     std::uint8_t  pll3_p   = 2;
     std::uint8_t  pll3_q   = 2;
-    std::uint8_t  pll3_r   = 25;
+    std::uint8_t  pll3_r   = 24;
 };
 
 // Run the ten-step bring-up sequence. On any timeout, traps via

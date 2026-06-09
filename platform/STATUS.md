@@ -29,7 +29,11 @@ where applicable):
    - **PLAT-02b:** Clocks, PLLs, GPIO pin mux.
    - **PLAT-02c:** SDRAM (FMC Bank 1). **Done — hardware-verified
      2026-06-08** (full address/data/range memtest PASS).
-   - **PLAT-02d:** LTDC + DSI + OTM8009A. **Unblocked** (SDRAM live).
+   - **PLAT-02d:** LTDC + DSI + OTM8009A. **In progress (bench session 1,
+     2026-06-08).** Chain proven working (probe-written LTDC config →
+     clean image on panel); blocked on an LTDC clock-domain access bug
+     (LTDC unreachable by the running CM7). Full log + learnings:
+     `docs/platform-disco/04-ltdc-dsi-and-panel.md` §15.
    - **PLAT-02e:** DMA2D + ERIF gating.
    - **PLAT-02f:** FT5336 touch + USART1 playit transport.
 3. **PLAT-03:** BeagleBone Black + NHD cape (Linux DRM). Mirrors the
@@ -230,6 +234,24 @@ Stubbed:
   applied 2026-04-28 with memalpha-cited audit comment) is the
   mirror. Bulk SHA refresh across 64 lvglpp files
   (`b178cbc` → `79f730d`).
+- 2026-06-08 — **PLAT-02d bench session 1 (LTDC/DSI/panel).** Landed +
+  flashed `disco/regs/{ltdc,dsi}.hpp`, `disco/display.{hpp,cpp}`,
+  `main_display.cpp`, `lvglpp_stm32h747i_disco_display` target (faithful
+  mirror of `rlvgl/platform/src/display_init.rs` + `nt35510`). On the
+  bench: framebuffer fill, DSI host/PHY/PLL, panel init, and PLL3-R pixel
+  clock all PROVEN good — probe-writing the LTDC config lights the panel
+  with the clean four-quadrant pattern. **BLOCKER:** the LTDC is
+  inaccessible to the *running* CM7 (register reads return 0, writes
+  don't latch) though fine to the *halted* probe (reads 0x2220) — so the
+  firmware never configures it → no scan → DSI sends garbage → rainbow
+  snow. Two real clock fixes found & applied (uncommitted): PLL3 32→27.5
+  MHz (rlvgl parity) and the missing `C1_APB3ENR`/`C1_AHB1ENR` CM7 clock
+  gates for LTDC/DSI/DMA2D (FMC already set both; the file's own comment
+  mandates it) — verified landed but NOT sufficient; ≥1 more clock-domain
+  bit is missing. NEXT: flash the working rlvgl disco binary on this board
+  and diff its live RCC+LTDC clock registers vs ours. Full log, ruled-out
+  list, and technique pros/cons: `docs/platform-disco/04-...md` §15. Code
+  on disk, uncommitted.
 - 2026-06-08 — **PLAT-02c SDRAM hardware-verified; column-bit-2 bug
   RESOLVED.** The SDCLK `0b01`→`0b10` correction (in
   `disco/regs/fmc.hpp` `SDCLK_DIV2 = 0b10<<10`, so the live

@@ -144,7 +144,16 @@ void init(const Plan& plan) noexcept {
     RCC->ahb3enr    = RCC->ahb3enr    | ahb3enr::FMCEN | ahb3enr::MDMAEN;
     RCC->c1_ahb3enr = RCC->c1_ahb3enr | ahb3enr::FMCEN | ahb3enr::MDMAEN;
     RCC->ahb1enr    = RCC->ahb1enr    | ahb1enr::DMA2DEN;
+    RCC->c1_ahb1enr = RCC->c1_ahb1enr | ahb1enr::DMA2DEN;
     RCC->apb3enr    = RCC->apb3enr    | apb3enr::LTDCEN | apb3enr::DSIEN;
+    // PLAT-02d FIX: LTDC/DSI also need the per-core (CM7) gate, exactly
+    // like FMC above. Without RCC_C1_APB3ENR set, the LTDC is ungated
+    // from CM7's perspective during normal run: register writes are
+    // dropped and reads return 0 (proven on the bench — GCR read 0 while
+    // running, 0x2220 only when the debugger halted the core). The DSI
+    // PLL/regulator happen to come up regardless, but the LTDC needs
+    // this to latch its config and scan the framebuffer.
+    RCC->c1_apb3enr = RCC->c1_apb3enr | apb3enr::LTDCEN | apb3enr::DSIEN;
 
     // GPIO ports A,B,D,E,F,G,H,I,J,K (NOT C — no FMC/LTDC/DSI/touch
     // pin uses PCx in the PLAT-02b set; sub-phases that need PCx opt

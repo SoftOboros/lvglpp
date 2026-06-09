@@ -103,6 +103,51 @@ add_custom_command(TARGET lvglpp_stm32h747i_disco_sdram POST_BUILD
     COMMAND ${CMAKE_SIZE} $<TARGET_FILE:lvglpp_stm32h747i_disco_sdram>
     VERBATIM)
 
+# --- PLAT-02d display first-pixels target ---------------------------
+# Boots, runs the clock tree (PLAT-02b), muxes FMC pins, brings up
+# SDRAM (PLAT-02c), then DSI + LTDC + NT35510 panel (PLAT-02d) in
+# adapted command mode and fills the framebuffer at 0xD0000000 with a
+# four-quadrant + 1px-border ARGB8888 pattern. Relays DSI_PSR /
+# LTDC_CDSR / DSI_WISR to D3 SRAM at 0x38000320.. for probe-rs.
+
+add_executable(lvglpp_stm32h747i_disco_display
+    startup_stm32h747xi.cpp
+    disco/clocks.cpp
+    disco/pinmux.cpp
+    disco/sdram.cpp
+    disco/display.cpp
+    main_display.cpp
+)
+
+set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
+    SUFFIX ".elf"
+    OUTPUT_NAME "lvglpp-stm32h747i-disco-display")
+
+target_include_directories(lvglpp_stm32h747i_disco_display
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(lvglpp_stm32h747i_disco_display
+    PRIVATE lvglpp_warnings lvglpp_posture)
+
+target_link_options(lvglpp_stm32h747i_disco_display PRIVATE
+    "-T${_disco_ld_dir}/disco.ld"
+    "-L${_disco_ld_dir}"
+    "-nostartfiles"
+    "-Wl,-Map=$<TARGET_FILE_DIR:lvglpp_stm32h747i_disco_display>/lvglpp-stm32h747i-disco-display.map")
+
+set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
+    LINK_DEPENDS "${_disco_ld_dir}/disco.ld;${_disco_ld_dir}/memory.ld")
+
+add_custom_command(TARGET lvglpp_stm32h747i_disco_display POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary
+            $<TARGET_FILE:lvglpp_stm32h747i_disco_display>
+            $<TARGET_FILE_DIR:lvglpp_stm32h747i_disco_display>/lvglpp-stm32h747i-disco-display.bin
+    COMMAND ${CMAKE_OBJCOPY} -O ihex
+            $<TARGET_FILE:lvglpp_stm32h747i_disco_display>
+            $<TARGET_FILE_DIR:lvglpp_stm32h747i_disco_display>/lvglpp-stm32h747i-disco-display.hex
+    COMMAND ${CMAKE_SIZE} $<TARGET_FILE:lvglpp_stm32h747i_disco_display>
+    VERBATIM)
+
 # --- PLAT-02b clocks-and-pinmux smoke target ------------------------
 # Boots, brings up the clock tree (SYSCLK=400, HCLK=200, PLL3_R≈32),
 # muxes the FMC pins AF12+VeryHigh, writes breadcrumb 0xA11C_0007,
