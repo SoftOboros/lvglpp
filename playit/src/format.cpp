@@ -229,3 +229,20 @@ std::size_t format_event_spec(const EventSpec& spec,
 }
 
 }  // namespace lvglpp::playit
+
+namespace lvglpp::playit {
+
+std::size_t format_hex_u32(std::uint32_t value,
+                           std::span<char> buf) noexcept {
+    // PARITY: rlvgl/playit/src/protocol.rs:566 — 8 uppercase digits,
+    // MSB first, truncate when the buffer is short.
+    constexpr char HEX[] = "0123456789ABCDEF";
+    std::size_t n = 0;
+    for (int i = 7; i >= 0; --i) {
+        if (n >= buf.size()) break;
+        buf[n++] = HEX[(value >> (static_cast<unsigned>(i) * 4u)) & 0xFu];
+    }
+    return n;
+}
+
+}  // namespace lvglpp::playit

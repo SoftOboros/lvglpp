@@ -172,3 +172,12 @@ It MUST NOT:
   conditional. Test target `lvglpp_playit_executor` (8 fixtures)
   green; embedded posture clean (Transport base + Executor
   compile freestanding-friendly).
+- 2026-06-10 — **PLAYIT-07a**: FramebufferReader seam added
+  (`framebuffer.hpp`, mirrors rlvgl playit/src/framebuffer.rs).
+  Executor intercepts DumpPixels when a reader is attached
+  (`set_framebuffer_reader`), present-gated emission mirroring
+  rlvgl executor.rs::emit_dump_if_ready including the priming
+  quirk; `format_hex_u32` added to the formatter (protocol.rs:566
+  parity). Without a reader, DumpPixels falls through to the
+  Dispatcher (pre-07a behaviour). First consumer:
+  examples/disco-sim automation-headless mode (DEMO-07).

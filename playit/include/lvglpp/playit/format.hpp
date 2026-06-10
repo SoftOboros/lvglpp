@@ -31,6 +31,12 @@ namespace lvglpp::playit {
 [[nodiscard]] std::size_t format_event_spec(const EventSpec& spec,
                                             std::span<char> buf) noexcept;
 
+// Write a u32 as 8 uppercase hex digits (the `D` dump pixel form).
+// Mirrors rlvgl/playit/src/protocol.rs:566 write_hex_u32, including
+// the truncate-on-short-buffer behaviour. Returns bytes written.
+[[nodiscard]] std::size_t format_hex_u32(std::uint32_t value,
+                                         std::span<char> buf) noexcept;
+
 }  // namespace lvglpp::playit
 
 #endif  // LVGLPP_PLAYIT_FORMAT_HPP

@@ -228,10 +228,55 @@ struct SimStack {
     }
 };
 
+// PLAYIT-07a adapter: exposes the headless MemoryRenderer frame +
+// the SimStack present counter to the Executor for `D` dumps.
+class MemoryFramebufferReader final : public lpit::FramebufferReader {
+public:
+    // Args:
+    //   fb, present: observes — both outlive the automation loop.
+    MemoryFramebufferReader(const lvglpp::sim::MemoryRenderer& fb,
+                            const std::uint32_t& present) noexcept
+        : fb_{&fb}, present_{&present} {}
+
+    [[nodiscard]] std::uint32_t read_pixel(std::int32_t x,
+                                           std::int32_t y) const override {
+        if (x < 0 || y < 0) return 0;
+        return fb_->pixel(static_cast<std::uint32_t>(x),
+                          static_cast<std::uint32_t>(y));
+    }
+
+    std::size_t read_row(std::int32_t x, std::int32_t y,
+                         std::uint16_t width,
+                         std::span<std::uint32_t> out) const override {
+        std::size_t n = 0;
+        for (std::uint16_t i = 0; i < width && n < out.size(); ++i) {
+            const std::int32_t px = x + static_cast<std::int32_t>(i);
+            if (px < 0 || y < 0 ||
+                static_cast<std::uint32_t>(px) >= fb_->width() ||
+                static_cast<std::uint32_t>(y) >= fb_->height()) {
+                break;
+            }
+            out[n++] = fb_->pixel(static_cast<std::uint32_t>(px),
+                                  static_cast<std::uint32_t>(y));
+        }
+        return n;
+    }
+
+    [[nodiscard]] std::uint32_t present_count() const override {
+        return *present_;
+    }
+
+private:
+    const lvglpp::sim::MemoryRenderer* fb_;  // observes
+    const std::uint32_t* present_;           // observes
+};
+
 [[noreturn]] void run_automation_headless(SimStack& stack,
                                           std::uint32_t width,
                                           std::uint32_t height) {
     lvglpp::sim::MemoryRenderer renderer{width, height};
+    MemoryFramebufferReader reader{renderer, stack.present_counter};
+    stack.executor.set_framebuffer_reader(&reader);
     constexpr auto FRAME_TIME = std::chrono::microseconds{16'667};  // 60 Hz
     for (;;) {
         const auto started = std::chrono::steady_clock::now();

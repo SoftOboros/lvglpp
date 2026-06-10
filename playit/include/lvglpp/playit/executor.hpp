@@ -17,9 +17,12 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 
+#include "lvglpp/playit/command.hpp"
 #include "lvglpp/playit/dispatcher.hpp"
 #include "lvglpp/playit/event_recorder.hpp"
+#include "lvglpp/playit/framebuffer.hpp"
 #include "lvglpp/playit/transport.hpp"
 
 namespace lvglpp::playit {
@@ -49,6 +52,22 @@ public:
         recorder_ = recorder;
     }
 
+    // Attach a FramebufferReader (PLAYIT-07a). While set, the
+    // Executor intercepts `D` (DumpPixels) commands: queue on
+    // accept (`DUMP:queued`), then emit one frame per observed
+    // present-count change from poll() — mirrors rlvgl
+    // executor.rs::emit_dump_if_ready. Without a reader, `D` falls
+    // through to the Dispatcher (not-implemented error, the
+    // pre-07a behaviour).
+    //
+    // Args:
+    //   reader: borrows for the executor's lifetime, or nullptr to
+    //           detach (cancels any queued dump).
+    void set_framebuffer_reader(FramebufferReader* reader) noexcept {
+        fb_ = reader;
+        if (reader == nullptr) dump_.reset();
+    }
+
     // Drain currently-available bytes. For each newline-terminated
     // line, parse + dispatch + format + write the response.
     // Returns the number of complete lines processed this call.
@@ -56,13 +75,25 @@ public:
     std::size_t poll() noexcept;
 
 private:
+    // In-progress framebuffer dump (mirrors rlvgl's DumpState).
+    struct DumpState {
+        DumpSpec      spec{};
+        std::uint8_t  remaining = 0;
+        std::uint32_t last_present_seen = 0;
+    };
+
     void dispatch_line() noexcept;
     void dump_recording() noexcept;
+    void emit_dump_if_ready() noexcept;
 
     // borrows: caller-owned.
-    Transport*     transport_;
-    Dispatcher*    dispatcher_;
-    EventRecorder* recorder_   = nullptr;
+    Transport*         transport_;
+    Dispatcher*        dispatcher_;
+    EventRecorder*     recorder_ = nullptr;
+    FramebufferReader* fb_       = nullptr;
+
+    // owns: queued dump request, present-gated (PLAYIT-07a).
+    std::optional<DumpState> dump_{};
 
     // owns: per-line accumulator. Bytes are appended until '\n'
     // arrives; CRLF tolerance strips a trailing '\r'.

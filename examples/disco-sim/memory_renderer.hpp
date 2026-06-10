@@ -80,6 +80,15 @@ public:
         return out;
     }
 
+    // Pixel inspection for the PLAYIT-07a FramebufferReader adapter.
+    [[nodiscard]] std::uint32_t width() const noexcept { return w_; }
+    [[nodiscard]] std::uint32_t height() const noexcept { return h_; }
+    [[nodiscard]] std::uint32_t pixel(std::uint32_t x,
+                                      std::uint32_t y) const noexcept {
+        if (x >= w_ || y >= h_) return 0;
+        return buf_[static_cast<std::size_t>(y) * w_ + x];
+    }
+
 private:
     std::uint32_t w_;
     std::uint32_t h_;

@@ -115,3 +115,16 @@ the listener keeps accepting the next client.
   Motivated by the blind-bench posture (owner eyes unavailable):
   the rust sim is the behavioral oracle, and headless parity
   driving needs this surface on the lvglpp side.
+- 2026-06-10 — PLAYIT-07a consumed: the §5.1 "D dumps answer ERR"
+  DELTA is CLOSED for automation-headless mode (the Executor's new
+  FramebufferReader seam + a MemoryRenderer adapter). Windowed mode
+  still has no CPU frame (SDL renders directly) — D stays ERR there.
+- 2026-06-10 — Cross-sim pixel parity attempted; BLOCKED by an
+  rlvgl-side gap, recorded in rlvgl-sim-headless-frame-gap.md:
+  rlvgl-disco-sim's FrameMirror is unpopulated in
+  --automation-headless (D dumps all 00000000) and its --headless
+  ASCII contains icons but no background fill and no text. lvglpp
+  renders complete frames in all modes. On the shared content the
+  ASCII diff is clean: sidebar icons pixel-identical in position,
+  98.1% cell match after normalizing a one-bucket background
+  luminance offset, zero 20×20 tiles off by >1.0 mean rank.
