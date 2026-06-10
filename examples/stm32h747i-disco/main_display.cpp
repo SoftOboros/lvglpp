@@ -36,6 +36,10 @@
 //   0x3800_03A4 = inject commands parsed (dispatch pending widgets)
 //   0x3800_03A8 = USART RX overrun count
 //   0x3800_03AC = pump tick (low word, free-running)
+// PLAT-02e-2 async/ISR gate relay (0x3800_03B0..):
+//   0x3800_03B0 = DMA2D ISR complete count (expect 3)
+//   0x3800_03B4 = DMA2D ISR error count (expect 0)
+//   0x3800_03B8 = gate result (0x600D_0E22 ok / 0xBAD0_0E22 fail)
 
 #include <cstddef>
 #include <cstdint>
@@ -218,6 +222,46 @@ void dma2d_blit_gate() noexcept {
     dsb();
 }
 
+// PLAT-02e-2 gate (05 §5.7): three sequential async fills, each
+// completed via the DMA2D ISR latch — no CR.START busy-wait in this
+// path. The FrameBuffer handle round-trips through the InFlight
+// token (moved in at submit, released after the latch). MUST run
+// after the blocking gates: enable_irq() makes the ISR clear the
+// flags wait_done() inspects.
+void dma2d_async_gate() noexcept {
+    namespace disco = lvglpp::disco;
+    namespace d2 = lvglpp::disco::dma2d;
+    constexpr std::uint32_t W = disco::display::PANEL_W;
+    constexpr std::uint32_t H = disco::display::PANEL_H;
+    struct Rect { std::uint32_t x, y, argb; };
+    constexpr Rect rects[] = {
+        {40,  40,  0xFFFF'FF00u},   // yellow,  RED quadrant
+        {220, 380, 0xFF00'FFFFu},   // cyan,    spans the center seams
+        {400, 720, 0xFFFF'8000u},   // orange,  WHITE quadrant
+    };
+
+    d2::enable_irq();
+    disco::FrameBuffer fb{disco::display::FRAMEBUFFER_BASE, W, H, W};
+
+    bool ok = true;
+    for (const auto& r : rects) {
+        auto inflight = d2::start_fill_async(
+            static_cast<disco::FrameBuffer&&>(fb), r.x, r.y, 40, 40, r.argb);
+        bool latched = false;
+        for (std::uint32_t i = 0; i < 100'000'000u; ++i) {
+            if (d2::take_complete()) { latched = true; break; }
+        }
+        fb = inflight.try_release();
+        ok = ok && latched && fb.valid();
+    }
+    ok = ok && d2::complete_count() == 3 && d2::error_count() == 0;
+
+    *d3(0xB0) = d2::complete_count();
+    *d3(0xB4) = d2::error_count();
+    *d3(0xB8) = ok ? 0x600D'0E22u : 0xBAD0'0E22u;
+    dsb();
+}
+
 // ── PLAT-02f-1 serial pump (06-touch-and-uart.md §5.3/§5.5) ─────────
 // Speaks the playit wire protocol over USART1/VCP using the canonical
 // lvglpp parser + formatter (grammar/format restatement here is
@@ -364,6 +408,7 @@ int main() {
 
     dma2d_first_fill();                      // 0xA11C_000D on success
     dma2d_blit_gate();
+    dma2d_async_gate();                      // PLAT-02e-2 ISR latch path
     capture_framebuffer(0x3800'5000u);       // post-DMA2D blind capture
 
     lvglpp::disco::usart::init();

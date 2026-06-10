@@ -161,7 +161,41 @@ impossible (nothing else writes it).
   `lvglpp::core::Renderer` integration (`fill_rect`/`blend_rect`).
   Gate: deliberate-pressure test per family §5.1.
 
-## §10 Reconciliation vs. adjacent primitives
+### §5.7 PLAT-02e-2 — ISR latch + InFlight token — **Specification Required**
+
+Added by the 2026-06-10 §15 amendment; mirrors rlvgl Vol II Ch 7 §3
++ `hwcore/surface.rs` (`BorrowedForDma` / `InFlight`).
+
+- **ISR**: `DMA2D_IRQHandler` (vector slot 90, verified positionally
+  against the startup table) clears the asserted ISR bits via IFCR
+  and latches TCIF into a completion latch, TEIF|CEIF into an error
+  latch; counts both. NVIC priority 3 (rlvgl parity: one notch below
+  the future TIM6 touch tick at 2). The latch is consumed by a
+  single `take_complete()` swap — poll-then-clear from the main loop
+  races the next job (rlvgl Ch 7 §3); the latch does not.
+- **Latch storage**: plain `volatile` words, NOT C11/C++ atomics —
+  single core, single writer (ISR) / single reader (main loop),
+  word-sized aligned accesses. Becomes `std::atomic` the day a
+  second context appears.
+- **`FrameBuffer`**: move-only value handle (base, w, h, stride) over
+  a `dma:`-marked SDRAM region. CPU mutation goes through the
+  handle; the handle does not own the memory (`external:` SDRAM,
+  never freed).
+- **`InFlight`**: returned by `start_fill_async` / `start_blit_async`,
+  which take the `FrameBuffer` **by value (moved in)**. While the
+  token holds the buffer, the caller has no handle to mutate — the
+  closest C++ gets to rlvgl's borrow-checked guarantee, and a
+  compile error for the straight-line misuse (use-after-move is
+  flagged by clang-tidy per the ownership lint posture).
+  `try_release()` returns the buffer only after the latch reports
+  completion; `release_blocking()` spins on the latch. Misuse that
+  C++ cannot reject at compile time (releasing while busy) returns
+  no buffer rather than trapping.
+- **Engine exclusivity**: one outstanding transfer; `start_*_async`
+  with a transfer in flight traps (bkpt) — single-context bring-up
+  posture, revisited when the cooperative pump owns scheduling.
+
+
 
 - **AR=1 vs rlvgl's ERIF-holdoff pipeline.** rlvgl's admission
   control assumes the Ch 5 manual present pipeline (ERIF ISR clears
@@ -216,6 +250,23 @@ impossible (nothing else writes it).
       LTDC→DSI→panel path itself was owner-verified in PLAT-02d.
 - [x] Cross-build clean with `-Werror`.
 
+### PLAT-02e-2 (§5.7)
+
+- [x] `regs/nvic.hpp` (enable + priority, IRQN_DMA2D=90 verified
+      positionally against the startup vector table — note the
+      double-entry reserved line at slots 66/67 when counting).
+- [x] `DMA2D_IRQHandler` + completion/error latches + counters;
+      `enable_irq()` at NVIC priority 3.
+- [x] `FrameBuffer` move-only handle + `InFlight` token;
+      `start_fill_async` takes the buffer by value and the token
+      returns it only when done.
+- [x] Bench gate (2026-06-10, blind): three sequential async fills
+      completed via `take_complete()` only (no CR.START busy-wait);
+      relays 0x3B0=3 / 0x3B4=0 / 0x3B8=0x600D_0E22; all PLAT-02e-1
+      relays unchanged. Serial `D` probes confirmed all three rect
+      interiors AND adjacent untouched pixels (yellow/cyan/orange
+      at exact coordinates).
+
 ## §13 Files cited
 
 - `rlvgl/platform/src/dma2d.rs`, `rlvgl/platform/src/blit.rs`
@@ -249,3 +300,14 @@ impossible (nothing else writes it).
   host-side). Panel-optics confirm stays an open checklist item,
   non-blocking for 02e-2/3. PLAT-02e-1 execution landed same day;
   all blind gates green first run.
+- 2026-06-10 — §5.7 ADDED (PLAT-02e-2 design): DMA2D ISR +
+  completion latch, volatile-not-atomic rationale, FrameBuffer /
+  InFlight move semantics, engine-exclusivity trap. Eyes-free gate:
+  three sequential async fills completed via the ISR latch (no
+  CR.START busy-wait), relayed counters at 0x3800_03B0.., content
+  verified over playit serial `D` dumps.
+- 2026-06-10 — PLAT-02e-2 execution landed; all gates green first
+  run (§12). Ordering constraint recorded in code: enable_irq()
+  must follow the blocking-path gates, since the ISR clears the
+  flags wait_done() inspects. Remaining sub-phase: 02e-3
+  (admission control — the §10 AR=1 question).

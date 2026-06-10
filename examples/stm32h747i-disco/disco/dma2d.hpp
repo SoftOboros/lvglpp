@@ -15,6 +15,8 @@
 
 #include <cstdint>
 
+#include "framebuffer.hpp"
+
 namespace lvglpp::disco::dma2d {
 
 // One-time engine setup. Mirrors Dma2dBlitter::new(): clears stale
@@ -65,5 +67,69 @@ bool blit(const volatile std::uint32_t* src,
 // Last observed ISR error bits (TEIF|CEIF) from the most recent
 // fill/blit, for D3-SRAM relay diagnosis. 0 = clean.
 [[nodiscard]] std::uint32_t last_error() noexcept;
+
+// ── PLAT-02e-2: ISR completion latch + non-blocking submission ─────
+// See docs/platform-disco/05-dma2d-engine.md §5.7.
+
+// Enable the DMA2D NVIC interrupt (slot 90, priority 3 — rlvgl
+// parity) and the CR.TCIE|TEIE sources. Idempotent.
+void enable_irq() noexcept;
+
+// Consume the ISR completion latch (single swap — a completion can
+// only be taken once; mirrors rlvgl dma2d_irq::take_complete).
+[[nodiscard]] bool take_complete() noexcept;
+
+// ISR telemetry for the D3 relays.
+[[nodiscard]] std::uint32_t complete_count() noexcept;
+[[nodiscard]] std::uint32_t error_count() noexcept;
+
+// Token holding the FrameBuffer for the duration of one DMA2D
+// transfer. While it lives, the caller has no handle with which to
+// CPU-mutate the destination (the buffer was moved in) — the
+// compile-visible analogue of rlvgl's InFlight<'dma, T> borrow.
+class InFlight {
+public:
+    InFlight(const InFlight&)            = delete;
+    InFlight& operator=(const InFlight&) = delete;
+    InFlight(InFlight&&) noexcept            = default;
+    InFlight& operator=(InFlight&&) noexcept = default;
+
+    // True once the engine has finished the transfer (CR.START
+    // self-clears at completion, before/independent of the ISR).
+    [[nodiscard]] bool done() const noexcept;
+
+    // Returns the buffer when done; otherwise an invalid handle and
+    // the token keeps ownership (call again later). Never traps —
+    // 05 §5.7 "misuse returns no buffer".
+    [[nodiscard]] FrameBuffer try_release() noexcept;
+
+    // Spin until done, then return the buffer.
+    [[nodiscard]] FrameBuffer release_blocking() noexcept;
+
+private:
+    friend InFlight start_fill_async(FrameBuffer, std::uint32_t,
+                                     std::uint32_t, std::uint32_t,
+                                     std::uint32_t, std::uint32_t) noexcept;
+    explicit InFlight(FrameBuffer fb) noexcept : fb_{static_cast<FrameBuffer&&>(fb)} {}
+    FrameBuffer fb_;  // owns (the mutation authority) until released
+};
+
+// Non-blocking R2M fill of a width×height ARGB8888 rect at (x, y)
+// inside fb.
+//
+// Args:
+//   fb:   moved in; held by the returned InFlight until completion.
+//         Caller guarantees the rect lies within the buffer.
+// Returns:
+//   owns the in-flight transfer; completion is observed via
+//   take_complete() (ISR latch) or InFlight::done().
+// Traps (bkpt) if a transfer is already outstanding — 05 §5.7
+// engine-exclusivity posture.
+[[nodiscard]] InFlight start_fill_async(FrameBuffer fb,
+                                        std::uint32_t x,
+                                        std::uint32_t y,
+                                        std::uint32_t width,
+                                        std::uint32_t height,
+                                        std::uint32_t argb) noexcept;
 
 } // namespace lvglpp::disco::dma2d
