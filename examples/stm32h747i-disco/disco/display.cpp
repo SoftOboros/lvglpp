@@ -11,9 +11,12 @@
 //         The LPENR keep-clocked-in-CSleep writes are omitted: on
 //         bare-metal the *LPENR reset default is LPEN=1, so LTDC/FMC
 //         stay clocked through the main_display WFE loop. (2) Pixel
-//         clock for the DSI video-timing derivation is taken as the
-//         display_init.rs shipped const (27.5 MHz); the lvglpp PLL3_R
-//         is 32 MHz — flagged for bench verification (§8 timing).
+//         clock for the DSI video-timing derivation is 27.5 MHz,
+//         matching the lvglpp PLL3_R (M=5 N=132 R=24); the proven
+//         rlvgl bare-metal path uses 32/32 — both self-consistent.
+//         (3) setup_ltdc_layer fixes two rlvgl off-by-ones (window
+//         origin +1, CFBLL +7 vs RM0399's +3) — see the PARITY
+//         DEVIATION comment in setup_ltdc_layer; flag upstream.
 //
 // PLAT-02d §7 init order. See docs/platform-disco/04-ltdc-dsi-and-panel.md.
 //
@@ -170,9 +173,15 @@ void configure_adapted_cmd_mode() noexcept {
     // LCCR @ 0x064 — command size = display width. The dsi.hpp offsetof
     // assert is what makes the "0x64 not 0x2C" invariant compile-enforced.
     d.lccr = std::uint32_t{PANEL_W};
+    // AR=1 mirrors the PROVEN bare-metal path (stm32h747i_disco.rs:529-537),
+    // NOT dsi_cmd_mode.rs (AR=0 is the Zephyr/steady-state variant). With
+    // AR=0, GCR.LTDCEN enables the LTDC into a dead wrapper handshake and
+    // the LTDC register bus wedges (PLAT-02d §15.10 "enable hangs"); AR=1
+    // keeps the wrapper re-arming frame transfers on each panel TE event.
     w.wcfgr = (1u << 0)   // DSIM = adapted command mode
             | (5u << 1)   // COLMUX = RGB888
-            | (1u << 4);  // TESRC (external TE)
+            | (1u << 4)   // TESRC (external TE)
+            | (1u << 6);  // AR (automatic refresh on TE)
     d.cmcr = 1;           // TEARE
     w.wier = 0x03;        // TEIE | ERIE
 }
@@ -330,23 +339,35 @@ void configure_ltdc_timing() noexcept {
 void setup_ltdc_layer() noexcept {
     auto& y = LTDC_L1.ref();
     constexpr std::uint32_t pitch = std::uint32_t{PANEL_W} * 4u;  // ARGB8888
-    constexpr std::uint32_t x0 = std::uint32_t{HSW} + HBP + 1u;
-    constexpr std::uint32_t x1 = x0 + PANEL_W - 1u;
-    constexpr std::uint32_t y0 = std::uint32_t{VSW} + VBP + 1u;
-    constexpr std::uint32_t y1 = y0 + PANEL_H - 1u;
+    // PARITY DEVIATION vs rlvgl setup_ltdc_layer (stm32h747i_disco.rs:1096,
+    // display_init.rs:523, freertos_entry.rs:477): rlvgl uses
+    // x0 = HSW+HBP+1 and CFBLL = pitch+7. Both are off-by-one per RM0399
+    // (LxWHPCR: WHSTPOS >= AHBP+1; LxCFBLR: CFBLL = line length + 3) and
+    // ST HAL HAL_LTDC_ConfigLayer. +7 fetches one extra pixel per line.
+    // Bench-confirmed on PLAT-02d first light: rlvgl's values clip the
+    // last fb column/row (missing 1px border on native right/bottom) and
+    // bleed 1px of the next row at the seam. Upstream report:
+    // docs/platform-disco/rlvgl-ltdc-layer-off-by-one.md. Downgrade this
+    // to a plain PARITY cite once the rlvgl fix lands + pin bumps.
+    constexpr std::uint32_t x0 = std::uint32_t{HSW} + HBP;        // = AHBP+1
+    constexpr std::uint32_t x1 = x0 + PANEL_W - 1u;               // = AWCR.AAW
+    constexpr std::uint32_t y0 = std::uint32_t{VSW} + VBP;        // = AVBP+1
+    constexpr std::uint32_t y1 = y0 + PANEL_H - 1u;               // = AWCR.AAH
+    static_assert(x1 == std::uint32_t{HSW} + HBP + PANEL_W - 1u);
+    static_assert(y1 == std::uint32_t{VSW} + VBP + PANEL_H - 1u);
     y.whpcr  = (x1 << 16) | x0;
     y.wvpcr  = (y1 << 16) | y0;
     y.pfcr   = l1pfcr::ARGB8888;
     y.cacr   = 255;                       // constant alpha
     y.bfcr   = 0x0405;                     // PAxCA / 1-PAxCA blending
     y.cfbar  = static_cast<std::uint32_t>(FRAMEBUFFER_BASE);
-    y.cfblr  = (pitch << 16) | (pitch + 7u);
+    y.cfblr  = (pitch << 16) | (pitch + 3u);  // CFBLL = length+3 (RM0399)
     y.cfblnr = PANEL_H;
     y.cr     = y.cr | l1cr::LEN;
     LTDC.ref().srcr = srcr::IMR;           // immediate shadow reload
 }
 
-void enable_ltdc() noexcept {
+[[maybe_unused]] void enable_ltdc() noexcept {
     auto& l = LTDC.ref();
     l.gcr  = gcr::ENABLE_VALUE;            // reset value + LTDCEN
     l.srcr = srcr::IMR;
@@ -383,37 +404,113 @@ void init() noexcept {
     (void)init_nt35510_panel();
     disable_lp_cmd_overrides();
 
-    // §7.12-7.13 — LTDC timing + layer + enable.
-    // BENCH ITER (PLAT-02d): firmware LTDC writes don't latch on the
-    // first pass during init (the LTDC isn't settled), while the same
-    // writes from a fully-settled state do (proven: probe-written config
-    // → correct image). Write-and-verify with retry until GCR reads back
-    // the enable value, then relay the retry count + final GCR to D3 for
-    // diagnosis.
-    std::uint32_t ltdc_tries = 0;
-    do {
-        configure_ltdc_timing();
-        setup_ltdc_layer();
-        enable_ltdc();
-        ++ltdc_tries;
-    } while (LTDC.ref().gcr != gcr::ENABLE_VALUE && ltdc_tries < 200'000u);
-    *reinterpret_cast<volatile std::uint32_t*>(0x3800'0330u) = ltdc_tries;
-    *reinterpret_cast<volatile std::uint32_t*>(0x3800'0334u) = LTDC.ref().gcr;
-    *reinterpret_cast<volatile std::uint32_t*>(0x3800'0338u) = LTDC.ref().twcr;
+    // BENCH DIAG (PLAT-02d §15): firmware-authoritative snapshot at the
+    // exact moment of LTDC config. Relays the firmware's OWN view of the
+    // PLL3 clock tree + a benign LTDC_BCCR (background-color, R/W, no
+    // enable needed) write-readback. This disambiguates "is ltdc_ker_ck
+    // valid from the CM7's view here" vs "does any CM7 write to an LTDC
+    // register stick" — the two remaining hypotheses for the dropped
+    // writes. Read these via probe at 0x3800_0340..0x3800_0354.
+    {
+        auto rd = [](std::uintptr_t a) {
+            return *reinterpret_cast<volatile std::uint32_t*>(a);
+        };
+        auto wr = [](std::uintptr_t a, std::uint32_t v) {
+            *reinterpret_cast<volatile std::uint32_t*>(a) = v;
+        };
+        wr(0x3800'0340u, rd(0x5802'4400u));   // RCC_CR (PLL3ON/RDY)
+        wr(0x3800'0344u, rd(0x5802'442Cu));   // RCC_PLLCFGR (DIVR3EN/RGE)
+        wr(0x3800'0348u, rd(0x5802'44E4u));   // RCC_APB3ENR (firmware view, LTDCEN)
+        wr(0x3800'034Cu, rd(0x5802'4544u));   // RCC_C1_APB3ENR (firmware view)
+        // Re-assert the LTDC bus clock right here, read-back + settle (tests
+        // the "clock-enable not effective until re-asserted near the access"
+        // hypothesis). Both combined + per-core gates.
+        wr(0x5802'44E4u, rd(0x5802'44E4u) | (1u << 3));   // APB3ENR.LTDCEN
+        wr(0x5802'4544u, rd(0x5802'4544u) | (1u << 3));   // C1_APB3ENR.LTDCEN
+        (void)rd(0x5802'44E4u);               // dummy read-back (ST errata)
+        dsb();
+        delay_cycles(100'000);
+        // Clean CM7 write to a benign LTDC register (BCCR @ LTDC+0x2C).
+        LTDC.ref().bccr = 0x00AB'CDEFu;
+        dsb();
+        wr(0x3800'0350u, LTDC.ref().bccr);    // expect 0x00ABCDEF if write sticks
+        wr(0x3800'0354u, LTDC.ref().gcr);     // LTDC GCR (firmware read)
+        // PIXEL-DOMAIN discriminating test from the CM7's own perspective:
+        // write TWCR (pixel domain, needs ltdc_ker_ck), change the bus value
+        // (BCCR), then read TWCR back. If TWCR reads the written value (masked)
+        // → ker_ck present for the running CM7; if it reads the BCCR bus value
+        // or 0 → ker_ck absent during the firmware run (timing/run-vs-halt).
+        LTDC.ref().twcr = 0xCAFE'0000u;
+        dsb();
+        LTDC.ref().bccr = 0x7777'7777u;        // change the APB bus value
+        dsb();
+        wr(0x3800'0358u, LTDC.ref().twcr);     // CAFE-masked=alive / 77777777|0=dead
+        wr(0x3800'035Cu, rd(0x5000'1048u));    // LTDC_CDSR (scan status)
+        wr(0x3800'0360u, rd(0x5000'1000u));    // LTDC base
+        wr(0x3800'0364u, rd(0x5000'1018u));    // LTDC GCR
+        wr(0x3800'0368u, rd(0x5000'0000u));    // DSI VR (sanity, known-good)
+        wr(0x3800'036Cu, LTDC.ref().bccr);     // BCCR readback (APB domain)
+    }
+
+    // §7.12-7.13 — LTDC config MOVED to after the DSI wrapper is enabled.
+    // BENCH FINDING (PLAT-02d §15.9): the running CM7 cannot access the LTDC
+    // this early (writes drop, reads 0) — but CAN once the DSI wrapper WCR is
+    // set + settled. So configure the LTDC down below, after the WCR write.
 
     enable_backlight();
 
-    // §7.15 — enable the LTDC→DSI path free-running (WCR = DSIEN|LTDCEN),
-    // matching rlvgl's init_full_adapted_cmd and the probe-driven test
-    // that produced a clean image on the panel. (The earlier single-shot
-    // was a mis-diagnosis: the SDRAM "corruption" seen via framebuffer
-    // capture was only the CPU's *concurrent* reads contending with the
-    // LTDC, not the LTDC's own display read path. The TE/ERIF-gated
-    // holdoff present is still PLAT-02e.)
-    delay_cycles(8'000'000);         // ~20 ms settle
-    DSI_W.ref().wcr = wcr::DSIEN | wcr::LTDCEN;  // 0x0C
+    auto relay = [](std::uintptr_t a, std::uint32_t v) {
+        *reinterpret_cast<volatile std::uint32_t*>(a) = v;
+    };
+
+    // §15.9 finding: WCR.LTDCEN being set is what makes the running CM7 able
+    // to reach the LTDC. Set it FIRST, settle, then config single-pass with a
+    // relay after EACH step to pinpoint where (if) it fails.
+    delay_cycles(8'000'000);
+    DSI_W.ref().wcr = wcr::DSIEN | wcr::LTDCEN;  // 0x0C — enable wrapper first
     dsb();
-    delay_cycles(8'000'000);         // let the first frame complete
+    delay_cycles(16'000'000);        // ~40 ms settle
+
+    configure_ltdc_timing();
+    dsb();
+    relay(0x3800'0330u, LTDC.ref().twcr);   // timing latched? (nonzero)
+    relay(0x3800'0334u, LTDC.ref().awcr);
+    setup_ltdc_layer();
+    dsb();
+    relay(0x3800'0338u, LTDC_L1.ref().cfbar); // layer fb addr latched?
+    relay(0x3800'033Cu, LTDC_L1.ref().cr);    // layer enable latched?
+
+    // AXI interconnect QoS (stm32h747i_disco.rs:601-610): LTDC (INI6) read
+    // priority max so its line FIFO stays fed; DMA2D (INI5) moderate.
+    // `mmio: AXI interconnect TARG/INI config, RM0399 §2.1.`
+    {
+        auto wr = [](std::uintptr_t a, std::uint32_t v) {
+            *reinterpret_cast<volatile std::uint32_t*>(a) = v;
+        };
+        wr(0x5104'7100u, 0xFu);  // INI6 LTDC read QoS = max
+        wr(0x5104'7104u, 0x4u);  // INI6 LTDC write QoS = low
+        wr(0x5104'6100u, 0x4u);  // INI5 DMA2D read QoS = moderate
+        wr(0x5104'6104u, 0x4u);  // INI5 DMA2D write QoS = moderate
+    }
+
+    // Enable sequence mirrors the PROVEN bare-metal path step 15
+    // (stm32h747i_disco.rs:783-918): GCR first, SRCR.IMR second, settle
+    // ~20 ms (let TE-driven auto-refresh frames cycle), THEN set
+    // WCR.LTDCEN. Do NOT clear WCR.LTDCEN in between — with AR=1 the
+    // wrapper owns the per-frame re-arm; the AR=0 clear/pulse/free-run
+    // variants all wedged the LTDC bus (§15.10 ruled-out list).
+    LTDC.ref().gcr = gcr::ENABLE_VALUE;     // GCR reset value + LTDCEN
+    LTDC.ref().srcr = srcr::IMR;            // immediate shadow reload
+    dsb();
+    relay(0x3800'0370u, LTDC.ref().gcr);    // GCR=0x2221 → enabled, not hung
+    relay(0x3800'0374u, LTDC.ref().twcr);   // 022504C3=alive / stale=hung
+    delay_cycles(8'000'000);                // ~20 ms settle
+    // First frame trigger (proven path: wcr.modify ltdcen set).
+    DSI_W.ref().wcr = wcr::DSIEN | wcr::LTDCEN;
+    dsb();
+    delay_cycles(8'000'000);                // let first frame complete
+    relay(0x3800'0378u, LTDC.ref().cdsr);   // scan status
+    relay(0x3800'037Cu, DSI_W.ref().wisr);  // TEIF(b0)/ERIF(b1) seen?
 
     breadcrumb::write(breadcrumb::PANEL_UP);  // 0xA11C_000B
 }

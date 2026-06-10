@@ -104,12 +104,21 @@ void init(const Plan& plan) noexcept {
     write_pll_dividers(RCC->pll2divr, plan.pll2_n, plan.pll2_p, plan.pll2_q, plan.pll2_r);
     write_pll_dividers(RCC->pll3divr, plan.pll3_n, plan.pll3_p, plan.pll3_q, plan.pll3_r);
 
-    // --- Step 4: Latch PLL1, PLL2 -----------------------------------
+    // --- Step 4: Latch PLL1, PLL2, PLL3 -----------------------------
+    // BENCH ITER (PLAT-02d §15.9): turn on ALL THREE PLLs here, BEFORE the
+    // SYSCLK switch — matching stm32h7xx-hal `freeze()` order. Previously
+    // PLL3 was forced on AFTER the SYSCLK→PLL1 switch (old "step 6"); the
+    // hypothesis is that enabling pll3_r_ck after the clock-tree switch
+    // failed to route ltdc_ker_ck to the LTDC (errata 2.13.1: LTDC access
+    // stalls when the pixel clock is disabled).
     RCC->cr = RCC->cr | cr::PLL1ON;
     if (!wait_until([] { return (RCC->cr & cr::PLL1RDY) != 0; }))
         trap();
     RCC->cr = RCC->cr | cr::PLL2ON;
     if (!wait_until([] { return (RCC->cr & cr::PLL2RDY) != 0; }))
+        trap();
+    RCC->cr = RCC->cr | cr::PLL3ON;
+    if (!wait_until([] { return (RCC->cr & cr::PLL3RDY) != 0; }))
         trap();
 
     // --- Step 5: Bus prescalers, then switch SYSCLK to PLL1 ---------
@@ -125,15 +134,6 @@ void init(const Plan& plan) noexcept {
     if (!wait_until([] {
         return (RCC->cfgr & cfgr::SWS_MASK) == cfgr::SWS_PLL1;
     })) trap();
-
-    // --- Step 6: PLL3ON gap fix -------------------------------------
-    // *** rlvgl/docs/disco-platform-guide/02-clocks-and-plls.md
-    //     § "Force PLL3 on". DO NOT collapse this step into a
-    //     vendor-builder call — without it, the LTDC AHB slave
-    //     hangs on its first register read. ***
-    RCC->cr = RCC->cr | cr::PLL3ON;
-    if (!wait_until([] { return (RCC->cr & cr::PLL3RDY) != 0; }))
-        trap();
 
     // --- Step 7: Peripheral clock-gates -----------------------------
     // The H7 has dual-core RCC: each peripheral clock gate exists in

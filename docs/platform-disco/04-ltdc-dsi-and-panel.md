@@ -351,3 +351,196 @@ study; check DBGMCU clock-keep-alive bits.
   -DLVGLPP_BUILD_TESTS=OFF -DLVGLPP_BUILD_EXAMPLES=ON` (PATH needs
   `~/toolchains/arm-gnu-15.2/bin`); `probe-rs download/reset --chip
   STM32H747XIHx`; target `lvglpp_stm32h747i_disco_display`.
+
+### §15.9 Session 2 (2026-06-08) — diagnosis CORRECTED
+
+**§15.3–§15.6 above were partly wrong: built on STALE D3 SRAM.** The
+`ltdc_tries=200000` / "writes dropped" data was from a *pre-compaction*
+run; D3 survives reset. Clean method: seed EVERY relay word with a
+sentinel + verify the breadcrumb advanced. Also: `display::init()` takes
+**~14 s** on the bench (panel delays + bounded-poll timeouts) — poll the
+breadcrumb over ~15 s, never read once at 5 s.
+
+**Firmware-authoritative diag** (relay the CM7's OWN reads right at LTDC
+config time — added to `display.cpp`, relays at `0x3800_0340..036C`):
+- PLL3 valid & locked at config time: `RCC_CR=0x3f03c025` (ON+RDY),
+  `PLLCFGR=0x01230888` (`DIVR3EN=1`, bit 24 datasheet-confirmed),
+  `DIVM3=5` → 5 MHz in → `PLL3_R=27.5 MHz`. **Clock CONFIG is correct.**
+- CM7 write to benign `LTDC_BCCR` → reads back 0; CM7 reads `GCR` → 0.
+- **Same run, CM7 writes the DSI fine** (reached PANEL_UP after DSI init).
+- CM7 address map: reads `0x5000_0000`–`0x5000_0C00` (DSI) fine; reads
+  `0x5000_1000`+ (LTDC) as **0**. Hard boundary at the LTDC page.
+
+**Probe write test (clean, before any PLL3 fiddling) — THE key result:**
+- `GCR` (0x18, **APB domain** `ltdc_pclk`): `0x2220→0x2221` ✓ sticks.
+- `BCCR` (0x2C, **APB domain**): `0→0xABCDEF` ✓ sticks.
+- `TWCR`/`SSCR` (**PIXEL domain** `ltdc_ker_ck`): writes never read back
+  the written value (return 0 or stale-bus data) ✗.
+
+**ROOT CAUSE (unified): `ltdc_ker_ck` (LCD_CLK = PLL3_R) does not reach
+the LTDC pixel-clock domain.** Per RM0399 §33.3.3 the timing regs
+(SSCR/BPCR/AWCR/TWCR) live in the pixel-clock domain; absent ker_ck their
+accesses never complete (datasheet's exact diagnostic). This single fault
+also explains the CM7 seeing the whole LTDC as 0 (its AXIM bus
+transactions to the LTDC slave never complete without ker_ck; the debug
+AHB-AP is more tolerant and reaches the APB-domain regs). It is
+**PLL3-config-INDEPENDENT**: 27.5 MHz and 32 MHz both fail (32 MHz was
+tried earlier — see `clocks.hpp:36`), live DIVR3EN-toggle and full PLL3
+recycle don't help. PLL3 is locked with DIVR3EN=1 and there is no
+separate LTDC kernel-clock mux (ker_ck is hardwired to pll3_r_ck).
+
+**RULED OUT this session:** PLL3 config (both freqs), DIVR3EN bit
+(=bit24, set), `LTDCEN` gate (APB3ENR & C1_APB3ENR both `0x18`,
+firmware-confirmed), reset (`APB3RSTR=0`), cache/MPU (our firmware has
+NONE — default Device map), CM7 bus PORT (datasheet: CM7 reaches both DSI
+and LTDC via AXIM, not AHBP), and stale-D3 artifacts.
+
+**rlvgl's CM7 drives the LTDC fully** (gear renders) with an
+LTDC-equivalent clock tree (its live regs via gdb: PLL3=32 MHz,
+APB3ENR/C1_APB3ENR=0x18, same as ours). So the fix is in *how* rlvgl
+establishes ker_ck, not the PLL3 numbers.
+
+**NEXT STEP:** rlvgl uses `stm32h7xx-hal`'s RCC `.freeze()` (with
+`pll3_r_ck`) — diff its exact PLL3/LTDC clock programming SEQUENCE against
+our hand-rolled `clocks.cpp` register-by-register (it may set a bit or
+ordering our manual path misses). Also: ST errata sheet for an
+H747 CM7↔LTDC / PLL3-R-to-LTDC quirk. Secondary fixes to land regardless:
+DMA2D must gate on **AHB3 bit 4** (not AHB1) in `clocks.cpp`.
+
+**Side findings (durable):** rlvgl's `*LPENR` offsets are wrong by +0x40
+(RM0399: AHB3LPENR=0xFC, APB3LPENR=0x10C, C1_*=D+0x60 e.g.
+C1_APB3LPENR=0x16C) — and rlvgl works anyway, so LPENR is not load-bearing
+for LTDC. RM0399 PLLCKSELR DIVM shifts are 4/12/20 (our rcc.hpp is
+correct). Reading rlvgl's debug-hostile (sleeping) binary: `probe-rs gdb
+--connect-under-reset` + gdb `set mem inaccessible-by-default off` + bp at
+`nt35510::init` (debug build @ 0x080193a8).
+
+**Bench caution:** live PLL3 off/on via probe while the LTDC is mid-config
+HANGS the LTDC bus interface (all reads freeze at the last bus value);
+a chip reset recovers it.
+
+**Uncommitted:** `display.cpp` now also carries the §15.9 firmware diag
+(PLL3 self-read + BCCR write-back + CM7 address map at `0x3800_0340`).
+
+### §15.10 Session 3 (2026-06-09) — TWO root causes found; both fixed
+
+The §15.9 "ltdc_ker_ck absent" diagnosis was correct AND there is a second,
+independent fault. Both are now understood; the panel still shows snow only
+because of a third, narrower DSI-command-mode issue.
+
+**ROOT CAUSE 1 — PLL3 enabled too late (FIXED in `clocks.cpp`).** Errata
+ES0445 §2.13.1: "Device stalled when accessing LTDC registers while pixel
+clock is disabled." Our clocks bring-up turned **PLL3 on AFTER the SYSCLK→
+PLL1 switch** (old step 6). With PLL3 enabled after the clock-tree switch,
+`pll3_r_ck` (= `ltdc_ker_ck`) never reached the LTDC. **Fix:** turn PLL1,
+PLL2 **and PLL3** all on in step 4, BEFORE the SYSCLK switch — matching
+`stm32h7xx-hal` `freeze()`. **Confirmed:** after the reorder the probe can
+write LTDC PIXEL-domain registers (TWCR/SSCR), which it could not before.
+PLL3 register *config* was never wrong (DIVR3EN=bit24 set, 27.5 MHz valid);
+only the *ordering* relative to the SYSCLK switch.
+
+**ROOT CAUSE 2 — CM7 reaches the LTDC only after `WCR.LTDCEN` (FIXED in
+`display.cpp` ordering).** The running CM7 reads the whole LTDC as 0 / drops
+writes when the config runs right after panel init; a settle delay alone
+does NOT help. Setting the DSI wrapper `WCR.LTDCEN` (DSIEN|LTDCEN) + settle
+is what opens CM7 access (adapted-command-mode quirk). **Confirmed:** with
+WCR.LTDCEN set, the CM7 fully configures the LTDC — `TWCR=0x022504C3`,
+`AWCR=0x0203042D`, `L1CFBAR=0xD0000000`, `L1CR=1` all latch from CM7 writes
+(granular per-step relay).
+
+**STILL OPEN — LTDC controller ENABLE hangs the scan (still snow).** With
+ker_ck present and the LTDC fully configured, setting `GCR.LTDCEN=1`
+permanently stalls the LTDC register bus (reads freeze at stale
+`0x00000001`) and yields no valid frame → rainbow snow (owner-confirmed).
+Ruled out: framebuffer location (hangs the same with fb at AXI-SRAM
+`0x24000000` and SDRAM `0xD0000000`), IMR-vs-VBR shadow reload, and
+WCR.LTDCEN free-run-vs-pulse-vs-cleared. This is a DSI-adapted-command-mode
+scan/packetization problem, NOT clock/access. The "config latches but
+enable hangs" split is the key clue.
+
+**Next:** diff `configure_adapted_cmd_mode` + LTDC timing params + the DSI
+command-mode regs (LCCR/WCFGR/CMCR/VMCR/TE) against rlvgl register-for-
+register; validate LTDC timing (SSCR<BPCR<AWCR<TWCR); decide free-run vs
+TE-gated single-shot for GCR.LTDCEN. Tooling that worked: granular per-step
+D3 relays (write reg → relay readback) pinpointed exactly that config
+latches but enable hangs.
+
+### §15.11 Session 4 (2026-06-09) — ROOT CAUSE 3: WCFGR.AR=0; scan pipeline now cycling
+
+The register-for-register diff had to target the right reference:
+`display_init.rs` / `dsi_cmd_mode.rs` are the **Zephyr** path; the binary
+gdb-verified scanning on this bench is the bare-metal inline sequence in
+`rlvgl/platform/src/stm32h747i_disco.rs::new()`. Diffing against THAT
+surfaced the one remaining wrapper-register delta:
+
+**ROOT CAUSE 3 — `WCFGR.AR` (bit 6, automatic refresh) must be 1 at
+GCR-enable time (FIXED in `display.cpp`).** The proven path sets
+`WCFGR = DSIM|COLMUX(5)|TESRC|AR` (stm32h747i_disco.rs:529-537); we had
+copied `AR=0` from `dsi_cmd_mode.rs` (Zephyr steady-state, where ERIF ISR
++ manual `present()` pulses replace AR). With AR=0, every enable variant
+(§15.10 free-run/pulse/cleared) enabled the LTDC into a dead wrapper
+handshake → bus wedge. With AR=1 the wrapper re-arms a frame transfer on
+each panel TE event, so the LTDC always drains.
+
+Also adopted from the proven path: AXI QoS (INI6 LTDC read=0xF,
+INI5 DMA2D=0x4, stm32h747i_disco.rs:601-610) and the enable order
+GCR=0x2221 → SRCR.IMR → ~20 ms settle → set WCR.LTDCEN (no WCR.LTDCEN
+clear in between).
+
+**Bench evidence (seeded-relay run, flash+reset, breadcrumb advanced to
+PANEL_UP):**
+
+- AR=1 alone opens CM7→LTDC access *before* any manual WCR.LTDCEN: the
+  early diag now shows `BCCR=0x00ABCDEF` sticking and the TWCR
+  pixel-domain write-discriminator alive (`0x0AFE0000`) — confirming
+  ROOT CAUSE 2's mechanism (wrapper-gated LTDC access; TE auto-pulses
+  provide it continuously).
+- Post-enable: `WISR=0x7307` → TEIF=1 (panel TE arriving), ERIF=1
+  (refreshes completing), BUSY=1 (transfer in flight). Live probe reads
+  of WISR alternate 0x7303/0x7307 — BUSY toggling = continuous
+  auto-refresh cycling. `init()` ran to completion; no bus wedge.
+- LTDC registers read back `0x00000001`/garbage DURING active scan —
+  matches the proven path's own observation (readbacks only "BEFORE GCR
+  enable (no aliasing yet)", stm32h747i_disco.rs:700,733). Post-enable
+  LTDC readback unreliability is expected on this part, not a fault.
+  Do not diagnose from post-enable LTDC reads.
+
+**Remaining deltas vs proven path (flagged, not adopted):** pixel clock
+27.5 MHz w/ matching DSI timing consts (proven bare-metal: 32/32 — both
+self-consistent and valid); LTDC timing written post-DSI-init under
+explicit WCR.LTDCEN rather than blind pre-DSI writes.
+
+**OWNER-CONFIRMED (2026-06-09): four distinct colours visible on the
+panel** — the four-quadrant test pattern (`main_display.cpp::
+fill_pattern`) is rendering. PLAT-02d first light achieved: clocks →
+SDRAM framebuffer → LTDC → DSI adapted command mode → NT35510 panel,
+end-to-end.
+
+### §15.12 Geometry verification: two rlvgl-inherited off-by-ones found+fixed
+
+Owner pattern-key readout (board-landscape viewing): quadrants exactly
+matched the native-portrait scan rotated to landscape — **no
+rotation/mirror error**. Convention note (owner-stated): "landscape" in
+this initiative = the orientation natural for the joystick + button,
+the same orientation rlvgl's UI uses; the panel scan itself is native
+portrait (480×800, MADCTL=0x00).
+
+The owner also saw the 1px white border on only two edges plus a 1px
+colour bleed at the seam → two real bugs in `setup_ltdc_layer`,
+inherited verbatim from rlvgl:
+
+1. **Layer window origin +1 in both axes** (`x0 = HSW+HBP+1`): RM0399
+   LxWHPCR requires WHSTPOS = AHBP+1 = HSW+HBP. The +1 shifted the
+   layer, pushed the window stop past AAW/AAH, and clipped the
+   framebuffer's last column/row (the missing border edges).
+2. **`CFBLR.CFBLL = pitch+7`**: RM0399 says line length **+3**. The +7
+   over-fetches one pixel per line (the next row's first pixel) — the
+   1px seam bleed — and reads 4 bytes past the buffer on the last line.
+
+Both fixed in `display.cpp::setup_ltdc_layer` (`x0 = HSW+HBP`,
+`y0 = VSW+VBP`, `CFBLL = pitch+3`); **owner-confirmed aligned** after
+reflash. rlvgl has the same bugs at three sites (L1 bare-metal, L1
+Zephyr, L2 FreeRTOS) — upstream report with cites, bench evidence, and
+suggested patch: `docs/platform-disco/rlvgl-ltdc-layer-off-by-one.md`.
+The lvglpp deviation carries a PARITY-deviation comment until the rlvgl
+fix lands and the submodule pin bumps.
