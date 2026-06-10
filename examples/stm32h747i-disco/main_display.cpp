@@ -31,9 +31,17 @@
 // downsamples of the framebuffer, probe-readable —
 //   0x3800_1000 = capture BEFORE display::init (CPU pattern source)
 //   0x3800_5000 = capture AFTER the DMA2D fill + blit gates
+// PLAT-02f-1 serial-pump relay (0x3800_03A0..):
+//   0x3800_03A0 = complete lines processed
+//   0x3800_03A4 = inject commands parsed (dispatch pending widgets)
+//   0x3800_03A8 = USART RX overrun count
+//   0x3800_03AC = pump tick (low word, free-running)
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
+#include <string_view>
+#include <variant>
 
 #include "disco/breadcrumb.hpp"
 #include "disco/clocks.hpp"
@@ -44,6 +52,10 @@
 #include "disco/regs/ltdc.hpp"
 #include "disco/regs/rcc.hpp"
 #include "disco/sdram.hpp"
+#include "disco/usart.hpp"
+#include "lvglpp/playit/format.hpp"
+#include "lvglpp/playit/parser.hpp"
+#include "lvglpp/playit/response.hpp"
 
 namespace {
 
@@ -206,6 +218,136 @@ void dma2d_blit_gate() noexcept {
     dsb();
 }
 
+// ── PLAT-02f-1 serial pump (06-touch-and-uart.md §5.3/§5.5) ─────────
+// Speaks the playit wire protocol over USART1/VCP using the canonical
+// lvglpp parser + formatter (grammar/format restatement here is
+// forbidden — 06 §5.4). Subset: Status, DumpPixels, Inject (parse-ack
+// only), Extension; queries/recorder answer ERR until the widget tree
+// lands on-target.
+
+void send_response(const lvglpp::playit::Response& resp) noexcept {
+    char buf[128];
+    const std::size_t n =
+        lvglpp::playit::format_response(resp, std::span<char>{buf});
+    lvglpp::disco::usart::put(std::string_view{buf, n});
+}
+
+// PARITY: rlvgl/playit/src/protocol.rs:566 write_hex_u32 (8 uppercase
+// hex digits).
+void put_hex_u32(std::uint32_t v) noexcept {
+    constexpr char HEX[] = "0123456789ABCDEF";
+    char out[8];
+    for (int i = 0; i < 8; ++i)
+        out[i] = HEX[(v >> ((7 - i) * 4)) & 0xFu];
+    lvglpp::disco::usart::put(std::string_view{out, 8});
+}
+
+// PARITY: rlvgl/playit/src/executor.rs::emit_dump_if_ready framing.
+// DELTA (06 §10): emits immediately from the live AR=1 front buffer;
+// rlvgl waits for the next present. Out-of-bounds pixels read as 0.
+void emit_dump(const lvglpp::playit::DumpSpec& spec) noexcept {
+    namespace disco = lvglpp::disco;
+    constexpr std::int32_t W = disco::display::PANEL_W;
+    constexpr std::int32_t H = disco::display::PANEL_H;
+    const auto* fb = reinterpret_cast<const volatile std::uint32_t*>(
+        disco::display::FRAMEBUFFER_BASE);
+
+    disco::usart::put("DUMP:queued\r\n");
+    for (std::uint8_t frame = 0; frame < spec.frames; ++frame) {
+        disco::usart::put("F\r\n");
+        for (std::uint16_t row = 0; row < spec.height; ++row) {
+            for (std::uint16_t col = 0; col < spec.width; ++col) {
+                const std::int32_t x = spec.x + col;
+                const std::int32_t y = spec.y + row;
+                const bool in = x >= 0 && x < W && y >= 0 && y < H;
+                put_hex_u32(in ? fb[y * W + x] : 0u);
+                if (col + 1 < spec.width) disco::usart::put(" ");
+            }
+            disco::usart::put("\r\n");
+        }
+    }
+    send_response(lvglpp::playit::response::DumpEnd{});
+}
+
+[[noreturn]] void serial_pump() noexcept {
+    namespace pi = lvglpp::playit;
+    namespace disco = lvglpp::disco;
+
+    char line[128];
+    std::size_t len = 0;
+    std::uint32_t lines = 0, injects = 0, tick = 0;
+
+    struct Visitor {
+        std::uint32_t& injects;
+        const std::uint32_t& tick;
+        void operator()(const pi::command::Status&) const {
+            // present_count stays 0 until present-counting lands
+            // (06 §10 deviation note).
+            send_response(pi::response::Status{{tick, 0u}});
+        }
+        void operator()(const pi::command::DumpPixels& d) const {
+            emit_dump(d.spec);
+        }
+        void operator()(const pi::command::Inject&) const {
+            ++injects;
+            send_response(pi::response::Ok{});
+        }
+        void operator()(const pi::command::InjectTagged&) const {
+            ++injects;
+            send_response(pi::response::Ok{});
+        }
+        void operator()(const pi::command::QueryBounds&) const {
+            send_response(pi::response::Error{"no-tree"});
+        }
+        void operator()(const pi::command::QueryExists&) const {
+            send_response(pi::response::Error{"no-tree"});
+        }
+        void operator()(const pi::command::QueryChildCount&) const {
+            send_response(pi::response::Error{"no-tree"});
+        }
+        void operator()(const pi::command::RecordStart&) const {
+            send_response(pi::response::Error{"unsupported"});
+        }
+        void operator()(const pi::command::RecordStop&) const {
+            send_response(pi::response::Error{"unsupported"});
+        }
+        void operator()(const pi::command::RecordDump&) const {
+            send_response(pi::response::Error{"unsupported"});
+        }
+        void operator()(const pi::command::Extension&) const {
+            send_response(pi::response::Ok{});
+        }
+    };
+
+    for (;;) {
+        ++tick;
+        int c;
+        while ((c = disco::usart::get_byte()) >= 0) {
+            const char ch = static_cast<char>(c);
+            if (ch == '\n' || ch == '\r') {
+                if (len > 0) {
+                    ++lines;
+                    if (auto cmd = pi::parse_command({line, len})) {
+                        std::visit(Visitor{injects, tick}, *cmd);
+                    }
+                    len = 0;
+                }
+            } else if (len < sizeof(line)) {
+                line[len++] = ch;
+            } else {
+                len = 0;  // oversize line: drop, resync at newline
+            }
+        }
+        if ((tick & 0xFFFu) == 0) {  // relay refresh, ~per-ms scale
+            *d3(0xA0) = lines;
+            *d3(0xA4) = injects;
+            *d3(0xA8) = disco::usart::rx_overruns();
+            *d3(0xAC) = tick;
+            dsb();
+        }
+    }
+}
+
 } // namespace
 
 int main() {
@@ -224,7 +366,8 @@ int main() {
     dma2d_blit_gate();
     capture_framebuffer(0x3800'5000u);       // post-DMA2D blind capture
 
-    for (;;) asm volatile ("wfe");
+    lvglpp::disco::usart::init();
+    serial_pump();                           // never returns
 }
 
 

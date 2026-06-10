@@ -79,6 +79,9 @@ struct alignas(4) Rcc {
     volatile std::uint32_t c1_ahb2enr;    // 0x13C
     volatile std::uint32_t c1_ahb4enr;    // 0x140
     volatile std::uint32_t c1_apb3enr;    // 0x144
+    volatile std::uint32_t c1_apb1lenr;   // 0x148
+    volatile std::uint32_t c1_apb1henr;   // 0x14C
+    volatile std::uint32_t c1_apb2enr;    // 0x150 §8.7.x — CM7 per-core APB2 gate
 };
 
 static_assert(offsetof(Rcc, cr)        == 0x000, "RM0399 §8.7.2");
@@ -97,6 +100,7 @@ static_assert(offsetof(Rcc, ahb1enr)   == 0x0D8, "RM0399 §8.7.38");
 static_assert(offsetof(Rcc, ahb4enr)   == 0x0E0, "RM0399 §8.7.41");
 static_assert(offsetof(Rcc, apb3enr)   == 0x0E4, "RM0399 §8.7.43");
 static_assert(offsetof(Rcc, c1_ahb3enr) == 0x134, "RM0399 §8.7.x (CM7 AHB3 gate)");
+static_assert(offsetof(Rcc, c1_apb2enr) == 0x150, "RM0399 §8.7.x (CM7 APB2 gate)");
 
 // `mmio: owned by RM0399 §8.7; never freed.`
 inline constexpr MmioAddr<Rcc> RCC{0x5802'4400u};
@@ -221,6 +225,11 @@ namespace apb3enr {
     // §8.7.43
     inline constexpr std::uint32_t LTDCEN = 1u << 3;
     inline constexpr std::uint32_t DSIEN  = 1u << 4;
+}
+
+namespace apb2enr {
+    // §8.7.46
+    inline constexpr std::uint32_t USART1EN = 1u << 4;
 }
 
 } // namespace lvglpp::disco::regs

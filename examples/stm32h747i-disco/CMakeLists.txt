@@ -109,6 +109,10 @@ add_custom_command(TARGET lvglpp_stm32h747i_disco_sdram POST_BUILD
 # adapted command mode and fills the framebuffer at 0xD0000000 with a
 # four-quadrant + 1px-border ARGB8888 pattern. Relays DSI_PSR /
 # LTDC_CDSR / DSI_WISR to D3 SRAM at 0x38000320.. for probe-rs.
+# PLAT-02f-1: ends in the playit serial pump on USART1/VCP. The
+# playit parser/formatter sources compile directly into the target
+# (06-touch-and-uart.md §5.4) until the module libraries grow a
+# cross-build leg.
 
 add_executable(lvglpp_stm32h747i_disco_display
     startup_stm32h747xi.cpp
@@ -117,7 +121,11 @@ add_executable(lvglpp_stm32h747i_disco_display
     disco/sdram.cpp
     disco/display.cpp
     disco/dma2d.cpp
+    disco/usart.cpp
+    disco/cxx_shims.cpp
     main_display.cpp
+    ${CMAKE_SOURCE_DIR}/playit/src/parser.cpp
+    ${CMAKE_SOURCE_DIR}/playit/src/format.cpp
 )
 
 set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
@@ -125,7 +133,9 @@ set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
     OUTPUT_NAME "lvglpp-stm32h747i-disco-display")
 
 target_include_directories(lvglpp_stm32h747i_disco_display
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/playit/include)
 
 target_link_libraries(lvglpp_stm32h747i_disco_display
     PRIVATE lvglpp_warnings lvglpp_posture)
