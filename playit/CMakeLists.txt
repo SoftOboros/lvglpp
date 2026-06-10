@@ -19,11 +19,14 @@ target_sources(lvglpp_playit
         src/parser.cpp
 )
 
-# StdioTransport is host-only — pulls in POSIX <fcntl.h> + <unistd.h>.
-# Excluded under embedded posture so the freestanding subset rule
-# in docs/std-mapping.md is preserved.
+# StdioTransport / TcpServerTransport are host-only — they pull in
+# POSIX <fcntl.h> / <sys/socket.h>. Excluded under embedded posture
+# so the freestanding subset rule in docs/std-mapping.md is
+# preserved. (TCP: DEMO-07 §5.4, mirrors rlvgl playit/src/tcp.rs.)
 if(NOT LVGLPP_EMBEDDED_POSTURE)
-    target_sources(lvglpp_playit PRIVATE src/stdio_transport.cpp)
+    target_sources(lvglpp_playit PRIVATE
+        src/stdio_transport.cpp
+        src/tcp_transport.cpp)
 endif()
 
 target_include_directories(lvglpp_playit
