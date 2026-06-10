@@ -33,9 +33,13 @@
 //   0x3800_5000 = capture AFTER the DMA2D fill + blit gates
 // PLAT-02f-1 serial-pump relay (0x3800_03A0..):
 //   0x3800_03A0 = complete lines processed
-//   0x3800_03A4 = inject commands parsed (dispatch pending widgets)
+//   0x3800_03A4 = dark_mode click count (mirror of 0x3C0)
 //   0x3800_03A8 = USART RX overrun count
 //   0x3800_03AC = pump tick (low word, free-running)
+// PLAT-02f-1b widget-tree relay:
+//   0x3800_03C0 = dark_mode on_click fire count (fingers-substitute
+//                 proof: serial T@/T inject → real Dispatcher →
+//                 Button::handle_event → callback)
 // PLAT-02e-2 async/ISR gate relay (0x3800_03B0..):
 //   0x3800_03B0 = DMA2D ISR complete count (expect 3)
 //   0x3800_03B4 = DMA2D ISR error count (expect 0)
@@ -43,7 +47,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <variant>
 
@@ -57,9 +63,14 @@
 #include "disco/regs/rcc.hpp"
 #include "disco/sdram.hpp"
 #include "disco/usart.hpp"
+#include "lvglpp/core/widget_node.hpp"
+#include "lvglpp/playit/dispatcher.hpp"
 #include "lvglpp/playit/format.hpp"
 #include "lvglpp/playit/parser.hpp"
 #include "lvglpp/playit/response.hpp"
+#include "lvglpp/widgets/button.hpp"
+#include "lvglpp/widgets/container.hpp"
+#include "lvglpp/widgets/label.hpp"
 
 namespace {
 
@@ -313,55 +324,39 @@ void emit_dump(const lvglpp::playit::DumpSpec& spec) noexcept {
     send_response(lvglpp::playit::response::DumpEnd{});
 }
 
+// observes: button-click count; written by the dark_mode on_click
+// handler, relayed to 0x3800_03C0.
+std::uint32_t g_clicks = 0;
+
 [[noreturn]] void serial_pump() noexcept {
     namespace pi = lvglpp::playit;
+    namespace cc = lvglpp::core;
+    namespace wi = lvglpp::widgets;
     namespace disco = lvglpp::disco;
+
+    // PLAT-02f-1b on-target widget tree — the first heap consumer
+    // (WidgetNode children vector + unique_ptr widgets; disco.ld
+    // `end` symbol). Tags mirror the cross-language fixture set
+    // (family §12 uses `dark_mode`). Static storage: the tree and
+    // dispatcher live for the life of the pump.
+    static cc::WidgetNode root{
+        std::make_unique<wi::Container>(cc::Rect{0, 0, 480, 800}),
+        "root"};
+    {
+        root.add_child(cc::WidgetNode{
+            std::make_unique<wi::Label>(std::string{"lvglpp"},
+                                        cc::Rect{40, 40, 200, 32}),
+            "title"});
+        auto btn = std::make_unique<wi::Button>(
+            std::string{"Dark"}, cc::Rect{40, 600, 200, 64});
+        btn->set_on_click([](wi::Button&) { *d3(0xC0) = ++g_clicks; });
+        root.add_child(cc::WidgetNode{std::move(btn), "dark_mode"});
+    }
+    static pi::Dispatcher dispatcher{root};
 
     char line[128];
     std::size_t len = 0;
-    std::uint32_t lines = 0, injects = 0, tick = 0;
-
-    struct Visitor {
-        std::uint32_t& injects;
-        const std::uint32_t& tick;
-        void operator()(const pi::command::Status&) const {
-            // present_count stays 0 until present-counting lands
-            // (06 §10 deviation note).
-            send_response(pi::response::Status{{tick, 0u}});
-        }
-        void operator()(const pi::command::DumpPixels& d) const {
-            emit_dump(d.spec);
-        }
-        void operator()(const pi::command::Inject&) const {
-            ++injects;
-            send_response(pi::response::Ok{});
-        }
-        void operator()(const pi::command::InjectTagged&) const {
-            ++injects;
-            send_response(pi::response::Ok{});
-        }
-        void operator()(const pi::command::QueryBounds&) const {
-            send_response(pi::response::Error{"no-tree"});
-        }
-        void operator()(const pi::command::QueryExists&) const {
-            send_response(pi::response::Error{"no-tree"});
-        }
-        void operator()(const pi::command::QueryChildCount&) const {
-            send_response(pi::response::Error{"no-tree"});
-        }
-        void operator()(const pi::command::RecordStart&) const {
-            send_response(pi::response::Error{"unsupported"});
-        }
-        void operator()(const pi::command::RecordStop&) const {
-            send_response(pi::response::Error{"unsupported"});
-        }
-        void operator()(const pi::command::RecordDump&) const {
-            send_response(pi::response::Error{"unsupported"});
-        }
-        void operator()(const pi::command::Extension&) const {
-            send_response(pi::response::Ok{});
-        }
-    };
+    std::uint32_t lines = 0, tick = 0;
 
     for (;;) {
         ++tick;
@@ -372,7 +367,18 @@ void emit_dump(const lvglpp::playit::DumpSpec& spec) noexcept {
                 if (len > 0) {
                     ++lines;
                     if (auto cmd = pi::parse_command({line, len})) {
-                        std::visit(Visitor{injects, tick}, *cmd);
+                        // Status and DumpPixels stay pump-local (the
+                        // dispatcher has no tick source or
+                        // framebuffer reader); everything else goes
+                        // through the real host-tested Dispatcher.
+                        if (std::get_if<pi::command::Status>(&*cmd)) {
+                            send_response(pi::response::Status{{tick, 0u}});
+                        } else if (const auto* d =
+                                       std::get_if<pi::command::DumpPixels>(&*cmd)) {
+                            emit_dump(d->spec);
+                        } else {
+                            send_response(dispatcher.dispatch(*cmd));
+                        }
                     }
                     len = 0;
                 }
@@ -384,7 +390,7 @@ void emit_dump(const lvglpp::playit::DumpSpec& spec) noexcept {
         }
         if ((tick & 0xFFFu) == 0) {  // relay refresh, ~per-ms scale
             *d3(0xA0) = lines;
-            *d3(0xA4) = injects;
+            *d3(0xA4) = g_clicks;
             *d3(0xA8) = disco::usart::rx_overruns();
             *d3(0xAC) = tick;
             dsb();

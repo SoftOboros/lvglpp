@@ -37,12 +37,23 @@ namespace {
 
 namespace std {
 
+// Cover the FULL set libstdc++ functexcept.o defines that our code
+// references — a partial set makes the linker pull the archive
+// member for the missing one and then collide with the shims.
 [[noreturn]] void __throw_bad_variant_access(const char*) { trap(); }
 [[noreturn]] void __throw_bad_optional_access() { trap(); }
 [[noreturn]] void __throw_bad_function_call() { trap(); }
 [[noreturn]] void __throw_bad_alloc() { trap(); }
+[[noreturn]] void __throw_bad_array_new_length() { trap(); }
 [[noreturn]] void __throw_length_error(const char*) { trap(); }
+[[noreturn]] void __throw_logic_error(const char*) { trap(); }
+[[noreturn]] void __throw_domain_error(const char*) { trap(); }
+[[noreturn]] void __throw_invalid_argument(const char*) { trap(); }
+[[noreturn]] void __throw_out_of_range(const char*) { trap(); }
 [[noreturn]] void __throw_out_of_range_fmt(const char*, ...) { trap(); }
+[[noreturn]] void __throw_runtime_error(const char*) { trap(); }
+[[noreturn]] void __throw_overflow_error(const char*) { trap(); }
+[[noreturn]] void __throw_underflow_error(const char*) { trap(); }
 
 // _GLIBCXX_ASSERTIONS failure hook (Debug builds): the libstdc++
 // definition fprintf's to stderr — another stdio/heap pull.
@@ -58,3 +69,9 @@ namespace std {
 // exist here. Overriding it keeps libc_a-abort.o (and the libnosys
 // stub farm behind it) out of the link.
 extern "C" [[noreturn]] void abort() { trap(); }
+
+// __cxa_atexit registration for function-local statics references
+// the translation unit's __dso_handle. Bare metal never runs static
+// destructors (the image never exits), so a self-referential
+// definition satisfies the link.
+extern "C" { void* __dso_handle = &__dso_handle; }

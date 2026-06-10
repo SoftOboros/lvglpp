@@ -111,9 +111,9 @@ ICR.ORECF and counted to a D3 relay regardless.
 | --- | --- |
 | `?` | `STAT:<tick>,<present>` — tick = pump iterations; present = 0 until present-counting lands (deviation, §10). |
 | `D<x>,<y>,<w>,<h>[,<frames>]` | Immediate dump of the live front buffer per §3 framing; w clamped to 40, frames honoured by re-reading the live buffer. |
-| `T…`/`P…`/`K…`/`M…` (inject) | Parsed, replied `OK` — **recorded to a D3 relay count** so the host can verify parse-side handling; dispatch lands with the widget tree. |
-| `Q…` (query) | `ERR:no-tree` until widgets land on-target. |
-| `R…` (recorder) | `ERR:unsupported` in 02f-1. |
+| `T…`/`P…`/`K…`/`M…` (inject) | ~~Parse-ack only~~ **AMENDED 02f-1b**: dispatched into the on-target WidgetNode tree via the host-tested `Dispatcher`. |
+| `Q…` (query) | ~~`ERR:no-tree`~~ **AMENDED 02f-1b**: real `BOUNDS:`/`EXISTS:`/`CHILDREN:` answers from the tree. |
+| `R…` (recorder) | Dispatcher-default error in 02f-1 (recorder integration pends the Executor swap, §10). |
 | unknown | Extension per parser → `OK` (rlvgl parity). |
 
 ### §5.4 Parser/formatter reuse — **Standards Action**
@@ -244,3 +244,14 @@ fingers-substitute meanwhile.
   standing eyes-substitute (D dumps at native resolution) and
   fingers-substitute (inject parse path live, dispatch pending the
   on-target widget tree).
+- 2026-06-10 — **PLAT-02f-1b**: on-target widget tree landed; §5.3
+  table amended (inject → real dispatch; queries → real answers).
+  First heap consumer: disco.ld now PROVIDEs `end` for newlib sbrk;
+  cxx_shims extended to the full functexcept set + `__dso_handle`
+  (a PARTIAL shim set makes the linker pull the archive member and
+  collide). Tree: root container + `title` label + `dark_mode`
+  button (tags from the family §12 fixture). Bench (blind):
+  QE/QB/QC exact, `T@dark_mode` AND untagged `T100,620` both fired
+  on_click (relay 0x3800_03C0 = 2), miss at `T10,10` did not,
+  unknown tag → `ERR: tag not found`. Dispatcher source compiles
+  into the target per §5.4 (same standing deviation as the parser).

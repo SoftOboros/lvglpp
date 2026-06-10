@@ -114,6 +114,11 @@ SECTIONS
   {
     . = ALIGN(8);
     PROVIDE(__end = .);
+    /* newlib/libnosys sbrk.c takes the heap base from `end` (single
+     * underscore). PLAT-02f-1b: the on-target widget tree is the
+     * first heap consumer (WidgetNode children vector + unique_ptr
+     * widgets).                                                    */
+    PROVIDE(end = .);
     PROVIDE(_end_of_heap = ORIGIN(RAM) + LENGTH(RAM) - 0x4000); /* 16K stack */
   } > RAM
 

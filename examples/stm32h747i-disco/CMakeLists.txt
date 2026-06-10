@@ -126,6 +126,10 @@ add_executable(lvglpp_stm32h747i_disco_display
     main_display.cpp
     ${CMAKE_SOURCE_DIR}/playit/src/parser.cpp
     ${CMAKE_SOURCE_DIR}/playit/src/format.cpp
+    ${CMAKE_SOURCE_DIR}/playit/src/dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/widgets/src/container.cpp
+    ${CMAKE_SOURCE_DIR}/widgets/src/button.cpp
+    ${CMAKE_SOURCE_DIR}/widgets/src/label.cpp
 )
 
 set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
@@ -135,7 +139,9 @@ set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
 target_include_directories(lvglpp_stm32h747i_disco_display
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/playit/include)
+        ${CMAKE_SOURCE_DIR}/playit/include
+        ${CMAKE_SOURCE_DIR}/core/include
+        ${CMAKE_SOURCE_DIR}/widgets/include)
 
 target_link_libraries(lvglpp_stm32h747i_disco_display
     PRIVATE lvglpp_warnings lvglpp_posture)
