@@ -68,6 +68,7 @@
 #include "disco/regs/nvic.hpp"
 #include "disco/regs/rcc.hpp"
 #include "disco/sdram.hpp"
+#include "disco/renderer.hpp"
 #include "disco/usart.hpp"
 #include "lvglpp/core/widget_node.hpp"
 #include "lvglpp/playit/dispatcher.hpp"
@@ -345,20 +346,42 @@ std::uint32_t g_clicks = 0;
     // `end` symbol). Tags mirror the cross-language fixture set
     // (family §12 uses `dark_mode`). Static storage: the tree and
     // dispatcher live for the life of the pump.
-    static cc::WidgetNode root{
-        std::make_unique<wi::Container>(cc::Rect{0, 0, 480, 800}),
-        "root"};
-    {
-        root.add_child(cc::WidgetNode{
-            std::make_unique<wi::Label>(std::string{"lvglpp"},
-                                        cc::Rect{40, 40, 200, 32}),
-            "title"});
+    // Styled for blind D-dump verification (PLAT-02e-3b): every
+    // surface a distinct, greppable ARGB value.
+    constexpr cc::Color NAVY  {16,  24,  48,  255};  // FF101830
+    constexpr cc::Color FACE  {200, 60,  60,  255};  // FFC83C3C
+    constexpr cc::Color WHITE {255, 255, 255, 255};  // FFFFFFFF
+
+    static cc::WidgetNode root = [&] {
+        auto cont = std::make_unique<wi::Container>(cc::Rect{0, 0, 480, 800});
+        cont->style.bg_color = NAVY;
+        cc::WidgetNode node{std::move(cont), "root"};
+
+        auto title = std::make_unique<wi::Label>(
+            std::string{"lvglpp"}, cc::Rect{40, 40, 200, 32});
+        title->style.bg_color = NAVY;
+        title->text_color     = WHITE;
+        node.add_child(cc::WidgetNode{std::move(title), "title"});
+
         auto btn = std::make_unique<wi::Button>(
             std::string{"Dark"}, cc::Rect{40, 600, 200, 64});
+        btn->style().bg_color = FACE;
+        btn->text_color()     = WHITE;
         btn->set_on_click([](wi::Button&) { *d3(0xC0) = ++g_clicks; });
-        root.add_child(cc::WidgetNode{std::move(btn), "dark_mode"});
-    }
+        node.add_child(cc::WidgetNode{std::move(btn), "dark_mode"});
+        return node;
+    }();
     static pi::Dispatcher dispatcher{root};
+
+    // PLAT-02e-3b: render the tree into the live framebuffer. The
+    // PLAT-02d/02e test pattern + gate rects are intentionally
+    // painted over — from here on, serial D dumps show real widgets.
+    static lvglpp::disco::FrameBuffer fb{
+        disco::display::FRAMEBUFFER_BASE,
+        disco::display::PANEL_W, disco::display::PANEL_H,
+        disco::display::PANEL_W};
+    static lvglpp::disco::DiscoRenderer renderer{fb};
+    root.draw(renderer);
 
     char line[128];
     std::size_t len = 0;
@@ -407,6 +430,11 @@ std::uint32_t g_clicks = 0;
                             emit_dump(d->spec);
                         } else {
                             send_response(dispatcher.dispatch(*cmd));
+                            // Injected events may mutate widget
+                            // state; redraw the tree (cheap at the
+                            // ~30 Hz scan cadence, and queries are
+                            // harmless to repaint after).
+                            root.draw(renderer);
                         }
                     }
                     len = 0;

@@ -321,3 +321,16 @@ Added by the 2026-06-10 §15 amendment; mirrors rlvgl Vol II Ch 7 §3
   (closes the 06 §10 present=0 deviation). Full admission gating
   (cost model + guard band + underrun proof under deliberate
   pressure) remains 02e-3 proper.
+- 2026-06-10 — PLAT-02e-3b: **DiscoRenderer landed** (family §10's
+  named surface) — fill_rect with a 64-px cost split (CPU below,
+  DMA2D above; glyph fragments are scale×scale rects where
+  per-transfer setup dominates), draw_text via core FONT_6X10.
+  wait_done() relaxed: with the ISR live, TCIF is consumed before a
+  poll can see it — completion = CR.START self-clear + no error.
+  The pump now draws the real widget tree (navy container, styled
+  title label, dark_mode button) and redraws after dispatched
+  commands. Blind gate: serial D dumps verified container/face
+  colors, the old test pattern painted over, click-after-redraw,
+  and a **pixel-exact 560/560 match** of the on-target "lv" glyph
+  render against a host-side reference render of the same
+  font_6x10.bin. The eyes-substitute now sees real widgets.

@@ -114,6 +114,28 @@ add_custom_command(TARGET lvglpp_stm32h747i_disco_sdram POST_BUILD
 # (06-touch-and-uart.md §5.4) until the module libraries grow a
 # cross-build leg.
 
+# PLAT-02e-3b: regenerate the bring-up font .inc for the cross
+# build (same configure-time conversion as core/CMakeLists.txt —
+# core's copy lands in the host build dir only).
+set(_disco_font_bin "${CMAKE_SOURCE_DIR}/core/src/fonts/font_6x10.bin")
+set(_disco_font_inc_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+file(READ "${_disco_font_bin}" _disco_font_hex HEX)
+string(REGEX MATCHALL "[0-9a-f][0-9a-f]" _disco_font_bytes "${_disco_font_hex}")
+list(LENGTH _disco_font_bytes _disco_font_len)
+set(_disco_font_body "")
+foreach(_b ${_disco_font_bytes})
+    string(APPEND _disco_font_body "0x${_b}, ")
+endforeach()
+file(WRITE "${_disco_font_inc_dir}/font_6x10_data.inc"
+"// Auto-generated from core/src/fonts/font_6x10.bin at CMake configure time.\n"
+"// DO NOT EDIT — regenerated whenever the .bin changes.\n"
+"#pragma once\n"
+"#include <array>\n"
+"#include <cstdint>\n"
+"namespace lvglpp::core::fonts::detail {\n"
+"inline constexpr std::array<std::uint8_t, ${_disco_font_len}> FONT_6X10_BYTES = { ${_disco_font_body} };\n"
+"}\n")
+
 add_executable(lvglpp_stm32h747i_disco_display
     startup_stm32h747xi.cpp
     disco/clocks.cpp
@@ -122,6 +144,7 @@ add_executable(lvglpp_stm32h747i_disco_display
     disco/display.cpp
     disco/dma2d.cpp
     disco/usart.cpp
+    disco/renderer.cpp
     disco/cxx_shims.cpp
     main_display.cpp
     ${CMAKE_SOURCE_DIR}/playit/src/parser.cpp
@@ -130,6 +153,7 @@ add_executable(lvglpp_stm32h747i_disco_display
     ${CMAKE_SOURCE_DIR}/widgets/src/container.cpp
     ${CMAKE_SOURCE_DIR}/widgets/src/button.cpp
     ${CMAKE_SOURCE_DIR}/widgets/src/label.cpp
+    ${CMAKE_SOURCE_DIR}/core/src/fonts/font_6x10.cpp
 )
 
 set_target_properties(lvglpp_stm32h747i_disco_display PROPERTIES
@@ -141,7 +165,8 @@ target_include_directories(lvglpp_stm32h747i_disco_display
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/playit/include
         ${CMAKE_SOURCE_DIR}/core/include
-        ${CMAKE_SOURCE_DIR}/widgets/include)
+        ${CMAKE_SOURCE_DIR}/widgets/include
+        ${_disco_font_inc_dir})
 
 target_link_libraries(lvglpp_stm32h747i_disco_display
     PRIVATE lvglpp_warnings lvglpp_posture)

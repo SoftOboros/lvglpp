@@ -38,11 +38,17 @@ bool wait_done() noexcept {
     for (std::uint32_t i = 0; i < 100'000'000u; ++i) {
         if ((d.cr & dma2d_cr::START) == 0u) { stopped = true; break; }
     }
+    // PLAT-02e-3b: once enable_irq() is live the ISR clears the ISR
+    // flags before this poll can read them, so TCIF cannot be a
+    // success requirement. CR.START self-clearing + no error (from
+    // either the snapshot or the ISR error counter advancing) is the
+    // completion criterion.
+    const std::uint32_t errs_before = g_error_count;
     const std::uint32_t isr = d.isr;
     g_last_error = isr & dma2d_isr::ERROR_MASK;
     const bool ok = stopped
                  && g_last_error == 0u
-                 && (isr & dma2d_isr::TCIF) != 0u;
+                 && g_error_count == errs_before;
     d.ifcr = dma2d_isr::ALL;   // mirrors dma2d.rs wait() flag clear
     return ok;
 }
