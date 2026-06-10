@@ -311,3 +311,13 @@ Added by the 2026-06-10 §15 amendment; mirrors rlvgl Vol II Ch 7 §3
   must follow the blocking-path gates, since the ISR clears the
   flags wait_done() inspects. Remaining sub-phase: 02e-3
   (admission control — the §10 AR=1 question).
+- 2026-06-10 — PLAT-02e-3a: the §10 open question now has bench
+  evidence. Frame cadence measured blind by edge-counting WISR.BUSY
+  from the serial pump with DWT timestamps (relays 0x3800_03C4..):
+  **AR=1 auto-refresh ≈ 29.9 Hz, interval ≈ 13.37 M cycles @
+  400 MHz (EMA stable)** — about half rlvgl's 60 Hz assumption, so
+  `dma2d_admits` budget math must use the measured EMA, not the
+  transplanted constant. STAT present_count is now this counter
+  (closes the 06 §10 present=0 deviation). Full admission gating
+  (cost model + guard band + underrun proof under deliberate
+  pressure) remains 02e-3 proper.

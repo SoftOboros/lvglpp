@@ -40,6 +40,11 @@
 //   0x3800_03C0 = dark_mode on_click fire count (fingers-substitute
 //                 proof: serial T@/T inject → real Dispatcher →
 //                 Button::handle_event → callback)
+// PLAT-02e-3a frame-cadence relay:
+//   0x3800_03C4 = present count (WISR.BUSY rising edges = AR=1
+//                 auto-refresh frames)
+//   0x3800_03C8 = last edge-to-edge interval (DWT cycles @ 400 MHz)
+//   0x3800_03CC = interval EMA (alpha = 1/8, rlvgl FRAME_BUDGET style)
 // PLAT-02e-2 async/ISR gate relay (0x3800_03B0..):
 //   0x3800_03B0 = DMA2D ISR complete count (expect 3)
 //   0x3800_03B4 = DMA2D ISR error count (expect 0)
@@ -60,6 +65,7 @@
 #include "disco/pinmux.hpp"
 #include "disco/regs/dsi.hpp"
 #include "disco/regs/ltdc.hpp"
+#include "disco/regs/nvic.hpp"
 #include "disco/regs/rcc.hpp"
 #include "disco/sdram.hpp"
 #include "disco/usart.hpp"
@@ -358,8 +364,31 @@ std::uint32_t g_clicks = 0;
     std::size_t len = 0;
     std::uint32_t lines = 0, tick = 0;
 
+    // PLAT-02e-3a frame-cadence telemetry: under AR=1 each panel TE
+    // re-arms a frame transfer; WISR.BUSY pulses once per refresh.
+    // Edge-counting it from the pump (sampling at MHz rates vs a
+    // ~50 Hz cadence) gives present_count + the frame-budget input
+    // for the 05 §10 admission question, DWT-timestamped.
+    disco::regs::dwt_enable_cyccnt();
+    std::uint32_t presents = 0, prev_busy = 0;
+    std::uint32_t last_edge_cyc = 0, interval = 0, interval_ema = 0;
+
     for (;;) {
         ++tick;
+        {
+            const std::uint32_t busy =
+                disco::regs::DSI_W.ref().wisr & disco::regs::wisr::BUSY;
+            if (busy != 0u && prev_busy == 0u) {
+                ++presents;
+                const std::uint32_t now = disco::regs::DWT.ref().cyccnt;
+                interval      = now - last_edge_cyc;
+                last_edge_cyc = now;
+                interval_ema  = interval_ema == 0u
+                    ? interval
+                    : interval_ema - (interval_ema >> 3) + (interval >> 3);
+            }
+            prev_busy = busy;
+        }
         int c;
         while ((c = disco::usart::get_byte()) >= 0) {
             const char ch = static_cast<char>(c);
@@ -372,7 +401,7 @@ std::uint32_t g_clicks = 0;
                         // framebuffer reader); everything else goes
                         // through the real host-tested Dispatcher.
                         if (std::get_if<pi::command::Status>(&*cmd)) {
-                            send_response(pi::response::Status{{tick, 0u}});
+                            send_response(pi::response::Status{{tick, presents}});
                         } else if (const auto* d =
                                        std::get_if<pi::command::DumpPixels>(&*cmd)) {
                             emit_dump(d->spec);
@@ -393,6 +422,9 @@ std::uint32_t g_clicks = 0;
             *d3(0xA4) = g_clicks;
             *d3(0xA8) = disco::usart::rx_overruns();
             *d3(0xAC) = tick;
+            *d3(0xC4) = presents;
+            *d3(0xC8) = interval;
+            *d3(0xCC) = interval_ema;
             dsb();
         }
     }

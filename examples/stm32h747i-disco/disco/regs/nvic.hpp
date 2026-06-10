@@ -43,4 +43,25 @@ inline void nvic_set_priority(std::uint32_t irqn, std::uint8_t prio) noexcept {
 inline constexpr std::uint32_t IRQN_USART1 = 37;
 inline constexpr std::uint32_t IRQN_DMA2D  = 90;
 
+// ── DWT cycle counter (ARMv7-M ARM C1.8) ────────────────────────────
+// `mmio: owned by ARMv7-M debug architecture; never freed.`
+// PLAT-02e-3a frame-cadence telemetry; mirrors rlvgl's DWT posture
+// (CLAUDE.md profiling guidance: prefer DWT over serial for timing).
+
+struct alignas(4) Dwt {
+    volatile std::uint32_t ctrl;     // 0xE0001000 — CYCCNTENA @ bit 0
+    volatile std::uint32_t cyccnt;   // 0xE0001004 — free-running cycles
+};
+static_assert(offsetof(Dwt, cyccnt) == 0x4, "ARMv7-M DWT_CYCCNT");
+
+inline constexpr MmioAddr<Dwt> DWT{0xE000'1000u};
+// DEMCR.TRCENA gates the whole DWT block.
+inline constexpr MmioAddr<volatile std::uint32_t> DEMCR_WORD{0xE000'EDFCu};
+
+inline void dwt_enable_cyccnt() noexcept {
+    DEMCR_WORD.ref() = DEMCR_WORD.ref() | (1u << 24);  // TRCENA
+    DWT.ref().cyccnt = 0;
+    DWT.ref().ctrl   = DWT.ref().ctrl | 1u;            // CYCCNTENA
+}
+
 } // namespace lvglpp::disco::regs

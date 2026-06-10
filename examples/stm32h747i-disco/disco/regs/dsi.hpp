@@ -146,9 +146,11 @@ namespace wrpcr {
 }
 
 namespace wisr {
+    inline constexpr std::uint32_t TEIF  = 1u << 0;  // tearing-effect flag
+    inline constexpr std::uint32_t ERIF  = 1u << 1;  // end-of-refresh flag
+    inline constexpr std::uint32_t BUSY  = 1u << 2;  // frame transfer ongoing
     inline constexpr std::uint32_t PLLLS = 1u << 8;  // PLL lock status
     inline constexpr std::uint32_t RRS   = 1u << 12; // regulator ready status
-    inline constexpr std::uint32_t ERIF  = 1u << 1;  // end-of-refresh flag
 }
 
 namespace psr {
