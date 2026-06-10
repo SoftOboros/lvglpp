@@ -202,14 +202,12 @@ namespace d1ccipr {
 }
 
 namespace ahb3enr {
-    // §8.7.36
-    inline constexpr std::uint32_t MDMAEN = 1u <<  0;
-    inline constexpr std::uint32_t FMCEN  = 1u << 12;
-}
-
-namespace ahb1enr {
-    // §8.7.38
-    inline constexpr std::uint32_t DMA2DEN = 1u << 23;
+    // §8.7.36. NOTE: on the H7, DMA2D is an AHB3 peripheral (bit 4) —
+    // bit 23 of AHB1ENR is the F4/F7 position and lands on nothing
+    // useful here (PLAT-02e §5.1; rlvgl bench AHB3ENR=0x1010).
+    inline constexpr std::uint32_t MDMAEN  = 1u <<  0;
+    inline constexpr std::uint32_t DMA2DEN = 1u <<  4;
+    inline constexpr std::uint32_t FMCEN   = 1u << 12;
 }
 
 namespace ahb4enr {

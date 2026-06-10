@@ -141,10 +141,13 @@ void init(const Plan& plan) noexcept {
     // (RCC_C1_AHBxENR for CM7). Both must be set or the peripheral
     // appears ungated from CM7's perspective. Mirrors rlvgl
     // early_fmc_setup which writes both for FMC.
-    RCC->ahb3enr    = RCC->ahb3enr    | ahb3enr::FMCEN | ahb3enr::MDMAEN;
-    RCC->c1_ahb3enr = RCC->c1_ahb3enr | ahb3enr::FMCEN | ahb3enr::MDMAEN;
-    RCC->ahb1enr    = RCC->ahb1enr    | ahb1enr::DMA2DEN;
-    RCC->c1_ahb1enr = RCC->c1_ahb1enr | ahb1enr::DMA2DEN;
+    // PLAT-02e §5.1 FIX: DMA2D is AHB3 bit 4 on the H7 (the old
+    // ahb1enr bit-23 gate was the F4/F7 position — DMA2D was never
+    // clocked). rlvgl bench AHB3ENR=0x1010 = FMC|DMA2D.
+    RCC->ahb3enr    = RCC->ahb3enr
+                    | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
+    RCC->c1_ahb3enr = RCC->c1_ahb3enr
+                    | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
     RCC->apb3enr    = RCC->apb3enr    | apb3enr::LTDCEN | apb3enr::DSIEN;
     // PLAT-02d FIX: LTDC/DSI also need the per-core (CM7) gate, exactly
     // like FMC above. Without RCC_C1_APB3ENR set, the LTDC is ungated

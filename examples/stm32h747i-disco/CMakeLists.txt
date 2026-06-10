@@ -116,6 +116,7 @@ add_executable(lvglpp_stm32h747i_disco_display
     disco/pinmux.cpp
     disco/sdram.cpp
     disco/display.cpp
+    disco/dma2d.cpp
     main_display.cpp
 )
 
