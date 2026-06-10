@@ -261,9 +261,12 @@ struct XY {
     DumpSpec spec{};
     spec.x      = parts[0];
     spec.y      = parts[1];
-    spec.width  = static_cast<std::uint16_t>(std::clamp(parts[2], 1, 40));
-    spec.height = static_cast<std::uint16_t>(std::clamp(parts[3], 1, 40));
-    spec.frames = static_cast<std::uint8_t>(std::clamp(parts[4], 1, 4));
+    // Explicit template argument: std::int32_t is `long` on
+    // arm-none-eabi (newlib), so mixing parts[n] with bare int
+    // literals would fail deduction on the cross build.
+    spec.width  = static_cast<std::uint16_t>(std::clamp<std::int32_t>(parts[2], 1, 40));
+    spec.height = static_cast<std::uint16_t>(std::clamp<std::int32_t>(parts[3], 1, 40));
+    spec.frames = static_cast<std::uint8_t>(std::clamp<std::int32_t>(parts[4], 1, 4));
     return Command{command::DumpPixels{spec}};
 }
 
