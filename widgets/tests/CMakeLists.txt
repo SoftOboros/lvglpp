@@ -38,3 +38,15 @@ add_executable(lvglpp_widgets_container_test container_test.cpp)
 target_link_libraries(lvglpp_widgets_container_test
     PRIVATE lvglpp::widgets lvglpp_warnings)
 add_test(NAME lvglpp_widgets_container COMMAND lvglpp_widgets_container_test)
+
+# WID-05 acceptance (List half; Container landed via DEMO-01).
+add_executable(lvglpp_widgets_list_test list_test.cpp)
+target_link_libraries(lvglpp_widgets_list_test
+    PRIVATE lvglpp::widgets lvglpp_warnings)
+add_test(NAME lvglpp_widgets_list COMMAND lvglpp_widgets_list_test)
+
+# WID-06 acceptance.
+add_executable(lvglpp_widgets_image_test image_test.cpp)
+target_link_libraries(lvglpp_widgets_image_test
+    PRIVATE lvglpp::widgets lvglpp_warnings)
+add_test(NAME lvglpp_widgets_image COMMAND lvglpp_widgets_image_test)

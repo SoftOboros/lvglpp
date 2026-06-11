@@ -11,7 +11,9 @@ target_sources(lvglpp_widgets
         src/button.cpp
         src/checkbox.cpp
         src/container.cpp
+        src/image.cpp
         src/label.cpp
+        src/list.cpp
         src/slider.cpp
         src/switch.cpp
 )
