@@ -19,6 +19,7 @@ option(LVGLPP_CORE_QRCODE         "Enable QR code generator plugin"      OFF)
 option(LVGLPP_CORE_CANVAS         "Enable embedded-canvas plugin"        OFF)
 option(LVGLPP_CORE_FATFS          "Enable FAT filesystem plugin"         OFF)
 option(LVGLPP_CORE_FONTDUE        "Enable fontdue host font plugin"      OFF)
+option(LVGLPP_CORE_RLE            "Enable RLE (RLEC) decoder plugin"     OFF)  # CORE-07n
 option(LVGLPP_CORE_LOTTIE         "Enable Lottie API surface plugin"     OFF)
 option(LVGLPP_CORE_LOTTIE_BACKEND "Enable rlottie runtime backend"       OFF)
 option(LVGLPP_CORE_PINYIN         "Enable pinyin helper plugin"          OFF)
@@ -53,8 +54,14 @@ target_sources(lvglpp_core
     PRIVATE
         src/runtime.cpp
         src/fonts/font_6x10.cpp
-        src/rle.cpp
 )
+
+# CORE-07n — RLE decoder plugin (docs/core-plugins/01-rle.md).
+# Embedded-friendly; no external dependency.
+if(LVGLPP_CORE_RLE)
+    target_sources(lvglpp_core PRIVATE src/plugins/rle.cpp)
+    target_compile_definitions(lvglpp_core PUBLIC LVGLPP_CORE_RLE=1)
+endif()
 
 target_include_directories(lvglpp_core
     PRIVATE

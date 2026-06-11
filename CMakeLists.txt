@@ -167,6 +167,12 @@ target_link_libraries(lvglpp_expected
 # embedded-clean cross paths for the modules that need them on-target.
 # ---------------------------------------------------------------------------
 if(LVGLPP_HOST_BUILD)
+    # CORE-07n §5.3: in-repo example consumers (disco-demo icons,
+    # widget gallery) force the RLE plugin on; the bare library
+    # build stays plugin-free.
+    if(LVGLPP_BUILD_EXAMPLES)
+        set(LVGLPP_CORE_RLE ON)
+    endif()
     add_subdirectory(core)
     add_subdirectory(widgets)
     add_subdirectory(ui)

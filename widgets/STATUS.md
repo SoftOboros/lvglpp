@@ -62,11 +62,7 @@ Stubbed:
 - **WID-02..WID-08 concepts docs.** Each widget needs its own
   per-chapter concepts doc under `docs/widgets-<name>/` before
   execution. Owner: project lead / per-widget implementer.
-- **Asset-loader seam (WID-06).** `Image` is the first widget that
-  needs the rlvgl-creator-emitted asset format. The CORE-07
-  plugin-surface chapter is ratified, but no decoder plugin has
-  landed yet (CORE-07a..m sub-phases). Owner: implementer of the
-  rlvgl-creator → lvglpp asset path.
+(Asset-loader seam blocker RESOLVED 2026-06-10 — see change log.)
 
 ## Definitions
 
@@ -149,3 +145,17 @@ Stubbed:
   original WID-05 slot as a disco-demo (DEMO) prerequisite. Test
   target `lvglpp_widgets_container` (5 fixtures) green; `-Werror`
   + embedded posture clean. **DELTA**: none vs `container.rs`.
+
+- 2026-06-10 — WID-05 List half landed (docs/widgets-list/00-list.md;
+  Container half had landed via DEMO-01). list.rs parity: 16px rows,
+  selection via style.border_color, PressRelease-only.
+- 2026-06-10 — WID-06 Image landed (docs/widgets-image/00-image.md):
+  borrows a decoded Color span, draws via draw_pixels, passive.
+  Asset-loader-seam blocker RESOLVED: first CORE-07 decoder landed
+  as CORE-07n (RLE plugin, docs/core-plugins/01-rle.md) — the
+  DEMO-04 decoder moved behind LVGLPP_CORE_RLE with a deprecated
+  forwarder at the old include path.
+- 2026-06-10 — Conformance bar met on the sim: widget-gallery
+  example (List+Image composition) driven over playit TCP; tagged
+  tap changes the selected item's pixel color and D dumps return
+  the RLE-decoded icon content.

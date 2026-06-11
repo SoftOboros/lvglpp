@@ -199,3 +199,9 @@ A conforming CORE-07 execution PR MUST satisfy:
   declares all 13 slot options (§5.1) with default `OFF`.
   `core/src/plugins/.gitkeep` marks the canonical plugin landing
   zone. No plugin source — that's per-sub-phase work.
+
+- 2026-06-10 — §5.1 AMENDED (CORE-07n): slot **RLE** added —
+  CMake `LVGLPP_CORE_RLE`, embedded-friendly, mirrors the
+  `rlvgl-decomp` crate boundary (no Cargo feature exists; the
+  crate is the gate, so no rlvgl-side change is required). First
+  executed plugin sub-phase: docs/core-plugins/01-rle.md.

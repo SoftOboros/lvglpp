@@ -30,3 +30,15 @@ endif()
 if(LVGLPP_PLATFORM_DISCO)
     add_subdirectory(stm32h747i-disco)
 endif()
+
+# WID-05/WID-06 conformance gallery — headless List+Image sim
+# (no SDL; needs only core/widgets/playit + the RLE plugin).
+if(LVGLPP_HOST_BUILD)
+    add_subdirectory(widget-gallery)
+endif()
+
+# PLAT-LNX fbdev smoke (docs/platform-linux/00-fbdev-evdev.md §5.3).
+# Linux-only; renders the gallery scene to /dev/fb0.
+if(LVGLPP_PLATFORM_LINUX_FBDEV)
+    add_subdirectory(linux-fbdev-smoke)
+endif()

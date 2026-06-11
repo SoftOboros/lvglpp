@@ -6,7 +6,7 @@
 // LVGL:   N/A (asset codec).
 // DELTA:  decode into core::Color span, consume-only (no encoder).
 
-#include "lvglpp/core/rle.hpp"
+#include "lvglpp/core/plugins/rle.hpp"
 
 #include <array>
 
