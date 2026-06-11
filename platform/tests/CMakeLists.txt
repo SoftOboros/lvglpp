@@ -15,3 +15,15 @@ target_link_libraries(lvglpp_platform_screen_test
         lvglpp_warnings
 )
 add_test(NAME lvglpp_platform_screen COMMAND lvglpp_platform_screen_test)
+
+# PLAT-LNX §12 — evdev protocol state machine, synthetic streams,
+# no /dev access. The TU is portable (device IO is __linux__-gated),
+# so this test runs on every host.
+add_executable(lvglpp_platform_evdev_test
+    evdev_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/lnx/evdev_input.cpp)
+target_include_directories(lvglpp_platform_evdev_test
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_link_libraries(lvglpp_platform_evdev_test
+    PRIVATE lvglpp::core lvglpp_warnings)
+add_test(NAME lvglpp_platform_evdev COMMAND lvglpp_platform_evdev_test)

@@ -10,10 +10,20 @@ option(LVGLPP_PLATFORM_HOST_SDL
     "Build the host SDL2 backend (PLAT-01). Requires SDL2."
     OFF)
 
+option(LVGLPP_PLATFORM_LINUX_FBDEV
+    "Build the generic Linux fbdev+evdev backend (PLAT-LNX). Linux only."
+    OFF)
+
 # Future:
 # option(LVGLPP_PLATFORM_STM32H747I_DISCO ... PLAT-02)
-# option(LVGLPP_PLATFORM_BEAGLEBONE_BLACK ... PLAT-03)
+# option(LVGLPP_PLATFORM_BEAGLEBONE_BLACK ... PLAT-03, consumes PLAT-LNX)
 # option(LVGLPP_PLATFORM_ESP32_LCD       ... PLAT-04)
+
+if(LVGLPP_PLATFORM_LINUX_FBDEV AND NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR
+        "LVGLPP_PLATFORM_LINUX_FBDEV=ON requires a Linux target "
+        "(docs/platform-linux/00-fbdev-evdev.md Â§5.2).")
+endif()
 
 # Embedded posture is mutually exclusive with any host backend.
 if(LVGLPP_EMBEDDED_POSTURE AND LVGLPP_PLATFORM_HOST_SDL)
@@ -41,6 +51,13 @@ if(LVGLPP_PLATFORM_HOST_SDL)
             "'apt install libsdl2-dev') or set SDL2_DIR.")
     endif()
     list(APPEND LVGLPP_PLATFORM_SOURCES src/host_sdl/host_sdl.cpp)
+endif()
+
+if(LVGLPP_PLATFORM_LINUX_FBDEV)
+    # PLAT-LNX (docs/platform-linux/00-fbdev-evdev.md Â§5.2).
+    list(APPEND LVGLPP_PLATFORM_SOURCES
+        src/lnx/fbdev_display.cpp
+        src/lnx/evdev_input.cpp)
 endif()
 
 # ---------------------------------------------------------------------------

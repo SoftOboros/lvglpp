@@ -36,8 +36,13 @@ where applicable):
      `docs/platform-disco/04-ltdc-dsi-and-panel.md` §15.
    - **PLAT-02e:** DMA2D + ERIF gating.
    - **PLAT-02f:** FT5336 touch + USART1 playit transport.
-3. **PLAT-03:** BeagleBone Black + NHD cape (Linux DRM). Mirrors the
-   BBB four-prong work in rlvgl `v0.2.0`.
+3. **PLAT-LNX:** generic Linux fbdev+evdev layer
+   (docs/platform-linux/00-fbdev-evdev.md) — cross-cutting OS
+   chapter outside the per-board numbering; first consumer is an
+   external fbdev repo. Landed 2026-06-10.
+4. **PLAT-03:** BeagleBone Black + NHD cape. Consumes PLAT-LNX and
+   adds board specifics only. (Note: rlvgl's generic layer is
+   fbdev, not DRM — earlier DRM wording was aspirational.)
 4. **PLAT-04:** ESP32 LCD (LCDC + I2C touch). Mirrors
    `rlvgl-chips-esp` BSP consumption.
 
@@ -369,3 +374,11 @@ Stubbed:
   gated on `LVGLPP_HOST_BUILD` so cross builds skip lvgl + tests
   + per-module libs cleanly; host build (19/19 ctest, including
   the SDL demo + recorder) unaffected.
+
+- 2026-06-10 — PLAT-LNX landed: FbdevDisplay (32/24/16bpp,
+  line_length-honouring rect flush) + EvdevInput (single-touch +
+  MT protocol B; state machine portable and host-tested with
+  synthetic streams). LVGLPP_PLATFORM_LINUX_FBDEV, Linux-only.
+  BLOCKER: examples/linux-fbdev-smoke console rendering needs a
+  Linux host — none on this bench. Owner: external fbdev consumer
+  / project lead.
