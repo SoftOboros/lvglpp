@@ -178,6 +178,7 @@ if(LVGLPP_HOST_BUILD)
     add_subdirectory(ui)
     add_subdirectory(platform)
     add_subdirectory(playit)
+    add_subdirectory(i18n)
 
     # Aggregate INTERFACE alias — the surface a typical consumer links.
     add_library(lvglpp INTERFACE)

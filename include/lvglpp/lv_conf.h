@@ -10,8 +10,10 @@
  * the LVGL global tree; lvglpp wrappers must treat them as `external` /
  * `mmio` per the strict-and-explicit-ownership discipline (see CLAUDE.md).
  */
-#ifndef LVGLPP_LV_CONF_H
-#define LVGLPP_LV_CONF_H
+/* Guard must be literally LV_CONF_H: lv_conf_internal.h checks this
+ * exact macro to confirm the config was really included. */
+#ifndef LV_CONF_H
+#define LV_CONF_H
 
 #define LV_CONF_INCLUDE_SIMPLE 1
 
@@ -32,4 +34,7 @@
 #define LV_USE_LABEL        1
 #define LV_USE_BUTTON       1
 
-#endif /* LVGLPP_LV_CONF_H */
+/* I18N-02: lv_translation bridge (docs/i18n/01-lv-translation-bridge.md). */
+#define LV_USE_TRANSLATION  1
+
+#endif /* LV_CONF_H */
