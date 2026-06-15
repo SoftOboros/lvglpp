@@ -79,6 +79,15 @@ target_link_libraries(lvglpp_core_display_test
 )
 add_test(NAME lvglpp_core_display COMMAND lvglpp_core_display_test)
 
+# LPAR-06 acceptance (RAII Timer over lv_timer_t + Animation over lv_anim_t).
+add_executable(lvglpp_core_timer_test timer_test.cpp)
+target_link_libraries(lvglpp_core_timer_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_timer COMMAND lvglpp_core_timer_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

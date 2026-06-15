@@ -161,6 +161,13 @@ Implemented:
   `Object::invalidate()` wraps `lv_obj_invalidate`. Dirty-rect planning
   stays LVGL's. Test `lvglpp_core_display`. See
   `docs/core-object/01-invalidation-display.md`.
+- **LPAR-06** (timers & object anim): `Timer` move-only RAII over
+  `lv_timer_t` owning a `std::function<void()>` dispatched via a static
+  trampoline (user-data back-pointer rebound on move, mirrors `Object`);
+  `set_period`/`pause`/`resume`. `Animation` builder over `lv_anim_t`
+  (`set_var`/`set_values`/`set_time`/`set_exec_cb`/`set_path_cb`/`start`);
+  LVGL copies the descriptor at `lv_anim_start` (ownership DELTA). Test
+  `lvglpp_core_timer`. See `docs/core-timer/00-timers-object-anim.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -321,6 +328,14 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lvglpp_core_display` green (full suite 35/35); both postures.
   Additive. Ratified chapter:
   `docs/core-object/01-invalidation-display.md`.
+- 2026-06-15 — LPAR-06 (timers & object anim) landed.
+  `core/include/lvglpp/core/timer.hpp` + `core/src/timer.cpp` add `Timer`
+  (RAII `lv_timer_t`, owned `std::function` via a `lv_timer_get_user_data`
+  trampoline, user-data rebound on move) and `Animation` (builder over
+  `lv_anim_t`; `set_time` maps to `lv_anim_set_duration`). Deterministic
+  test `lvglpp_core_timer` drives `lv_tick_inc`+`lv_timer_handler` (full
+  suite 36/36); both postures. Additive. Ratified chapter:
+  `docs/core-timer/00-timers-object-anim.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer

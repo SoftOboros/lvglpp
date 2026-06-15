@@ -55,6 +55,7 @@ target_sources(lvglpp_core
         src/runtime.cpp
         src/object.cpp
         src/display.cpp
+        src/timer.cpp
         src/fonts/font_6x10.cpp
 )
 
