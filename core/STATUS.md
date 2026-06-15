@@ -154,6 +154,13 @@ Implemented:
   enums. Grid track arrays are caller-owned and MUST outlive the object
   (documented `borrows`-into-LVGL). Empty-safe. Test
   `lvglpp_core_object_layout`. See `docs/core-layout/00-layout.md`.
+- **LPAR-03** (invalidation & display): `Display` move-only RAII over
+  `lv_display_t` (`try_make`/`make`, `set_flush_cb`, `set_buffers` with
+  buffers tagged `dma`/`external`, `set_render_mode`, `active_screen` →
+  `ObjectView`); `RenderMode` mirror of `lv_display_render_mode_t`;
+  `Object::invalidate()` wraps `lv_obj_invalidate`. Dirty-rect planning
+  stays LVGL's. Test `lvglpp_core_display`. See
+  `docs/core-object/01-invalidation-display.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -307,6 +314,13 @@ Local glossary. Forms follow `CLAUDE.md` §
   outlive the object (frozen rule). Test `lvglpp_core_object_layout`
   green (full suite 34/34); both postures. Additive. Ratified chapter:
   `docs/core-layout/00-layout.md`.
+- 2026-06-15 — LPAR-03 (invalidation & display) landed.
+  `core/include/lvglpp/core/display.hpp` + `core/src/display.cpp` add
+  `Display` (RAII `lv_display_t`, `RenderMode` enum) and
+  `Object::invalidate()` over `lv_obj_invalidate`. Test
+  `lvglpp_core_display` green (full suite 35/35); both postures.
+  Additive. Ratified chapter:
+  `docs/core-object/01-invalidation-display.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer

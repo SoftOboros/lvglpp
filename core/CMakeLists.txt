@@ -54,6 +54,7 @@ target_sources(lvglpp_core
     PRIVATE
         src/runtime.cpp
         src/object.cpp
+        src/display.cpp
         src/fonts/font_6x10.cpp
 )
 

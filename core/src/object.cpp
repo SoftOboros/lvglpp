@@ -174,6 +174,16 @@ ObjectView Object::child(std::uint32_t index) const noexcept {
     return ObjectView{lv_obj_get_child(obj_, static_cast<std::int32_t>(index))};
 }
 
+// --- LPAR-03: invalidation ---
+
+void Object::invalidate() noexcept {
+    if (obj_ != nullptr) {
+        // lv_obj_invalidate marks the area dirty; its lv_result_t is
+        // best-effort (INVALID when off-screen) and intentionally ignored.
+        lv_obj_invalidate(obj_);
+    }
+}
+
 // --- LPAR-05: scroll ---
 
 void Object::scroll_to(std::int32_t x, std::int32_t y, bool animate) noexcept {

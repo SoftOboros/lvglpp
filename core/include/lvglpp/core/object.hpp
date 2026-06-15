@@ -182,6 +182,11 @@ public:
     [[nodiscard]] std::uint32_t child_count() const noexcept;
     [[nodiscard]] ObjectView    child(std::uint32_t index) const noexcept;
 
+    // --- LPAR-03: invalidation (over lv_obj_invalidate) ---
+    // Mark this object's area dirty; LVGL repaints it on the next refresh
+    // (lv_timer_handler). No-op when this Object is empty.
+    void invalidate() noexcept;
+
     // --- LPAR-05: scroll (over lv_obj_scroll_*) ---
     void scroll_to(std::int32_t x, std::int32_t y, bool animate) noexcept;
     void scroll_by(std::int32_t dx, std::int32_t dy, bool animate) noexcept;
