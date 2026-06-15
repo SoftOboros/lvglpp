@@ -30,6 +30,9 @@
 #define LV_TICK_CUSTOM      0
 
 /* Enable the widgets we expect to wrap first. Add as bindings land. */
+/* LVGLPP-WRAP-00 baseline (docs/wrap/00-concepts.md §5.6): LV_USE_OBJ is
+ * the object core the RAII Object/Screen wrappers require. The playit tag
+ * bridge (LVGLPP-WRAP-0N) will additionally need LV_USE_OBJ_NAME. */
 #define LV_USE_OBJ          1
 #define LV_USE_LABEL        1
 #define LV_USE_BUTTON       1

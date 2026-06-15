@@ -53,6 +53,7 @@ file(WRITE "${LVGLPP_FONT_6X10_INC}"
 target_sources(lvglpp_core
     PRIVATE
         src/runtime.cpp
+        src/object.cpp
         src/fonts/font_6x10.cpp
 )
 

@@ -9,8 +9,14 @@ history.
 
 # lvglpp::core — STATUS
 
-Tracks `rlvgl/core` @ `v0.2.0` (commit `d99f793`). Last reconciled:
-2026-04-27.
+Tracks `rlvgl/core` @ `v0.2.4` (commit `343f596`). Last reconciled:
+2026-06-15.
+
+Migration in progress: the hand-rolled CORE-* surface is being wrapped
+onto upstream LVGL (`lv_*`) under LVGLPP-WRAP (`docs/wrap/`) + LPAR
+(`docs/lpar/`). WRAP-00 (RAII `Object`/`Screen`) landed 2026-06-15; the
+earlier CORE-01..07n surface still mirrors the v0.2.0 hand-rolled shape
+until its migration sub-phases run.
 
 ## Roadmap intent
 
@@ -113,6 +119,20 @@ Implemented:
   conversion (no xxd/objcopy dependency). Test target
   `lvglpp_core_font` covers minimal-glyph dispatch, non-printable
   skip, scaled dimensions, and bring-up font emit-shape.
+
+- **LVGLPP-WRAP-00** (RAII lv_obj core): `lvglpp::core::Object` +
+  `Screen` in `core/include/lvglpp/core/object.hpp` /
+  `core/src/object.cpp`. Move-only RAII owner of an `lv_obj_t*`; a
+  self-registered `LV_EVENT_DELETE` callback nulls the handle on
+  LVGL-driven deletion (parent delete / `lv_obj_clean`) so the
+  destructor never double-frees; `user_data` holds the C++ back-pointer
+  (rebased on move); `try_make` (→ `expected`) + throwing `make`
+  (abort under embedded posture). **First lvglpp code to call `lv_*`.**
+  Test target `lvglpp_core_object` (delete-on-drop, move transfer,
+  parent-delete double-free safety, Screen create+load, host `make`).
+  Additive — the hand-rolled `Widget`/`WidgetNode`/`Renderer` layer is
+  unchanged, retired later under LVGLPP-WRAP-01..0N. See
+  `docs/wrap/00-concepts.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -236,6 +256,17 @@ Local glossary. Forms follow `CLAUDE.md` §
   hex conversion. Test target `lvglpp_core_font` registered;
   bring-up font verified to emit fill_rects for printable glyphs
   and to skip the blank space glyph entirely.
+- 2026-06-15 — LVGLPP-WRAP-00 (additive RAII `lv_obj` core) landed.
+  `core/include/lvglpp/core/object.hpp` + `core/src/object.cpp` define
+  `lvglpp::core::Object` and `Screen` — the first lvglpp surface that
+  calls upstream LVGL (`lv_obj_create`/`lv_obj_delete`). Move-only;
+  self-registered `LV_EVENT_DELETE` delete-safety; `user_data`
+  back-pointer rebased on move; `try_make` (→ `expected`) + throwing
+  `make` (abort under `LVGLPP_EMBEDDED_POSTURE`). `lv_conf.h` baseline
+  confirmed (`LV_USE_OBJ`). Test `lvglpp_core_object` green (31/31 full
+  suite); builds + runs clean under default and embedded posture.
+  Removes nothing (WRAP-00 §5.7). rlvgl pin reference bumped to v0.2.4
+  @ `343f596`. Ratified chapter: `docs/wrap/00-concepts.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer
