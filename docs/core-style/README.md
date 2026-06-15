@@ -16,7 +16,10 @@ This README is **informative**. The normative artifact is the chapter
 ## Chapters
 
 - [00-appearance.md](./00-appearance.md) — `Style`, `StyleBuilder`,
-  `Theme`, `LightTheme`, `DarkTheme`, `Easing`, `LoopMode`.
+  `Theme`, `LightTheme`, `DarkTheme`, `Easing`, `LoopMode` (**CORE-05**).
+- [01-style-cascade-theme.md](./01-style-cascade-theme.md) — **LPAR-07**
+  (draft): wrap the LVGL part/state style cascade + themes
+  (`lv_style` / `lv_obj_style` / `lv_theme`).
 
 ## Status
 

@@ -18,7 +18,11 @@ This README is **informative**. The normative artifact is the chapter
 
 - [00-event-surface.md](./00-event-surface.md) — Event variant set,
   TouchState/TouchPoint/Key, MAX_TOUCH_POINTS, source-of-truth map,
-  acceptance checklist.
+  acceptance checklist (**CORE-02**, ratified).
+- [01-event-focus-input.md](./01-event-focus-input.md) — **LPAR-04**
+  (draft): event routing through the `lv_obj` tree, focus groups
+  (`lv_group_*`), input devices (`lv_indev_*`), and the `lv_event_t` ↔
+  `Event` seam.
 
 ## Conformance target
 
