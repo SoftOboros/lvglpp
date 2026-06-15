@@ -4,7 +4,7 @@
 [submodule "rlvgl"]
 	path = rlvgl
 	url = git@github.com:SoftOboros/rlvgl.git
-	branch = v0.2.0
+	branch = v0.2.4
 	fetchRecurseSubmodules = false
 	update = checkout
 	ignore = dirty

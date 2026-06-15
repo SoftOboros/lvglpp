@@ -115,10 +115,10 @@ humans, static analyzers, and future compiler diagnostics to reason about.
 
 ## Spec-Before-Code Planning Discipline
 
-lvglpp adopts the same **spec-before-code** discipline as rlvgl `v0.2.0`
+lvglpp adopts the same **spec-before-code** discipline as rlvgl `v0.2.4`
 (see `rlvgl/CLAUDE.md` § "Spec-Before-Code Planning Discipline" — the
 authoritative source). The rules below are the lvglpp restatement; when
-they disagree with rlvgl `v0.2.0`, **rlvgl wins** and this file is the
+they disagree with rlvgl `v0.2.4`, **rlvgl wins** and this file is the
 bug.
 
 Vocabulary drift and invariant erosion are the dominant failure modes
@@ -200,7 +200,7 @@ in lvglpp by definition.
 ### Phase document shape
 
 A per-chapter concepts doc follows: §0 authority policy (which external
-doc owns which vocabulary — LVGL upstream for widgets, rlvgl `v0.2.0`
+doc owns which vocabulary — LVGL upstream for widgets, rlvgl `v0.2.4`
 concepts docs for cross-language contracts, vendor RM/TRM for board
 specifics), §1 purpose, §2 problem statement (evidence pinned to code
 paths, e.g. `src/foo.cpp:NN`), §3 canonical glossary, §4 source-of-truth
@@ -235,7 +235,7 @@ the default for non-initiative work.
 When a change crosses rlvgl ↔ lvglpp (widget API, playit command,
 shared enum, BSP-consumption contract):
 
-1. Concepts-doc amendment lands in rlvgl `v0.2.0` first (or in lvglpp
+1. Concepts-doc amendment lands in rlvgl `v0.2.4` first (or in lvglpp
    if the concept originates here — rare).
 2. The owning side's implementation lands, citing the amendment.
 3. The mirroring side's implementation lands, citing both the amendment
@@ -309,7 +309,7 @@ Every `*.hpp` and `*.cpp` under a module MUST carry a triangulation
 cite block at file head, before the include guard. The forms:
 
 ```cpp
-// PARITY: rlvgl/<path>.rs (v0.2.0 @ <sha or branch tip>).
+// PARITY: rlvgl/<path>.rs (v0.2.4 @ <sha or branch tip>).
 // LVGL:   lvgl/<path>.h (or "N/A" with reason).
 // DELTA:  one-sentence summary of the C++ deviation, or "none".
 ```
@@ -366,9 +366,11 @@ lives in `docs/std-mapping.md` § "Embedded posture".
 ## Submodule Policy
 
 - `lvgl/` is the **only** LVGL source tree consumed by the build.
-- `rlvgl/` is pinned to the **`v0.2.0`** branch (tracked via
-  `.gitmodules` `branch = v0.2.0`). The Spec-Before-Code discipline
-  above lives there, not on `main`; do not switch the pin to `main`
+- `rlvgl/` is pinned to the **`v0.2.4`** branch (tracked via
+  `.gitmodules` `branch = v0.2.4`). The pin was advanced from `v0.2.0`
+  to `v0.2.4` to mirror rlvgl's LPAR (LVGL parity) and FONT initiatives;
+  see `docs/lpar/`. The Spec-Before-Code discipline above lives on the
+  `v0.2.4` branch, not on `main`; do not switch the pin to `main`
   without first lifting that section into `main`.
 - `rlvgl/` is a **non-recursive** submodule. Its own `lvgl/` submodule
   is deliberately left uninitialized: we already have lvgl at the top
@@ -381,10 +383,10 @@ lives in `docs/std-mapping.md` § "Embedded posture".
   cd lvglpp
   git submodule update --init lvgl rlvgl   # NO --recursive
   ```
-- To advance the rlvgl pin within `v0.2.0`:
+- To advance the rlvgl pin within `v0.2.4`:
   ```bash
-  cd rlvgl && git fetch origin v0.2.0 && git checkout origin/v0.2.0
-  cd .. && git add rlvgl && git commit -m "Bump rlvgl pin on v0.2.0"
+  cd rlvgl && git fetch origin v0.2.4 && git checkout origin/v0.2.4
+  cd .. && git add rlvgl && git commit -m "Bump rlvgl pin on v0.2.4"
   ```
 - Never run `git submodule update --init --recursive` at the top level.
   If you do, delete `rlvgl/lvgl/` afterwards and re-pin rlvgl.

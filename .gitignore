@@ -15,6 +15,8 @@ bin/
 lib/
 install/
 _deps/
+# CMake try_compile / system-information scratch dir
+__cmake_systeminformation/
 
 # CMake
 CMakeCache.txt
@@ -232,6 +234,14 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# Agent / MCP tooling (local-only)
+# -----------------------------------------------------------------------------
+# Claude Code per-user state, worktrees, settings.local.json
+.claude/
+# local MCP server config
+.mcp.json
 
 # -----------------------------------------------------------------------------
 # Local-only project state
