@@ -97,6 +97,15 @@ target_link_libraries(lvglpp_core_draw_test
 )
 add_test(NAME lvglpp_core_draw COMMAND lvglpp_core_draw_test)
 
+# LPAR-09 acceptance (ImageDecoder / FsDriver RAII over lv_image_decoder/lv_fs_drv).
+add_executable(lvglpp_core_asset_test asset_test.cpp)
+target_link_libraries(lvglpp_core_asset_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_asset COMMAND lvglpp_core_asset_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

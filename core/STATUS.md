@@ -176,6 +176,14 @@ Implemented:
   DELTAs (not executed here). Test `lvglpp_core_draw` (Font metrics;
   draw-helper runtime coverage deferred to first custom-draw widget).
   See `docs/core-draw/00-text-draw-image-mask.md`.
+- **LPAR-09** (asset & fs): `AssetPath` frozen 4-variant enum
+  (Embedded/Fatfs/Simulator/Memory, Standards Action); `ImageDecoder`
+  move-only RAII over `lv_image_decoder_t` (the CORE-07/07n
+  decoder-registration seam); `FsDriver` RAII over an `lv_fs_drv_t`
+  registration — **non-movable**, owns the `lv_fs_drv_t` storage because
+  LVGL 9.6 ships no `lv_fs_drv_unregister` (the registration must outlive
+  the wrapper). Test `lvglpp_core_asset`. See
+  `docs/core-asset/00-asset-filesystem.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -352,6 +360,13 @@ Local glossary. Forms follow `CLAUDE.md` §
   DELTA only. Test `lvglpp_core_draw` green (full suite 37/37); both
   postures. Additive. Ratified chapter:
   `docs/core-draw/00-text-draw-image-mask.md`.
+- 2026-06-15 — LPAR-09 (asset & fs) landed.
+  `core/include/lvglpp/core/asset.hpp` + `core/src/asset.cpp` add
+  `AssetPath` mirror enum, `ImageDecoder` (RAII `lv_image_decoder_t`), and
+  `FsDriver` (non-movable RAII owning an `lv_fs_drv_t`; no
+  `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
+  Test `lvglpp_core_asset` green (full suite 38/38); both postures.
+  Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer
