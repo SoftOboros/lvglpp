@@ -88,6 +88,15 @@ target_link_libraries(lvglpp_core_timer_test
 )
 add_test(NAME lvglpp_core_timer COMMAND lvglpp_core_timer_test)
 
+# LPAR-08 acceptance (Font handle over lv_font_t + draw helpers).
+add_executable(lvglpp_core_draw_test draw_test.cpp)
+target_link_libraries(lvglpp_core_draw_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_draw COMMAND lvglpp_core_draw_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

@@ -168,6 +168,14 @@ Implemented:
   (`set_var`/`set_values`/`set_time`/`set_exec_cb`/`set_path_cb`/`start`);
   LVGL copies the descriptor at `lv_anim_start` (ownership DELTA). Test
   `lvglpp_core_timer`. See `docs/core-timer/00-timers-object-anim.md`.
+- **LPAR-08** (text/draw, v1): `Font` non-owning handle over `lv_font_t`
+  (`default_font`, `glyph_advance`, `line_height` via
+  `lv_font_get_glyph_dsc`); `draw::fill_rect`/`draw::label` helpers over
+  `lv_draw_rect`/`lv_draw_label` taking an `lv_layer_t`. Image
+  descriptor/mask and the CORE-04/04a/06 retirement are documentary
+  DELTAs (not executed here). Test `lvglpp_core_draw` (Font metrics;
+  draw-helper runtime coverage deferred to first custom-draw widget).
+  See `docs/core-draw/00-text-draw-image-mask.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -336,6 +344,14 @@ Local glossary. Forms follow `CLAUDE.md` §
   test `lvglpp_core_timer` drives `lv_tick_inc`+`lv_timer_handler` (full
   suite 36/36); both postures. Additive. Ratified chapter:
   `docs/core-timer/00-timers-object-anim.md`.
+- 2026-06-15 — LPAR-08 (text/draw v1) landed.
+  `core/include/lvglpp/core/draw.hpp` + `core/src/draw.cpp` add a
+  non-owning `Font` handle (`lv_font_get_glyph_dsc` / `lv_font_get_default`,
+  `line_height`) and `draw::fill_rect`/`draw::label` over
+  `lv_draw_rect`/`lv_draw_label`. CORE-04/04a/06 supersession recorded as
+  DELTA only. Test `lvglpp_core_draw` green (full suite 37/37); both
+  postures. Additive. Ratified chapter:
+  `docs/core-draw/00-text-draw-image-mask.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer
