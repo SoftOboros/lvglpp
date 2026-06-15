@@ -6,6 +6,8 @@
 
 #include "lvglpp/core/object.hpp"
 
+#include "lvglpp/core/style_cascade.hpp"  // LPAR-07: style::Style / style::Selector
+
 #include <utility>  // std::move
 
 #if defined(LVGLPP_EMBEDDED_POSTURE)
@@ -280,6 +282,64 @@ std::int32_t Object::size_content() noexcept {
 
 std::int32_t Object::pct(std::int32_t value) noexcept {
     return lv_pct(value);
+}
+
+// --- LPAR-07: style cascade ---
+
+void Object::add_style(style::Style& s, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        // borrows: LVGL stores s.borrow_raw() (a pointer, not a copy). The
+        // caller guarantees `s` outlives this object (object.hpp / §5.1).
+        lv_obj_add_style(obj_, s.borrow_raw(), sel.raw());
+    }
+}
+
+void Object::remove_style(style::Style& s, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_remove_style(obj_, s.borrow_raw(), sel.raw());
+    }
+}
+
+void Object::remove_all_styles() noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_remove_style_all(obj_);
+    }
+}
+
+void Object::set_local_bg_color(lv_color_t c, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_bg_color(obj_, c, sel.raw());
+    }
+}
+
+void Object::set_local_bg_opa(lv_opa_t opa, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_bg_opa(obj_, opa, sel.raw());
+    }
+}
+
+void Object::set_local_text_color(lv_color_t c, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_text_color(obj_, c, sel.raw());
+    }
+}
+
+void Object::set_local_border_width(std::int32_t w, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_border_width(obj_, w, sel.raw());
+    }
+}
+
+void Object::set_local_radius(std::int32_t r, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_radius(obj_, r, sel.raw());
+    }
+}
+
+void Object::set_local_pad_all(std::int32_t p, style::Selector sel) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_style_pad_all(obj_, p, sel.raw());
+    }
 }
 
 }  // namespace lvglpp::core

@@ -97,6 +97,15 @@ target_link_libraries(lvglpp_core_draw_test
 )
 add_test(NAME lvglpp_core_draw COMMAND lvglpp_core_draw_test)
 
+# LPAR-07 acceptance (RAII Style over lv_style_t + selectors + Theme handle).
+add_executable(lvglpp_core_style_cascade_test style_cascade_test.cpp)
+target_link_libraries(lvglpp_core_style_cascade_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_style_cascade COMMAND lvglpp_core_style_cascade_test)
+
 # LPAR-09 acceptance (ImageDecoder / FsDriver RAII over lv_image_decoder/lv_fs_drv).
 add_executable(lvglpp_core_asset_test asset_test.cpp)
 target_link_libraries(lvglpp_core_asset_test

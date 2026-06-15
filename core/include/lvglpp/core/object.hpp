@@ -26,6 +26,15 @@ extern "C" {
 
 namespace lvglpp::core {
 
+// Forward declarations for the LPAR-07 style cascade. The full definitions
+// live in style_cascade.hpp (nested namespace style); Object::add_style takes
+// them by reference / by value, so a forward declaration suffices in this
+// header. object.cpp includes style_cascade.hpp for the definitions.
+namespace style {
+class Style;
+class Selector;
+}  // namespace style
+
 // Errors that the Object / Screen factories can produce.
 enum class ObjectError : std::uint8_t {
     CreateFailed = 1,  // lv_obj_create returned nullptr (e.g. OOM) or bad parent.
@@ -213,6 +222,28 @@ public:
     // Sizing helpers: LV_SIZE_CONTENT and percentage-encoded sizes.
     [[nodiscard]] static std::int32_t size_content() noexcept;
     [[nodiscard]] static std::int32_t pct(std::int32_t value) noexcept;
+
+    // --- LPAR-07: style cascade (over lv_obj_add_style / lv_obj_set_style_*) ---
+    // Attach a reusable Style to this object for the given selector
+    // (lv_obj_add_style). The Style is borrowed, NOT owned: LVGL stores a
+    // pointer to its lv_style_t, so `s` MUST outlive this object (or be
+    // removed first). See docs/core-style/01-style-cascade-theme.md §5.1.
+    //   s: borrows; must outlive this object or be removed via remove_style.
+    void add_style(style::Style& s, style::Selector sel) noexcept;
+    void remove_style(style::Style& s, style::Selector sel) noexcept;
+    // Drop every attached style from every part/state (lv_obj_remove_style_all).
+    void remove_all_styles() noexcept;
+
+    // Per-object local property overrides (lv_obj_set_style_*). Unlike a
+    // shared Style these are copied into the object, so they carry no
+    // outlives-object hazard. A representative subset; reach
+    // lv_obj_set_style_* directly for properties not surfaced here.
+    void set_local_bg_color(lv_color_t c, style::Selector sel) noexcept;
+    void set_local_bg_opa(lv_opa_t opa, style::Selector sel) noexcept;
+    void set_local_text_color(lv_color_t c, style::Selector sel) noexcept;
+    void set_local_border_width(std::int32_t w, style::Selector sel) noexcept;
+    void set_local_radius(std::int32_t r, style::Selector sel) noexcept;
+    void set_local_pad_all(std::int32_t p, style::Selector sel) noexcept;
 
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).

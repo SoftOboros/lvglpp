@@ -184,6 +184,18 @@ Implemented:
   LVGL 9.6 ships no `lv_fs_drv_unregister` (the registration must outlive
   the wrapper). Test `lvglpp_core_asset`. See
   `docs/core-asset/00-asset-filesystem.md`.
+- **LPAR-07** (style cascade & theme): `style::Style` RAII over `lv_style_t`
+  — **non-movable + non-copyable** so its storage address is stable, because
+  `lv_obj_add_style` records a pointer and the Style MUST outlive every
+  object it is added to (the load-bearing rule). `style::Part` mirrors
+  `lv_part_t`; `style::Selector` packs `(Part, ObjectState)` into
+  `lv_style_selector_t` (state half reuses `ObjectState`, no forked enum).
+  `Object` gains `add_style`/`remove_style`/`remove_all_styles` +
+  `set_local_*` overrides. `style::Theme` is a non-owning handle over
+  `lv_theme_t` (`default_init`/`apply_to`/`from`/`set_parent`/
+  `bind_to_display`). CORE-05 value-type `Style`/`Theme` retained for now
+  (reconciliation DELTA). Test `lvglpp_core_style_cascade`. See
+  `docs/core-style/01-style-cascade-theme.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -367,6 +379,16 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
   Test `lvglpp_core_asset` green (full suite 38/38); both postures.
   Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
+- 2026-06-15 — LPAR-07 (style cascade & theme) landed.
+  `core/include/lvglpp/core/style_cascade.hpp` adds `style::Style` (RAII
+  `lv_style_t`, non-movable so its address is stable for the outlives-objects
+  rule), `style::Part`/`style::Selector` (state half reuses `ObjectState`),
+  and `style::Theme` (non-owning handle over `lv_theme_t`). `object.{hpp,cpp}`
+  gain `add_style`/`remove_style`/`remove_all_styles` + `set_local_*`. CORE-05
+  value-type `Style`/`Theme` retained pending the `LVGLPP-WRAP` migration
+  (reconciliation DELTA, chapter §15). Test `lvglpp_core_style_cascade` green
+  (full suite 39/39); both postures. Additive. Ratified chapter:
+  `docs/core-style/01-style-cascade-theme.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer

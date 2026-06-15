@@ -16,6 +16,13 @@
 //
 // This file implements docs/core-style/00-appearance.md (CORE-05).
 // Variant sets and field shapes are FROZEN under Standards Action.
+//
+// LPAR-07 RECONCILIATION (docs/core-style/01-style-cascade-theme.md §5.3,
+// §10): this value-type Style/StyleBuilder/Theme/LightTheme/DarkTheme is
+// RETAINED while the hand-rolled widgets still consume it. The LVGL-backed
+// RAII cascade lives in lvglpp::core::style (style_cascade.hpp) and coexists
+// here; when LVGLPP-WRAP migrates the widgets off this value type, it is
+// removed and style::Style/style::Theme are promoted to lvglpp::core.
 
 #ifndef LVGLPP_CORE_STYLE_HPP
 #define LVGLPP_CORE_STYLE_HPP

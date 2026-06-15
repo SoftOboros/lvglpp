@@ -20,6 +20,7 @@
 #include "lvglpp/core/rle.hpp"
 #include "lvglpp/core/runtime.hpp"
 #include "lvglpp/core/style.hpp"
+#include "lvglpp/core/style_cascade.hpp"
 #include "lvglpp/core/timer.hpp"
 #include "lvglpp/core/widget.hpp"
 #include "lvglpp/core/widget_node.hpp"

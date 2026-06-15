@@ -85,12 +85,24 @@ descriptor) is reconciled against `lv_style_t` + part/state selectors.
 
 ## §12 Acceptance checklist
 
-- [ ] `Style` RAII over `lv_style_t` with the outlives-objects rule
+- [x] `Style` RAII over `lv_style_t` with the outlives-objects rule
       documented (`borrows`-into-LVGL tag).
-- [ ] `Object::add_style(Style&, Selector)` + local-style setters.
-- [ ] `Part`/`State` mirror enums; `Theme` over `lv_theme_*`.
-- [ ] CORE-05 reconciliation recorded as a DELTA.
-- [ ] Builds + tests under both postures; `core/STATUS.md` records LPAR-07.
+      `core/include/lvglpp/core/style_cascade.hpp` (`style::Style`,
+      non-movable/non-copyable so its address is stable).
+- [x] `Object::add_style(Style&, Selector)` + local-style setters.
+      `core/include/lvglpp/core/object.hpp` + `core/src/object.cpp`
+      (`add_style`/`remove_style`/`remove_all_styles` + `set_local_*`).
+- [x] `Part`/`State` mirror enums; `Theme` over `lv_theme_*`.
+      `style::Part` mirrors `lv_part_t`; the state half of `style::Selector`
+      reuses `ObjectState` (already mirrors `lv_state_t`) rather than forking
+      a second enum; `style::Theme` is a non-owning handle over
+      `lv_theme_t` (`default_init`/`apply_to`/`from`/`set_parent`/
+      `bind_to_display`).
+- [x] CORE-05 reconciliation recorded as a DELTA (see §15, 2026-06-15
+      execution entry).
+- [x] Builds + tests under both postures
+      (`core/tests/style_cascade_test.cpp`, host + `LVGLPP_EMBEDDED_POSTURE`);
+      `core/STATUS.md` records LPAR-07.
 
 ## §13 Files cited
 
@@ -108,3 +120,18 @@ descriptor) is reconciled against `lv_style_t` + part/state selectors.
   `lv_theme`; freeze the `Style`-outlives-objects ownership rule;
   reconcile CORE-05. **Not ratified** — batch pending with Wave 1.
 - **2026-06-15** — ratified by owner ("All ratified") with the Wave-1 batch; execution unblocked in dependency order (LPAR-02 first per LPAR-00 §6).
+- **2026-06-15** — LPAR-07 landed. `style::Style`/`style::Selector`/
+  `style::Part`/`style::Theme` in `style_cascade.hpp`; `Object::add_style`/
+  `remove_style`/`remove_all_styles` + `set_local_*` in `object.{hpp,cpp}`;
+  `style_cascade_test.cpp` green both postures.
+  **CORE-05 reconciliation DELTA (frozen decision §5.3):** the CORE-05
+  value-type `lvglpp::core::Style`/`StyleBuilder`/`Theme`/`LightTheme`/
+  `DarkTheme` (`core/include/lvglpp/core/style.hpp`) is **retained, not
+  deleted**, because the not-yet-migrated hand-rolled widgets still consume
+  it. The LVGL-backed RAII cascade is introduced in nested namespace
+  `lvglpp::core::style` so `style::Style` coexists with the value-type
+  `lvglpp::core::Style`. When `LVGLPP-WRAP` migrates the hand-rolled widgets
+  off the value type, the value type is removed and `style::Style`/`Theme`
+  are promoted to `lvglpp::core` (taking the bare `Style`/`Theme` names).
+  `LightTheme`/`DarkTheme` map onto `lv_theme_default_init(..., dark=…)` via
+  `style::Theme::default_init`.
