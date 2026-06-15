@@ -32,6 +32,33 @@ enum class ObjectError : std::uint8_t {
     NoDisplay    = 2,  // Screen requested but no default lv_display exists.
 };
 
+// LPAR-02 — mirror of LVGL object flags (lv_obj_flag_t,
+// lvgl/src/core/lv_obj.h). Standards Action to add a value that must
+// agree with rlvgl ObjectFlags. See docs/core-object/00-object-substrate.md.
+enum class ObjectFlag : std::uint32_t {
+    Hidden         = LV_OBJ_FLAG_HIDDEN,
+    Clickable      = LV_OBJ_FLAG_CLICKABLE,
+    ClickFocusable = LV_OBJ_FLAG_CLICK_FOCUSABLE,
+    Checkable      = LV_OBJ_FLAG_CHECKABLE,
+    Scrollable     = LV_OBJ_FLAG_SCROLLABLE,
+    ScrollOnFocus  = LV_OBJ_FLAG_SCROLL_ON_FOCUS,
+    Floating       = LV_OBJ_FLAG_FLOATING,
+};
+
+// LPAR-02 — mirror of LVGL interaction states (lv_state_t,
+// lvgl/src/core/lv_obj_style.h). Standards Action to diverge.
+enum class ObjectState : std::uint16_t {
+    Default  = LV_STATE_DEFAULT,
+    Checked  = LV_STATE_CHECKED,
+    Focused  = LV_STATE_FOCUSED,
+    FocusKey = LV_STATE_FOCUS_KEY,
+    Edited   = LV_STATE_EDITED,
+    Hovered  = LV_STATE_HOVERED,
+    Pressed  = LV_STATE_PRESSED,
+    Scrolled = LV_STATE_SCROLLED,
+    Disabled = LV_STATE_DISABLED,
+};
+
 // RAII owner of a single lv_obj_t. See docs/wrap/00-concepts.md (§5).
 //
 // Ownership: owns its lv_obj_t. The destructor calls lv_obj_delete iff it
@@ -72,6 +99,27 @@ public:
     // borrows: valid only while this Object owns a live lv_obj.
     [[nodiscard]] lv_obj_t* borrow_raw() const noexcept { return obj_; }
     [[nodiscard]] bool      empty()      const noexcept { return obj_ == nullptr; }
+
+    // --- LPAR-02: flags, state, hit-test, tree queries (over lv_obj_*) ---
+    // All are no-ops / empty-safe defaults when this Object is empty.
+    void add_flag(ObjectFlag f) noexcept;
+    void remove_flag(ObjectFlag f) noexcept;
+    [[nodiscard]] bool has_flag(ObjectFlag f) const noexcept;
+
+    void add_state(ObjectState s) noexcept;
+    void remove_state(ObjectState s) noexcept;
+    [[nodiscard]] bool has_state(ObjectState s) const noexcept;
+    // Active-state bitmask (bitwise-or of ObjectState bits).
+    [[nodiscard]] ObjectState state() const noexcept;
+
+    // True if screen-coordinate (x, y) hits this object.
+    [[nodiscard]] bool hit_test(std::int32_t x, std::int32_t y) const noexcept;
+
+    // Non-owning tree neighbors (observes). An empty Object or an
+    // out-of-range index yields an empty ObjectView.
+    [[nodiscard]] ObjectView    parent()      const noexcept;
+    [[nodiscard]] std::uint32_t child_count() const noexcept;
+    [[nodiscard]] ObjectView    child(std::uint32_t index) const noexcept;
 
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).

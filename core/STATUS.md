@@ -133,6 +133,14 @@ Implemented:
   Additive — the hand-rolled `Widget`/`WidgetNode`/`Renderer` layer is
   unchanged, retired later under LVGLPP-WRAP-01..0N. See
   `docs/wrap/00-concepts.md`.
+- **LPAR-02** (object substrate): `Object` gains `add_flag`/`remove_flag`/
+  `has_flag` over `ObjectFlag`, `add_state`/`remove_state`/`has_state`/
+  `state` over `ObjectState`, `hit_test`, and non-owning tree accessors
+  `parent`/`child_count`/`child` (→ `ObjectView`), all wrapping `lv_obj_*`
+  and empty-safe. `ObjectFlag`/`ObjectState` mirror `lv_obj_flag_t`/
+  `lv_state_t` (Standards Action). Test
+  `lvglpp_core_object_substrate`. See
+  `docs/core-object/00-object-substrate.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -267,6 +275,12 @@ Local glossary. Forms follow `CLAUDE.md` §
   suite); builds + runs clean under default and embedded posture.
   Removes nothing (WRAP-00 §5.7). rlvgl pin reference bumped to v0.2.4
   @ `343f596`. Ratified chapter: `docs/wrap/00-concepts.md`.
+- 2026-06-15 — LPAR-02 (object substrate) landed. `Object`
+  (`object.hpp`/`object.cpp`) gains flag/state/hit-test/tree-query
+  wrappers over `lv_obj_*`; `ObjectFlag`/`ObjectState` mirror enums
+  (Standards Action). Test `lvglpp_core_object_substrate` green; builds +
+  runs under default and `LVGLPP_EMBEDDED_POSTURE=ON`. Additive.
+  Ratified chapter: `docs/core-object/00-object-substrate.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer

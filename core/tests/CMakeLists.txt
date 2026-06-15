@@ -43,6 +43,15 @@ target_link_libraries(lvglpp_core_object_test
 )
 add_test(NAME lvglpp_core_object COMMAND lvglpp_core_object_test)
 
+# LPAR-02 acceptance (object flags/state/hit-test/tree over lv_obj_*).
+add_executable(lvglpp_core_object_substrate_test object_substrate_test.cpp)
+target_link_libraries(lvglpp_core_object_substrate_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_object_substrate COMMAND lvglpp_core_object_substrate_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

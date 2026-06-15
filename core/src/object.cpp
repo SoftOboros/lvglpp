@@ -110,4 +110,68 @@ void Screen::load() noexcept {
     }
 }
 
+// --- LPAR-02: flags, state, hit-test, tree queries ---
+
+void Object::add_flag(ObjectFlag f) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_add_flag(obj_, static_cast<lv_obj_flag_t>(f));
+    }
+}
+
+void Object::remove_flag(ObjectFlag f) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_remove_flag(obj_, static_cast<lv_obj_flag_t>(f));
+    }
+}
+
+bool Object::has_flag(ObjectFlag f) const noexcept {
+    return obj_ != nullptr && lv_obj_has_flag(obj_, static_cast<lv_obj_flag_t>(f));
+}
+
+void Object::add_state(ObjectState s) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_add_state(obj_, static_cast<lv_state_t>(s));
+    }
+}
+
+void Object::remove_state(ObjectState s) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_remove_state(obj_, static_cast<lv_state_t>(s));
+    }
+}
+
+bool Object::has_state(ObjectState s) const noexcept {
+    return obj_ != nullptr && lv_obj_has_state(obj_, static_cast<lv_state_t>(s));
+}
+
+ObjectState Object::state() const noexcept {
+    if (obj_ == nullptr) {
+        return ObjectState::Default;
+    }
+    return static_cast<ObjectState>(lv_obj_get_state(obj_));
+}
+
+bool Object::hit_test(std::int32_t x, std::int32_t y) const noexcept {
+    if (obj_ == nullptr) {
+        return false;
+    }
+    lv_point_t point{x, y};
+    return lv_obj_hit_test(obj_, &point);
+}
+
+ObjectView Object::parent() const noexcept {
+    return ObjectView{obj_ != nullptr ? lv_obj_get_parent(obj_) : nullptr};
+}
+
+std::uint32_t Object::child_count() const noexcept {
+    return obj_ != nullptr ? lv_obj_get_child_count(obj_) : 0U;
+}
+
+ObjectView Object::child(std::uint32_t index) const noexcept {
+    if (obj_ == nullptr) {
+        return ObjectView{nullptr};
+    }
+    return ObjectView{lv_obj_get_child(obj_, static_cast<std::int32_t>(index))};
+}
+
 }  // namespace lvglpp::core
