@@ -10,6 +10,9 @@
 #ifndef LVGLPP_CORE_CORE_HPP
 #define LVGLPP_CORE_CORE_HPP
 
+#include "lvglpp/core/asset.hpp"
+#include "lvglpp/core/display.hpp"
+#include "lvglpp/core/draw.hpp"
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/event.hpp"
 #include "lvglpp/core/object.hpp"
@@ -17,6 +20,7 @@
 #include "lvglpp/core/rle.hpp"
 #include "lvglpp/core/runtime.hpp"
 #include "lvglpp/core/style.hpp"
+#include "lvglpp/core/timer.hpp"
 #include "lvglpp/core/widget.hpp"
 #include "lvglpp/core/widget_node.hpp"
 //   #include "lvglpp/core/renderer.hpp"   // PARITY: rlvgl/core/src/renderer.rs

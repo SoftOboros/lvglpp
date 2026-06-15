@@ -55,19 +55,19 @@ Rust. LPAR unifies everything onto a single `lv_obj_t*`-backed model:
 | [01-baseline.md](./01-baseline.md) | LPAR-01 | **Ratified 2026-06-15** |
 | [`../wrap/00-concepts.md`](../wrap/00-concepts.md) | LVGLPP-WRAP-00 | **Ratified + landed 2026-06-15** (RAII `Object`/`Screen`) |
 
-### Wave 1 — substrate wrappers (drafted 2026-06-15, awaiting ratification)
+### Wave 1 — substrate wrappers (ratified 2026-06-15; **7/9 implemented**)
 
-| Phase | Chapter | Wraps |
-| --- | --- | --- |
-| LPAR-02 | [`../core-object/00-object-substrate.md`](../core-object/00-object-substrate.md) | `lv_obj_*` flags/state/hit-test |
-| LPAR-03 | [`../core-object/01-invalidation-display.md`](../core-object/01-invalidation-display.md) | `lv_obj_invalidate`, `lv_display_*` |
-| LPAR-04 | [`../core-event/01-event-focus-input.md`](../core-event/01-event-focus-input.md) | `lv_event_*`, `lv_group_*`, `lv_indev_*` |
-| LPAR-05 | [`../core-scroll/00-scroll-runtime.md`](../core-scroll/00-scroll-runtime.md) | `lv_obj_scroll_*` |
-| LPAR-06 | [`../core-timer/00-timers-object-anim.md`](../core-timer/00-timers-object-anim.md) | `lv_timer_*`, `lv_anim_*` |
-| LPAR-07 | [`../core-style/01-style-cascade-theme.md`](../core-style/01-style-cascade-theme.md) | `lv_style_*`, `lv_theme_*` |
-| LPAR-08 | [`../core-draw/00-text-draw-image-mask.md`](../core-draw/00-text-draw-image-mask.md) | `lv_draw_*`, `lv_font_*`, `lv_image_*` |
-| LPAR-09 | [`../core-asset/00-asset-filesystem.md`](../core-asset/00-asset-filesystem.md) | `lv_fs_*`, `lv_image_decoder_*` |
-| LPAR-10 | [`../core-layout/00-layout.md`](../core-layout/00-layout.md) | `lv_obj_set_flex_*`, `lv_obj_set_grid_*` |
+| Phase | Chapter | Wraps | Status |
+| --- | --- | --- | --- |
+| LPAR-02 | [`../core-object/00-object-substrate.md`](../core-object/00-object-substrate.md) | `lv_obj_*` flags/state/hit-test | ✅ landed |
+| LPAR-03 | [`../core-object/01-invalidation-display.md`](../core-object/01-invalidation-display.md) | `lv_obj_invalidate`, `lv_display_*` | ✅ landed |
+| LPAR-04 | [`../core-event/01-event-focus-input.md`](../core-event/01-event-focus-input.md) | `lv_event_*`, `lv_group_*`, `lv_indev_*` | ⏳ pending |
+| LPAR-05 | [`../core-scroll/00-scroll-runtime.md`](../core-scroll/00-scroll-runtime.md) | `lv_obj_scroll_*` | ✅ landed |
+| LPAR-06 | [`../core-timer/00-timers-object-anim.md`](../core-timer/00-timers-object-anim.md) | `lv_timer_*`, `lv_anim_*` | ✅ landed |
+| LPAR-07 | [`../core-style/01-style-cascade-theme.md`](../core-style/01-style-cascade-theme.md) | `lv_style_*`, `lv_theme_*` | ⏳ pending |
+| LPAR-08 | [`../core-draw/00-text-draw-image-mask.md`](../core-draw/00-text-draw-image-mask.md) | `lv_draw_*`, `lv_font_*`, `lv_image_*` | ✅ landed (v1) |
+| LPAR-09 | [`../core-asset/00-asset-filesystem.md`](../core-asset/00-asset-filesystem.md) | `lv_fs_*`, `lv_image_decoder_*` | ✅ landed |
+| LPAR-10 | [`../core-layout/00-layout.md`](../core-layout/00-layout.md) | `lv_obj_set_flex_*`, `lv_obj_set_grid_*` | ✅ landed |
 
 Later waves (FONT-00..05, LPAR-11..16) land their chapters per wave per
 LPAR-00 §7.
