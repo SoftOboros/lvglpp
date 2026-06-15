@@ -87,6 +87,39 @@ enum class ScrollDir : std::uint8_t {
     All    = LV_DIR_ALL,
 };
 
+// LPAR-10 — layout enums mirroring LVGL flex/grid
+// (lvgl/src/layouts/{flex,grid}). Standards Action to diverge. See
+// docs/core-layout/00-layout.md.
+enum class FlexFlow : std::uint8_t {
+    Row               = LV_FLEX_FLOW_ROW,
+    Column            = LV_FLEX_FLOW_COLUMN,
+    RowWrap           = LV_FLEX_FLOW_ROW_WRAP,
+    RowReverse        = LV_FLEX_FLOW_ROW_REVERSE,
+    RowWrapReverse    = LV_FLEX_FLOW_ROW_WRAP_REVERSE,
+    ColumnWrap        = LV_FLEX_FLOW_COLUMN_WRAP,
+    ColumnReverse     = LV_FLEX_FLOW_COLUMN_REVERSE,
+    ColumnWrapReverse = LV_FLEX_FLOW_COLUMN_WRAP_REVERSE,
+};
+
+enum class FlexAlign : std::uint8_t {
+    Start        = LV_FLEX_ALIGN_START,
+    End          = LV_FLEX_ALIGN_END,
+    Center       = LV_FLEX_ALIGN_CENTER,
+    SpaceEvenly  = LV_FLEX_ALIGN_SPACE_EVENLY,
+    SpaceAround  = LV_FLEX_ALIGN_SPACE_AROUND,
+    SpaceBetween = LV_FLEX_ALIGN_SPACE_BETWEEN,
+};
+
+enum class GridAlign : std::uint8_t {
+    Start        = LV_GRID_ALIGN_START,
+    End          = LV_GRID_ALIGN_END,
+    Center       = LV_GRID_ALIGN_CENTER,
+    Stretch      = LV_GRID_ALIGN_STRETCH,
+    SpaceEvenly  = LV_GRID_ALIGN_SPACE_EVENLY,
+    SpaceAround  = LV_GRID_ALIGN_SPACE_AROUND,
+    SpaceBetween = LV_GRID_ALIGN_SPACE_BETWEEN,
+};
+
 // RAII owner of a single lv_obj_t. See docs/wrap/00-concepts.md (§5).
 //
 // Ownership: owns its lv_obj_t. The destructor calls lv_obj_delete iff it
@@ -157,6 +190,24 @@ public:
     void set_scroll_dir(ScrollDir dir) noexcept;
     void set_scrollbar_mode(ScrollbarMode mode) noexcept;
     void set_scroll_snap(ScrollSnap x, ScrollSnap y) noexcept;
+
+    // --- LPAR-10: layout & sizing (over lv_obj_set_flex_*/grid_*) ---
+    void set_size(std::int32_t w, std::int32_t h) noexcept;
+    void set_flex_flow(FlexFlow flow) noexcept;
+    void set_flex_grow(std::uint8_t grow) noexcept;
+    void set_flex_align(FlexAlign main, FlexAlign cross, FlexAlign track) noexcept;
+    // col_dsc / row_dsc are caller-owned arrays terminated with
+    // LV_GRID_TEMPLATE_LAST. LVGL stores the pointers, so they MUST
+    // outlive this object (docs/core-layout/00-layout.md §5.2).
+    //   col_dsc, row_dsc: borrows; must outlive this object.
+    void set_grid_dsc(const std::int32_t* col_dsc, const std::int32_t* row_dsc) noexcept;
+    void set_grid_cell(GridAlign col_align, std::int32_t col_pos, std::int32_t col_span,
+                       GridAlign row_align, std::int32_t row_pos, std::int32_t row_span) noexcept;
+    void set_grid_align(GridAlign col_align, GridAlign row_align) noexcept;
+
+    // Sizing helpers: LV_SIZE_CONTENT and percentage-encoded sizes.
+    [[nodiscard]] static std::int32_t size_content() noexcept;
+    [[nodiscard]] static std::int32_t pct(std::int32_t value) noexcept;
 
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).

@@ -61,6 +61,15 @@ target_link_libraries(lvglpp_core_object_scroll_test
 )
 add_test(NAME lvglpp_core_object_scroll COMMAND lvglpp_core_object_scroll_test)
 
+# LPAR-10 acceptance (flex/grid layout + sizing over lv_obj_set_*).
+add_executable(lvglpp_core_object_layout_test object_layout_test.cpp)
+target_link_libraries(lvglpp_core_object_layout_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_object_layout COMMAND lvglpp_core_object_layout_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

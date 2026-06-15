@@ -215,4 +215,61 @@ void Object::set_scroll_snap(ScrollSnap x, ScrollSnap y) noexcept {
     }
 }
 
+// --- LPAR-10: layout & sizing ---
+
+void Object::set_size(std::int32_t w, std::int32_t h) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_size(obj_, w, h);
+    }
+}
+
+void Object::set_flex_flow(FlexFlow flow) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_flex_flow(obj_, static_cast<lv_flex_flow_t>(flow));
+    }
+}
+
+void Object::set_flex_grow(std::uint8_t grow) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_flex_grow(obj_, grow);
+    }
+}
+
+void Object::set_flex_align(FlexAlign main, FlexAlign cross, FlexAlign track) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_flex_align(obj_, static_cast<lv_flex_align_t>(main),
+                              static_cast<lv_flex_align_t>(cross),
+                              static_cast<lv_flex_align_t>(track));
+    }
+}
+
+void Object::set_grid_dsc(const std::int32_t* col_dsc, const std::int32_t* row_dsc) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_grid_dsc_array(obj_, col_dsc, row_dsc);
+    }
+}
+
+void Object::set_grid_cell(GridAlign col_align, std::int32_t col_pos, std::int32_t col_span,
+                           GridAlign row_align, std::int32_t row_pos, std::int32_t row_span) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_grid_cell(obj_, static_cast<lv_grid_align_t>(col_align), col_pos, col_span,
+                             static_cast<lv_grid_align_t>(row_align), row_pos, row_span);
+    }
+}
+
+void Object::set_grid_align(GridAlign col_align, GridAlign row_align) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_grid_align(obj_, static_cast<lv_grid_align_t>(col_align),
+                              static_cast<lv_grid_align_t>(row_align));
+    }
+}
+
+std::int32_t Object::size_content() noexcept {
+    return LV_SIZE_CONTENT;
+}
+
+std::int32_t Object::pct(std::int32_t value) noexcept {
+    return lv_pct(value);
+}
+
 }  // namespace lvglpp::core

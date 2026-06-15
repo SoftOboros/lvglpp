@@ -147,6 +147,13 @@ Implemented:
   `ScrollSnap`/`ScrollDir` mirror enums (Standards Action). Empty-safe.
   Test `lvglpp_core_object_scroll`. See
   `docs/core-scroll/00-scroll-runtime.md`.
+- **LPAR-10** (layout): `Object` gains `set_size`, `set_flex_flow`/
+  `set_flex_grow`/`set_flex_align`, `set_grid_dsc`/`set_grid_cell`/
+  `set_grid_align`, and `size_content`/`pct` sizing helpers over
+  `lv_obj_set_flex_*`/`grid_*`. `FlexFlow`/`FlexAlign`/`GridAlign` mirror
+  enums. Grid track arrays are caller-owned and MUST outlive the object
+  (documented `borrows`-into-LVGL). Empty-safe. Test
+  `lvglpp_core_object_layout`. See `docs/core-layout/00-layout.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -293,6 +300,13 @@ Local glossary. Forms follow `CLAUDE.md` §
   enums. Test `lvglpp_core_object_scroll` green (full suite 33/33);
   builds + runs under both postures. Additive. Ratified chapter:
   `docs/core-scroll/00-scroll-runtime.md`.
+- 2026-06-15 — LPAR-10 (layout) landed. `Object` gains flex (flow/grow/
+  align), grid (dsc/cell/align), and sizing (`set_size`, `size_content`,
+  `pct`) over `lv_obj_set_flex_*`/`grid_*`; `FlexFlow`/`FlexAlign`/
+  `GridAlign` mirror enums. Grid track arrays are caller-owned and must
+  outlive the object (frozen rule). Test `lvglpp_core_object_layout`
+  green (full suite 34/34); both postures. Additive. Ratified chapter:
+  `docs/core-layout/00-layout.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer
