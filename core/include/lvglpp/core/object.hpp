@@ -59,6 +59,34 @@ enum class ObjectState : std::uint16_t {
     Disabled = LV_STATE_DISABLED,
 };
 
+// LPAR-05 — scroll enums mirroring LVGL (lvgl/src/core/lv_obj_scroll.h,
+// lvgl/src/misc/lv_area.h). Standards Action to diverge. See
+// docs/core-scroll/00-scroll-runtime.md.
+enum class ScrollbarMode : std::uint8_t {
+    Off    = LV_SCROLLBAR_MODE_OFF,
+    On     = LV_SCROLLBAR_MODE_ON,
+    Active = LV_SCROLLBAR_MODE_ACTIVE,
+    Auto   = LV_SCROLLBAR_MODE_AUTO,
+};
+
+enum class ScrollSnap : std::uint8_t {
+    None   = LV_SCROLL_SNAP_NONE,
+    Start  = LV_SCROLL_SNAP_START,
+    End    = LV_SCROLL_SNAP_END,
+    Center = LV_SCROLL_SNAP_CENTER,
+};
+
+enum class ScrollDir : std::uint8_t {
+    None   = LV_DIR_NONE,
+    Left   = LV_DIR_LEFT,
+    Right  = LV_DIR_RIGHT,
+    Top    = LV_DIR_TOP,
+    Bottom = LV_DIR_BOTTOM,
+    Hor    = LV_DIR_HOR,
+    Ver    = LV_DIR_VER,
+    All    = LV_DIR_ALL,
+};
+
 // RAII owner of a single lv_obj_t. See docs/wrap/00-concepts.md (§5).
 //
 // Ownership: owns its lv_obj_t. The destructor calls lv_obj_delete iff it
@@ -120,6 +148,15 @@ public:
     [[nodiscard]] ObjectView    parent()      const noexcept;
     [[nodiscard]] std::uint32_t child_count() const noexcept;
     [[nodiscard]] ObjectView    child(std::uint32_t index) const noexcept;
+
+    // --- LPAR-05: scroll (over lv_obj_scroll_*) ---
+    void scroll_to(std::int32_t x, std::int32_t y, bool animate) noexcept;
+    void scroll_by(std::int32_t dx, std::int32_t dy, bool animate) noexcept;
+    [[nodiscard]] std::int32_t scroll_x() const noexcept;
+    [[nodiscard]] std::int32_t scroll_y() const noexcept;
+    void set_scroll_dir(ScrollDir dir) noexcept;
+    void set_scrollbar_mode(ScrollbarMode mode) noexcept;
+    void set_scroll_snap(ScrollSnap x, ScrollSnap y) noexcept;
 
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).

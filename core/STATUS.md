@@ -141,6 +141,12 @@ Implemented:
   `lv_state_t` (Standards Action). Test
   `lvglpp_core_object_substrate`. See
   `docs/core-object/00-object-substrate.md`.
+- **LPAR-05** (scroll): `Object` gains `scroll_to`/`scroll_by`/
+  `scroll_x`/`scroll_y`/`set_scroll_dir`/`set_scrollbar_mode`/
+  `set_scroll_snap` over `lv_obj_scroll_*`, with `ScrollbarMode`/
+  `ScrollSnap`/`ScrollDir` mirror enums (Standards Action). Empty-safe.
+  Test `lvglpp_core_object_scroll`. See
+  `docs/core-scroll/00-scroll-runtime.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -281,6 +287,12 @@ Local glossary. Forms follow `CLAUDE.md` §
   (Standards Action). Test `lvglpp_core_object_substrate` green; builds +
   runs under default and `LVGLPP_EMBEDDED_POSTURE=ON`. Additive.
   Ratified chapter: `docs/core-object/00-object-substrate.md`.
+- 2026-06-15 — LPAR-05 (scroll) landed. `Object` gains scroll
+  position/by/to getters+setters, scrollbar-mode, snap, and dir over
+  `lv_obj_scroll_*`; `ScrollbarMode`/`ScrollSnap`/`ScrollDir` mirror
+  enums. Test `lvglpp_core_object_scroll` green (full suite 33/33);
+  builds + runs under both postures. Additive. Ratified chapter:
+  `docs/core-scroll/00-scroll-runtime.md`.
 - 2026-04-27 — CORE-03a chapter ratified at
   `docs/core-widget/01-widget-node.md` and execution landed.
   `lvglpp::core::WidgetNode` provides the tree composition layer

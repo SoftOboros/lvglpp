@@ -52,6 +52,15 @@ target_link_libraries(lvglpp_core_object_substrate_test
 )
 add_test(NAME lvglpp_core_object_substrate COMMAND lvglpp_core_object_substrate_test)
 
+# LPAR-05 acceptance (scroll over lv_obj_scroll_*).
+add_executable(lvglpp_core_object_scroll_test object_scroll_test.cpp)
+target_link_libraries(lvglpp_core_object_scroll_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_object_scroll COMMAND lvglpp_core_object_scroll_test)
+
 # CORE-03a acceptance.
 add_executable(lvglpp_core_widget_node_test widget_node_test.cpp)
 target_link_libraries(lvglpp_core_widget_node_test

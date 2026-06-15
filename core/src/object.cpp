@@ -174,4 +174,45 @@ ObjectView Object::child(std::uint32_t index) const noexcept {
     return ObjectView{lv_obj_get_child(obj_, static_cast<std::int32_t>(index))};
 }
 
+// --- LPAR-05: scroll ---
+
+void Object::scroll_to(std::int32_t x, std::int32_t y, bool animate) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_scroll_to(obj_, x, y, animate ? LV_ANIM_ON : LV_ANIM_OFF);
+    }
+}
+
+void Object::scroll_by(std::int32_t dx, std::int32_t dy, bool animate) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_scroll_by(obj_, dx, dy, animate ? LV_ANIM_ON : LV_ANIM_OFF);
+    }
+}
+
+std::int32_t Object::scroll_x() const noexcept {
+    return obj_ != nullptr ? lv_obj_get_scroll_x(obj_) : 0;
+}
+
+std::int32_t Object::scroll_y() const noexcept {
+    return obj_ != nullptr ? lv_obj_get_scroll_y(obj_) : 0;
+}
+
+void Object::set_scroll_dir(ScrollDir dir) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_scroll_dir(obj_, static_cast<lv_dir_t>(dir));
+    }
+}
+
+void Object::set_scrollbar_mode(ScrollbarMode mode) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_scrollbar_mode(obj_, static_cast<lv_scrollbar_mode_t>(mode));
+    }
+}
+
+void Object::set_scroll_snap(ScrollSnap x, ScrollSnap y) noexcept {
+    if (obj_ != nullptr) {
+        lv_obj_set_scroll_snap_x(obj_, static_cast<lv_scroll_snap_t>(x));
+        lv_obj_set_scroll_snap_y(obj_, static_cast<lv_scroll_snap_t>(y));
+    }
+}
+
 }  // namespace lvglpp::core
