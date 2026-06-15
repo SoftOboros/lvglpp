@@ -15,6 +15,7 @@
 #include "lvglpp/core/draw.hpp"
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/event.hpp"
+#include "lvglpp/core/input.hpp"
 #include "lvglpp/core/object.hpp"
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/rle.hpp"

@@ -28,12 +28,16 @@ Object::Object(lv_obj_t* obj) noexcept : obj_{obj} {
     }
 }
 
-Object::Object(Object&& other) noexcept : obj_{other.obj_} {
+Object::Object(Object&& other) noexcept
+    : obj_{other.obj_}, handlers_{std::move(other.handlers_)} {
     other.obj_ = nullptr;
     if (obj_ != nullptr) {
         // Rebind the back-pointer to this (new) location. The event
         // callback was registered once on the lv_obj and reads user_data
-        // dynamically, so it does not need re-adding.
+        // dynamically, so it does not need re-adding. The LPAR-04 event
+        // handlers are reached via their own holder addresses (the per-cb
+        // user_data), which are unchanged by moving the vector — so they
+        // need no rebinding either.
         lv_obj_set_user_data(obj_, this);
     }
 }
@@ -55,6 +59,16 @@ void Object::on_delete_(lv_event_t* e) {
     auto* self = static_cast<Object*>(lv_obj_get_user_data(obj));
     if (self != nullptr && self->obj_ == obj) {
         self->obj_ = nullptr;
+    }
+}
+
+void Object::on_event_(lv_event_t* e) {
+    // SAFETY: the per-cb user_data is the EventHandler holder this Object owns
+    //   (set in on(); the holder address is stable across moves). Borrowed for
+    //   the duration of this call only; the Object retains ownership.
+    auto* handler = static_cast<EventHandler*>(lv_event_get_user_data(e));
+    if (handler != nullptr && *handler) {
+        (*handler)(e);
     }
 }
 
@@ -340,6 +354,31 @@ void Object::set_local_pad_all(std::int32_t p, style::Selector sel) noexcept {
     if (obj_ != nullptr) {
         lv_obj_set_style_pad_all(obj_, p, sel.raw());
     }
+}
+
+// --- LPAR-04: per-object event callbacks ---
+
+void Object::on(EventCode code, std::function<void(lv_event_t*)> handler) noexcept {
+    if (obj_ == nullptr) {
+        return;
+    }
+    // Heap-hold the handler so its address is stable (it is the per-cb
+    // user_data). The Object owns it via handlers_. Under embedded posture an
+    // allocation failure aborts (this method is noexcept), matching the
+    // project's panic = abort posture.
+    auto holder = std::make_unique<EventHandler>(std::move(handler));
+    lv_obj_add_event_cb(obj_, &Object::on_event_, static_cast<lv_event_code_t>(code),
+                        holder.get());
+    handlers_.push_back(std::move(holder));
+}
+
+void Object::on(EventCode code, std::function<void()> handler) noexcept {
+    // Adapt the zero-arg shape onto the lv_event_t* storage type.
+    on(code, [fn = std::move(handler)](lv_event_t*) {
+        if (fn) {
+            fn();
+        }
+    });
 }
 
 }  // namespace lvglpp::core

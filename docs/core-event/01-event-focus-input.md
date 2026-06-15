@@ -85,12 +85,25 @@ re-targets the `lv_obj` tree (the playit↔lv_obj bridge, `LVGLPP-WRAP-0N`).
 
 ## §12 Acceptance checklist
 
-- [ ] `Object::on(...)` registers an `lv_obj` event cb with an
-      Object-owned C++ handler.
-- [ ] `FocusGroup` (RAII `lv_group_t`) and `InputDevice` (RAII
+- [x] `Object::on(...)` registers an `lv_obj` event cb with an
+      Object-owned C++ handler. `core/include/lvglpp/core/object.hpp` +
+      `core/src/object.cpp`: two overloads (`std::function<void(lv_event_t*)>`
+      and ergonomic `std::function<void()>`), normalized to one `EventHandler`
+      type held in a per-Object `std::vector<std::unique_ptr<EventHandler>>`;
+      the holder address is the per-cb `user_data`, so handlers survive Object
+      moves and are freed after `lv_obj_delete` in `~Object`.
+- [x] `FocusGroup` (RAII `lv_group_t`) and `InputDevice` (RAII
       `lv_indev_t`) with the named setters.
-- [ ] `lv_event_t` ↔ CORE-02 `Event` conversion seam, round-trip tested.
-- [ ] Builds + tests under both postures; `core/STATUS.md` records LPAR-04.
+      `core/include/lvglpp/core/input.hpp` + `core/src/input.cpp`
+      (move-only; `add`/`focus`/`focus_next`/`focus_prev`/`set_editing`;
+      `set_type`/`set_read_cb`/`set_group`/`set_display`/`set_user_data`).
+- [x] `lv_event_t` ↔ CORE-02 `Event` conversion seam, round-trip tested.
+      `key_from_lv`/`lv_key_of`, `lv_code_of`/`event_of_code`,
+      `event_from_lv` (live event), `event_to_indev` (injection replay).
+      Round-trip covered in `core/tests/input_test.cpp`.
+- [x] Builds + tests under both postures
+      (`core/tests/input_test.cpp`, host + `LVGLPP_EMBEDDED_POSTURE`);
+      `core/STATUS.md` records LPAR-04.
 
 ## §13 Files cited
 
@@ -110,3 +123,19 @@ re-targets the `lv_obj` tree (the playit↔lv_obj bridge, `LVGLPP-WRAP-0N`).
   `InputDevice`, and the `lv_event_t` ↔ CORE-02 `Event` seam; folds
   rlvgl INPUT-00. **Not ratified** — batch pending with Wave 1.
 - **2026-06-15** — ratified by owner ("All ratified") with the Wave-1 batch; execution unblocked in dependency order (LPAR-02 first per LPAR-00 §6).
+- **2026-06-15** — LPAR-04 landed. `Object::on` (two overloads) +
+  `EventCode` mirror enum in `object.{hpp,cpp}`; `FocusGroup`/`InputDevice`/
+  `InputType` + the `lv_event_t`↔CORE-02 seam in `input.{hpp,cpp}`;
+  `input_test.cpp` green both postures.
+  **Decisions recorded:** (1) per-cb `user_data` carries the heap handler
+  holder (the object's own `user_data` stays reserved for the WRAP-00
+  delete-safety back-pointer); handler holders are `unique_ptr`-pinned so
+  they survive Object moves. (2) The seam maps only the **representable
+  subset** — LVGL pointer/key events ↔ CORE-02 `PressDown`/`PressRelease`/
+  `PointerMove`/`KeyDown`; CORE-02 `Tick`/`Touch`/`DoubleTap` and LVGL
+  `ValueChanged`/`Focused`/… have no counterpart and yield `nullopt`. The
+  pointer/key subset round-trips exactly (frozen decision §5.2 preserved:
+  CORE-02 value types unchanged; this chapter only adds the conversion).
+  (3) The playit injection re-target (`event_to_indev`) is provided here as
+  the bridge primitive; wiring it into the playit dispatcher tree walk
+  remains `LVGLPP-WRAP-0N` (frozen decision §5.4).

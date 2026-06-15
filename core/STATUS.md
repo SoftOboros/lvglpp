@@ -184,6 +184,19 @@ Implemented:
   LVGL 9.6 ships no `lv_fs_drv_unregister` (the registration must outlive
   the wrapper). Test `lvglpp_core_asset`. See
   `docs/core-asset/00-asset-filesystem.md`.
+- **LPAR-04** (event/focus/input): `Object` gains `on(EventCode, …)` —
+  per-object event callbacks over `lv_obj_add_event_cb`, two overloads
+  (`std::function<void(lv_event_t*)>` and zero-arg) normalized to one
+  `EventHandler` held in a per-Object `unique_ptr` list whose holder address
+  is the per-cb `user_data` (survives Object moves; freed after
+  `lv_obj_delete`). The object's own `user_data` stays reserved for the
+  WRAP-00 delete-safety back-pointer. `EventCode` mirrors a subset of
+  `lv_event_code_t`. `input.{hpp,cpp}` add `FocusGroup` (RAII `lv_group_t`),
+  `InputDevice` (RAII `lv_indev_t`) + `InputType`, and the `lv_event_t`↔
+  CORE-02 `Event` seam (`key_from_lv`/`lv_key_of`, `lv_code_of`/
+  `event_of_code`, `event_from_lv`, `event_to_indev`) over the representable
+  pointer/key subset. Test `lvglpp_core_input`. See
+  `docs/core-event/01-event-focus-input.md`.
 - **LPAR-07** (style cascade & theme): `style::Style` RAII over `lv_style_t`
   — **non-movable + non-copyable** so its storage address is stable, because
   `lv_obj_add_style` records a pointer and the Style MUST outlive every
@@ -379,6 +392,15 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
   Test `lvglpp_core_asset` green (full suite 38/38); both postures.
   Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
+- 2026-06-15 — LPAR-04 (event/focus/input) landed. `object.{hpp,cpp}` gain
+  `Object::on` (two overloads) + `EventCode`; handlers are `unique_ptr`-pinned
+  in a per-Object list (holder = per-cb `user_data`, survives moves).
+  `core/include/lvglpp/core/input.hpp` + `core/src/input.cpp` add `FocusGroup`
+  (RAII `lv_group_t`), `InputDevice` (RAII `lv_indev_t`) + `InputType`, and the
+  `lv_event_t`↔CORE-02 `Event` seam (round-trips the pointer/key subset; CORE-02
+  value types unchanged). Test `lvglpp_core_input` green (full suite 40/40);
+  both postures. Additive. Ratified chapter:
+  `docs/core-event/01-event-focus-input.md`.
 - 2026-06-15 — LPAR-07 (style cascade & theme) landed.
   `core/include/lvglpp/core/style_cascade.hpp` adds `style::Style` (RAII
   `lv_style_t`, non-movable so its address is stable for the outlives-objects

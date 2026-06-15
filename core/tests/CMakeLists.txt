@@ -97,6 +97,15 @@ target_link_libraries(lvglpp_core_draw_test
 )
 add_test(NAME lvglpp_core_draw COMMAND lvglpp_core_draw_test)
 
+# LPAR-04 acceptance (Object::on event cbs + FocusGroup/InputDevice + seam).
+add_executable(lvglpp_core_input_test input_test.cpp)
+target_link_libraries(lvglpp_core_input_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_input COMMAND lvglpp_core_input_test)
+
 # LPAR-07 acceptance (RAII Style over lv_style_t + selectors + Theme handle).
 add_executable(lvglpp_core_style_cascade_test style_cascade_test.cpp)
 target_link_libraries(lvglpp_core_style_cascade_test

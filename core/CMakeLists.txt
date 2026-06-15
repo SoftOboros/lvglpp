@@ -54,6 +54,7 @@ target_sources(lvglpp_core
     PRIVATE
         src/runtime.cpp
         src/object.cpp
+        src/input.cpp
         src/display.cpp
         src/timer.cpp
         src/draw.cpp

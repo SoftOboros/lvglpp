@@ -16,6 +16,9 @@
 #define LVGLPP_CORE_OBJECT_HPP
 
 #include <cstdint>
+#include <functional>  // LPAR-04: std::function event handlers
+#include <memory>      // LPAR-04: std::unique_ptr handler holders
+#include <vector>      // LPAR-04: per-Object handler list
 
 #include "lvglpp/core/runtime.hpp"  // lvglpp::ObjectView
 #include "lvglpp/std/expected.hpp"
@@ -127,6 +130,21 @@ enum class GridAlign : std::uint8_t {
     SpaceEvenly  = LV_GRID_ALIGN_SPACE_EVENLY,
     SpaceAround  = LV_GRID_ALIGN_SPACE_AROUND,
     SpaceBetween = LV_GRID_ALIGN_SPACE_BETWEEN,
+};
+
+// LPAR-04 — event codes mirroring a useful subset of lv_event_code_t
+// (lvgl/src/misc/lv_event.h). Standards Action to add a value that must agree
+// with rlvgl's event surface. See docs/core-event/01-event-focus-input.md.
+enum class EventCode : std::uint32_t {
+    All          = LV_EVENT_ALL,
+    Pressed      = LV_EVENT_PRESSED,
+    Pressing     = LV_EVENT_PRESSING,
+    Released     = LV_EVENT_RELEASED,
+    Clicked      = LV_EVENT_CLICKED,
+    ValueChanged = LV_EVENT_VALUE_CHANGED,
+    Focused      = LV_EVENT_FOCUSED,
+    Defocused    = LV_EVENT_DEFOCUSED,
+    Key          = LV_EVENT_KEY,
 };
 
 // RAII owner of a single lv_obj_t. See docs/wrap/00-concepts.md (§5).
@@ -245,6 +263,21 @@ public:
     void set_local_radius(std::int32_t r, style::Selector sel) noexcept;
     void set_local_pad_all(std::int32_t p, style::Selector sel) noexcept;
 
+    // --- LPAR-04: per-object event callbacks (over lv_obj_add_event_cb) ---
+    // Register a C++ handler for `code`. The handler is OWNED by this Object:
+    // it is stored in a heap holder kept in the Object's handler list and
+    // torn down when the Object (and its lv_obj) is destroyed — mechanically
+    // safe per CLAUDE.md callback rule 9. The holder pointer is the per-cb
+    // user_data, so it survives Object moves (the holder address is stable).
+    //
+    // Two shapes: the `lv_event_t*` overload gives the handler full access to
+    // the live event (call lvglpp::core::event_from_lv(e) for the CORE-02
+    // view); the zero-arg overload is the ergonomic common case. No-op when
+    // this Object is empty.
+    //   handler: owns; moved into this Object, invoked until the Object dies.
+    void on(EventCode code, std::function<void(lv_event_t*)> handler) noexcept;
+    void on(EventCode code, std::function<void()> handler) noexcept;
+
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).
     // Installs the user-data back-pointer and the delete-safety callback.
@@ -257,8 +290,22 @@ private:
     // beyond the handle (LVGL may invoke it mid-teardown).
     static void on_delete_(lv_event_t* e);
 
+    // LPAR-04 event trampoline: recovers the heap handler holder via the
+    // event's per-cb user_data (NOT the object's user_data, which holds the
+    // delete-safety back-pointer) and invokes the stored function. Must not
+    // throw.
+    static void on_event_(lv_event_t* e);
+
+    // The stored handler type: every `on` overload normalizes to this.
+    using EventHandler = std::function<void(lv_event_t*)>;
+
     // owns: the LVGL object. Nulled by on_delete_ if LVGL deletes it first.
     lv_obj_t* obj_ = nullptr;
+    // owns: the per-object event handlers. Each holder's address is the
+    // user_data registered with lv_obj_add_event_cb, so it must stay stable
+    // across Object moves — unique_ptr gives that (the held function does not
+    // move when the vector reallocates). Freed after lv_obj_delete in ~Object.
+    std::vector<std::unique_ptr<EventHandler>> handlers_;
 };
 
 // An Object that is a screen root: created parentless on the default
