@@ -6,12 +6,12 @@
 // Standards Action; reordering or augmenting the calls requires a
 // chapter amendment.
 
-#include "lvglpp/widgets/label.hpp"
+#include "lvglpp/widgets/legacy/label.hpp"
 
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/renderer.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 void Label::draw(::lvglpp::core::Renderer& renderer) const {
     // 1. Background + border via the CORE-04a helper. Per the
@@ -30,4 +30,4 @@ void Label::draw(::lvglpp::core::Renderer& renderer) const {
         text_color.with_alpha(style.alpha));
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

@@ -12,8 +12,8 @@
 // Field set, override set, and draw call sequence are FROZEN per
 // the chapter (Standards Action for the draw sequence).
 
-#ifndef LVGLPP_WIDGETS_LABEL_HPP
-#define LVGLPP_WIDGETS_LABEL_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_LABEL_HPP
+#define LVGLPP_WIDGETS_LEGACY_LABEL_HPP
 
 #include <string>
 #include <string_view>
@@ -24,7 +24,7 @@
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 // Label — single-line text display. Per WID-01 chapter §5.2 the
 // widget does not consume input events.
@@ -77,6 +77,6 @@ private:
     std::string          text_;
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_LABEL_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_LABEL_HPP

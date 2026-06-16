@@ -7,13 +7,13 @@
 //
 // docs/widgets-list/00-list.md §5.2/§5.3.
 
-#include "lvglpp/widgets/list.hpp"
+#include "lvglpp/widgets/legacy/list.hpp"
 
 #include <variant>
 
 #include "lvglpp/core/draw_helpers.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 void List::draw(::lvglpp::core::Renderer& renderer) const {
     ::lvglpp::core::draw_widget_bg(renderer, bounds_, style);
@@ -56,4 +56,4 @@ bool List::handle_event(const ::lvglpp::core::Event& event) {
     return true;
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

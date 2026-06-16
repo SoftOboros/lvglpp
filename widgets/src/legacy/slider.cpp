@@ -2,14 +2,14 @@
 //
 // PARITY: rlvgl/widgets/src/slider.rs:59 / :95.
 
-#include "lvglpp/widgets/slider.hpp"
+#include "lvglpp/widgets/legacy/slider.hpp"
 
 #include <variant>
 
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/renderer.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 namespace {
 constexpr std::int32_t kTrackHeight = 4;
@@ -72,4 +72,4 @@ bool Slider::handle_event(const ::lvglpp::core::Event& event) {
     return true;
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

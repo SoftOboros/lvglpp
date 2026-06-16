@@ -7,15 +7,15 @@
 //
 // docs/widgets-toggles/00-checkbox-and-switch.md (WID-03 §5.2).
 
-#ifndef LVGLPP_WIDGETS_SWITCH_HPP
-#define LVGLPP_WIDGETS_SWITCH_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_SWITCH_HPP
+#define LVGLPP_WIDGETS_LEGACY_SWITCH_HPP
 
 #include "lvglpp/core/event.hpp"
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 class Switch final : public ::lvglpp::core::Widget {
 public:
@@ -52,6 +52,6 @@ private:
     bool                 on_ = false;
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_SWITCH_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_SWITCH_HPP

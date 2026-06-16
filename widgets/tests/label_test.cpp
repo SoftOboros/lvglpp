@@ -4,7 +4,7 @@
 //   2. draw_text at (bounds.x, bounds.y + bounds.height) with
 //      text_color.with_alpha(style.alpha).
 
-#include "lvglpp/widgets/label.hpp"
+#include "lvglpp/widgets/legacy/label.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

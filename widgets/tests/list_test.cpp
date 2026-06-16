@@ -4,7 +4,7 @@
 // selection), list_draw_selected.rs (selected item drawn with
 // style.border_color), golden_list.rs (bg fill present).
 
-#include "lvglpp/widgets/list.hpp"
+#include "lvglpp/widgets/legacy/list.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

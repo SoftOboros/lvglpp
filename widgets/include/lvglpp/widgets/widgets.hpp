@@ -2,21 +2,20 @@
 //
 // PARITY: rlvgl/widgets/src/lib.rs (v0.2.0 @ 79f730d).
 // LVGL:   lvgl/src/widgets/ (the upstream widget tree).
+//
+// LVGLPP-WRAP migration in progress: the canonical lvglpp::widgets names are
+// being re-homed onto lv_obj-backed wrappers (core::Object subclasses). The
+// hand-rolled implementations live under lvglpp::widgets::legacy (included
+// below) until LVGLPP-WRAP-0N retires them. New lv_obj-backed widget headers
+// are added here as each WRAP-0x sub-phase lands.
 
 #ifndef LVGLPP_WIDGETS_WIDGETS_HPP
 #define LVGLPP_WIDGETS_WIDGETS_HPP
 
-#include "lvglpp/widgets/button.hpp"
-#include "lvglpp/widgets/checkbox.hpp"
-#include "lvglpp/widgets/container.hpp"
-#include "lvglpp/widgets/image.hpp"
-#include "lvglpp/widgets/label.hpp"
-#include "lvglpp/widgets/list.hpp"
-#include "lvglpp/widgets/slider.hpp"
-#include "lvglpp/widgets/switch.hpp"
+// lv_obj-backed widgets (lvglpp::widgets, LVGLPP-WRAP-01..06) — added as they
+// land. (none yet — the scaffold commit only re-homes the legacy stack.)
 
-// Future per-widget headers (added as they land):
-//   #include "lvglpp/widgets/progress.hpp"   // PARITY: rlvgl/widgets/src/progress.rs
-//   #include "lvglpp/widgets/radio.hpp"      // PARITY: rlvgl/widgets/src/radio.rs
+// Hand-rolled widgets (lvglpp::widgets::legacy) — retired by WRAP-0N:
+#include "lvglpp/widgets/legacy/legacy.hpp"
 
 #endif  // LVGLPP_WIDGETS_WIDGETS_HPP

@@ -1,6 +1,6 @@
 // checkbox_test.cpp — WID-03 acceptance for Checkbox.
 
-#include "lvglpp/widgets/checkbox.hpp"
+#include "lvglpp/widgets/legacy/checkbox.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

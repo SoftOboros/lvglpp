@@ -7,8 +7,8 @@
 //
 // docs/widgets-slider/00-slider.md (WID-04).
 
-#ifndef LVGLPP_WIDGETS_SLIDER_HPP
-#define LVGLPP_WIDGETS_SLIDER_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_SLIDER_HPP
+#define LVGLPP_WIDGETS_LEGACY_SLIDER_HPP
 
 #include <algorithm>
 #include <cstdint>
@@ -18,7 +18,7 @@
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 class Slider final : public ::lvglpp::core::Widget {
 public:
@@ -70,6 +70,6 @@ private:
     std::int32_t         value_;
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_SLIDER_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_SLIDER_HPP

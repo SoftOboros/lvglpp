@@ -9,15 +9,15 @@
 //
 // docs/disco-demo/01-container-widget.md (DEMO-01).
 
-#ifndef LVGLPP_WIDGETS_CONTAINER_HPP
-#define LVGLPP_WIDGETS_CONTAINER_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_CONTAINER_HPP
+#define LVGLPP_WIDGETS_LEGACY_CONTAINER_HPP
 
 #include "lvglpp/core/event.hpp"
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 // Empty widget used to group child widgets (in the WidgetNode tree) and
 // provide background/border styling. It owns nothing and observes
@@ -51,6 +51,6 @@ private:
     ::lvglpp::core::Rect bounds_;
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_CONTAINER_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_CONTAINER_HPP

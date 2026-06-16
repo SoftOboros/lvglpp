@@ -7,11 +7,11 @@
 // docs/widgets-button/00-button.md §5.3 freezes this body under
 // Standards Action.
 
-#include "lvglpp/widgets/button.hpp"
+#include "lvglpp/widgets/legacy/button.hpp"
 
 #include <variant>
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 bool Button::handle_event(const ::lvglpp::core::Event& event) {
     if (const auto* pr = std::get_if<::lvglpp::core::event::PressRelease>(&event)) {
@@ -25,4 +25,4 @@ bool Button::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

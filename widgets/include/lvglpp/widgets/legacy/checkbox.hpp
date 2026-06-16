@@ -9,8 +9,8 @@
 //
 // docs/widgets-toggles/00-checkbox-and-switch.md (WID-03 §5.1).
 
-#ifndef LVGLPP_WIDGETS_CHECKBOX_HPP
-#define LVGLPP_WIDGETS_CHECKBOX_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_CHECKBOX_HPP
+#define LVGLPP_WIDGETS_LEGACY_CHECKBOX_HPP
 
 #include <string>
 #include <string_view>
@@ -21,7 +21,7 @@
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 class Checkbox final : public ::lvglpp::core::Widget {
 public:
@@ -64,6 +64,6 @@ private:
     bool                 checked_ = false;
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_CHECKBOX_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_CHECKBOX_HPP

@@ -2,7 +2,7 @@
 // PressRelease inside bounds (firing on_click) and ignores
 // everything else.
 
-#include "lvglpp/widgets/button.hpp"
+#include "lvglpp/widgets/legacy/button.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 
@@ -112,7 +112,7 @@ void test_button_draw_delegates_to_label() {
     b.draw(rb);
 
     RecordingRenderer rl;
-    lvglpp::widgets::Label l{std::string{"x"}, lc::Rect{0, 0, 50, 30}};
+    lvglpp::widgets::legacy::Label l{std::string{"x"}, lc::Rect{0, 0, 50, 30}};
     l.draw(rl);
 
     assert(rb.fill_calls == rl.fill_calls);

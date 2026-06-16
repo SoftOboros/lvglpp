@@ -4,7 +4,7 @@
 // [red, green, blue, white] buffer reproduces exactly at the widget
 // origin through the default per-pixel draw_pixels path.
 
-#include "lvglpp/widgets/image.hpp"
+#include "lvglpp/widgets/legacy/image.hpp"
 
 #include <array>
 #include <cassert>
@@ -13,7 +13,7 @@
 
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

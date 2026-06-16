@@ -1,6 +1,6 @@
 // slider_test.cpp — WID-04 acceptance for Slider.
 
-#include "lvglpp/widgets/slider.hpp"
+#include "lvglpp/widgets/legacy/slider.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 
