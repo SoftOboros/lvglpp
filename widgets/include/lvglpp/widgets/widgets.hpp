@@ -12,9 +12,15 @@
 #ifndef LVGLPP_WIDGETS_WIDGETS_HPP
 #define LVGLPP_WIDGETS_WIDGETS_HPP
 
-// lv_obj-backed widgets (lvglpp::widgets, LVGLPP-WRAP-01..06) — added as they
-// land:
-#include "lvglpp/widgets/label.hpp"  // WRAP-01
+// lv_obj-backed widgets (lvglpp::widgets, LVGLPP-WRAP-01..06):
+#include "lvglpp/widgets/button.hpp"     // WRAP-02
+#include "lvglpp/widgets/checkbox.hpp"   // WRAP-03
+#include "lvglpp/widgets/container.hpp"  // WRAP-05
+#include "lvglpp/widgets/image.hpp"      // WRAP-06
+#include "lvglpp/widgets/label.hpp"      // WRAP-01
+#include "lvglpp/widgets/list.hpp"       // WRAP-05
+#include "lvglpp/widgets/slider.hpp"     // WRAP-04
+#include "lvglpp/widgets/switch.hpp"     // WRAP-03
 
 // Hand-rolled widgets (lvglpp::widgets::legacy) — retired by WRAP-0N:
 #include "lvglpp/widgets/legacy/legacy.hpp"

@@ -10,6 +10,13 @@ target_sources(lvglpp_widgets
     PRIVATE
         # lv_obj-backed widgets (LVGLPP-WRAP-01..06):
         src/label.cpp
+        src/button.cpp
+        src/checkbox.cpp
+        src/switch.cpp
+        src/slider.cpp
+        src/container.cpp
+        src/list.cpp
+        src/image.cpp
         # hand-rolled widgets (lvglpp::widgets::legacy) — retired by WRAP-0N:
         src/legacy/button.cpp
         src/legacy/checkbox.cpp
