@@ -1,20 +1,21 @@
-// executor_test.cpp — PLAYIT-07 acceptance: end-to-end wire round-trip
-// through a MemoryTransport. The Executor reads bytes, accumulates
-// lines, dispatches via parse_command + Dispatcher, formats Response
-// via format_response, writes back through the transport.
+// executor_test.cpp — PLAYIT-07 acceptance, re-targeted onto lv_obj
+// (LVGLPP-WRAP-0N). End-to-end wire round-trip through a MemoryTransport: the
+// Executor reads bytes, accumulates lines, dispatches via parse_command +
+// ObjDispatcher (lv_obj tree), formats Response via format_response, writes
+// back. The dispatcher-agnostic Executor pumps ObjDispatcher unchanged.
 
 #include "lvglpp/playit/executor.hpp"
 
-#include "lvglpp/core/widget_node.hpp"
-#include "lvglpp/playit/dispatcher.hpp"
+#include "lvglpp/core/object.hpp"
+#include "lvglpp/core/runtime.hpp"
+#include "lvglpp/playit/obj_dispatcher.hpp"
 #include "lvglpp/playit/transport.hpp"
-#include "lvglpp/widgets/legacy/button.hpp"
-#include "lvglpp/widgets/legacy/label.hpp"
+#include "lvglpp/widgets/button.hpp"
+#include "lvglpp/widgets/label.hpp"
 
 #include <cassert>
 #include <cstdint>
 #include <deque>
-#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -22,12 +23,12 @@
 
 namespace lc = lvglpp::core;
 namespace lp = lvglpp::playit;
-namespace lw = lvglpp::widgets::legacy;
+namespace lw = lvglpp::widgets;
 
 namespace {
 
-// Test-only Transport: callers pre-fill in_bytes, then poll the
-// Executor; written bytes accumulate in out_bytes.
+// Test-only Transport: callers pre-fill in_bytes, then poll the Executor;
+// written bytes accumulate in out_bytes.
 struct MemoryTransport final : lp::Transport {
     std::deque<std::uint8_t> in_bytes;
     std::vector<std::uint8_t> out_bytes;
@@ -56,29 +57,36 @@ struct MemoryTransport final : lp::Transport {
     }
 };
 
+// lv_obj equivalent of the WidgetNode fixture:
+//   screen [tag=root]
+//   ├── status label [tag=status] {0,0,100,20}
+//   └── ok button     [tag=ok]     {10,30,80,40}, clickable
 struct Fixture {
-    int                button_clicks = 0;
-    lc::WidgetNode     root;
+    int        button_clicks = 0;
+    lc::Screen screen = lc::Screen::make();
+    lw::Label  status = lw::Label::make(screen.view());
+    lw::Button ok     = lw::Button::make(screen.view());
 
     Fixture() {
-        auto root_filler = std::make_unique<lw::Label>(
-            std::string{""}, lc::Rect{-1, -1, 0, 0});
-        root = lc::WidgetNode{std::move(root_filler), "root"};
+        screen.set_tag("root");
 
-        auto label = std::make_unique<lw::Label>(
-            std::string{"hi"}, lc::Rect{0, 0, 100, 20});
-        root.add_child(lc::WidgetNode{std::move(label), "status"});
+        status.set_tag("status");
+        status.set_text("hi");
+        lv_obj_set_pos(status.borrow_raw(), 0, 0);
+        status.set_size(100, 20);
 
-        auto btn = std::make_unique<lw::Button>(
-            std::string{"OK"}, lc::Rect{10, 30, 80, 40});
-        btn->set_on_click([this](lw::Button&) { ++button_clicks; });
-        root.add_child(lc::WidgetNode{std::move(btn), "ok"});
+        ok.set_tag("ok");
+        lv_obj_set_pos(ok.borrow_raw(), 10, 30);
+        ok.set_size(80, 40);
+        ok.set_on_click([this] { ++button_clicks; });
+
+        lv_obj_update_layout(screen.borrow_raw());
     }
 };
 
 void test_executor_roundtrip_status() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     dispatcher.set_status_snapshot(lp::StatusData{42, 7});
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
@@ -91,7 +99,7 @@ void test_executor_roundtrip_status() {
 
 void test_executor_tagged_inject_drives_button() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -103,7 +111,7 @@ void test_executor_tagged_inject_drives_button() {
 
 void test_executor_multiple_commands_one_poll() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -115,7 +123,7 @@ void test_executor_multiple_commands_one_poll() {
 
 void test_executor_crlf_tolerance() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -126,7 +134,7 @@ void test_executor_crlf_tolerance() {
 
 void test_executor_partial_line_accumulates_across_polls() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -140,7 +148,7 @@ void test_executor_partial_line_accumulates_across_polls() {
 
 void test_executor_empty_line_yields_error() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -151,12 +159,12 @@ void test_executor_empty_line_yields_error() {
 
 void test_executor_unknown_prefix_is_extension_error() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
     // 'Z' falls through parse_command's switch into Extension(line)
-    // — which the Dispatcher reports as "unhandled extension".
+    // — which the dispatcher reports as "unhandled extension".
     transport.feed("Zhello\n");
     assert(exec.poll() == 1);
     assert(transport.drain_response() == "ERR: unhandled extension\r\n");
@@ -164,7 +172,7 @@ void test_executor_unknown_prefix_is_extension_error() {
 
 void test_executor_long_line_overflow() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport transport;
     lp::Executor exec{transport, dispatcher};
 
@@ -176,9 +184,24 @@ void test_executor_long_line_overflow() {
     assert(transport.drain_response() == "ERR: line too long\r\n");
 }
 
+void noop_flush(lv_display_t* disp, const lv_area_t* /*area*/, std::uint8_t* /*px*/) {
+    lv_display_flush_ready(disp);
+}
+
 }  // namespace
 
 int main() {
+    auto runtime = lvglpp::Runtime::try_make();
+    assert(runtime.has_value());
+
+    static std::uint8_t draw_buf[100 * 20 * 4];
+    lv_display_t* disp = lv_display_create(100, 100);
+    assert(disp != nullptr);
+    lv_display_set_flush_cb(disp, noop_flush);
+    lv_display_set_buffers(disp, draw_buf, nullptr,
+                           static_cast<std::uint32_t>(sizeof(draw_buf)),
+                           LV_DISPLAY_RENDER_MODE_PARTIAL);
+
     test_executor_roundtrip_status();
     test_executor_tagged_inject_drives_button();
     test_executor_multiple_commands_one_poll();
@@ -187,5 +210,7 @@ int main() {
     test_executor_empty_line_yields_error();
     test_executor_unknown_prefix_is_extension_error();
     test_executor_long_line_overflow();
+
+    lv_display_delete(disp);
     return 0;
 }
