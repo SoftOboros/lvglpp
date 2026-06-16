@@ -13,7 +13,8 @@
 #define LVGLPP_WIDGETS_WIDGETS_HPP
 
 // lv_obj-backed widgets (lvglpp::widgets, LVGLPP-WRAP-01..06) — added as they
-// land. (none yet — the scaffold commit only re-homes the legacy stack.)
+// land:
+#include "lvglpp/widgets/label.hpp"  // WRAP-01
 
 // Hand-rolled widgets (lvglpp::widgets::legacy) — retired by WRAP-0N:
 #include "lvglpp/widgets/legacy/legacy.hpp"

@@ -8,6 +8,9 @@ add_library(lvglpp::widgets ALIAS lvglpp_widgets)
 
 target_sources(lvglpp_widgets
     PRIVATE
+        # lv_obj-backed widgets (LVGLPP-WRAP-01..06):
+        src/label.cpp
+        # hand-rolled widgets (lvglpp::widgets::legacy) — retired by WRAP-0N:
         src/legacy/button.cpp
         src/legacy/checkbox.cpp
         src/legacy/container.cpp
