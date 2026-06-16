@@ -7,11 +7,11 @@
 //
 // docs/widgets-image/00-image.md §5.2.
 
-#include "lvglpp/widgets/image.hpp"
+#include "lvglpp/widgets/legacy/image.hpp"
 
 #include "lvglpp/core/draw_helpers.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 void Image::draw(::lvglpp::core::Renderer& renderer) const {
     ::lvglpp::core::draw_widget_bg(renderer, bounds_, style);
@@ -20,4 +20,4 @@ void Image::draw(::lvglpp::core::Renderer& renderer) const {
                          static_cast<std::uint32_t>(height_));
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

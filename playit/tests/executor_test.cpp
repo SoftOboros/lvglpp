@@ -8,8 +8,8 @@
 #include "lvglpp/core/widget_node.hpp"
 #include "lvglpp/playit/dispatcher.hpp"
 #include "lvglpp/playit/transport.hpp"
-#include "lvglpp/widgets/button.hpp"
-#include "lvglpp/widgets/label.hpp"
+#include "lvglpp/widgets/legacy/button.hpp"
+#include "lvglpp/widgets/legacy/label.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -22,7 +22,7 @@
 
 namespace lc = lvglpp::core;
 namespace lp = lvglpp::playit;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

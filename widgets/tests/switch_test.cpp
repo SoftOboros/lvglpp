@@ -1,6 +1,6 @@
 // switch_test.cpp — WID-03 acceptance for Switch.
 
-#include "lvglpp/widgets/switch.hpp"
+#include "lvglpp/widgets/legacy/switch.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

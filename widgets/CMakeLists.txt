@@ -8,14 +8,14 @@ add_library(lvglpp::widgets ALIAS lvglpp_widgets)
 
 target_sources(lvglpp_widgets
     PRIVATE
-        src/button.cpp
-        src/checkbox.cpp
-        src/container.cpp
-        src/image.cpp
-        src/label.cpp
-        src/list.cpp
-        src/slider.cpp
-        src/switch.cpp
+        src/legacy/button.cpp
+        src/legacy/checkbox.cpp
+        src/legacy/container.cpp
+        src/legacy/image.cpp
+        src/legacy/label.cpp
+        src/legacy/list.cpp
+        src/legacy/slider.cpp
+        src/legacy/switch.cpp
 )
 
 target_include_directories(lvglpp_widgets

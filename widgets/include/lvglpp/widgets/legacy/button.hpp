@@ -8,8 +8,8 @@
 //
 // This file implements docs/widgets-button/00-button.md (WID-02).
 
-#ifndef LVGLPP_WIDGETS_BUTTON_HPP
-#define LVGLPP_WIDGETS_BUTTON_HPP
+#ifndef LVGLPP_WIDGETS_LEGACY_BUTTON_HPP
+#define LVGLPP_WIDGETS_LEGACY_BUTTON_HPP
 
 #include <functional>
 #include <string>
@@ -20,9 +20,9 @@
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/style.hpp"
 #include "lvglpp/core/widget.hpp"
-#include "lvglpp/widgets/label.hpp"
+#include "lvglpp/widgets/legacy/label.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 // Clickable button. Composes a Label for visual rendering and adds a
 // click callback fired on `PressRelease` within bounds.
@@ -86,6 +86,6 @@ private:
     ClickHandler         on_click_{};
 };
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
 
-#endif  // LVGLPP_WIDGETS_BUTTON_HPP
+#endif  // LVGLPP_WIDGETS_LEGACY_BUTTON_HPP

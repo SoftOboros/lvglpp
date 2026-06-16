@@ -3,14 +3,14 @@
 // PARITY: rlvgl/widgets/src/checkbox.rs:51 / :86. Draw call
 //         sequence frozen at WID-03 §5.1.
 
-#include "lvglpp/widgets/checkbox.hpp"
+#include "lvglpp/widgets/legacy/checkbox.hpp"
 
 #include <variant>
 
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/renderer.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 namespace {
 constexpr std::int32_t kSquareSize = 10;
@@ -64,4 +64,4 @@ bool Checkbox::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy

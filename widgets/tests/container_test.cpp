@@ -3,7 +3,7 @@
 // PARITY: rlvgl/widgets/src/container.rs. Mirrors the bounds-echo,
 // passive-event, and draw-via-draw_widget_bg behavior.
 
-#include "lvglpp/widgets/container.hpp"
+#include "lvglpp/widgets/legacy/container.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace lc = lvglpp::core;
-namespace lw = lvglpp::widgets;
+namespace lw = lvglpp::widgets::legacy;
 
 namespace {
 

@@ -2,14 +2,14 @@
 //
 // PARITY: rlvgl/widgets/src/switch.rs:46 / :72.
 
-#include "lvglpp/widgets/switch.hpp"
+#include "lvglpp/widgets/legacy/switch.hpp"
 
 #include <variant>
 
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/renderer.hpp"
 
-namespace lvglpp::widgets {
+namespace lvglpp::widgets::legacy {
 
 void Switch::draw(::lvglpp::core::Renderer& renderer) const {
     namespace lc = ::lvglpp::core;
@@ -42,4 +42,4 @@ bool Switch::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+}  // namespace lvglpp::widgets::legacy
