@@ -14,6 +14,7 @@ add_library(lvglpp::playit ALIAS lvglpp_playit)
 target_sources(lvglpp_playit
     PRIVATE
         src/dispatcher.cpp
+        src/obj_dispatcher.cpp   # LVGLPP-WRAP-0N: lv_obj-tree re-target
         src/executor.cpp
         src/format.cpp
         src/parser.cpp

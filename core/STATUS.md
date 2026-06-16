@@ -411,6 +411,12 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
   Test `lvglpp_core_asset` green (full suite 38/38); both postures.
   Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
+- 2026-06-16 — LVGLPP-WRAP-0N (playit tag channel) landed in core.
+  `Object` gains `set_tag`/`tag`/`find_by_tag` over `lv_obj_set_name`/
+  `lv_obj_get_name`/`lv_obj_find_by_name` (the WRAP-00 §5.4 reserved name
+  channel). `include/lvglpp/lv_conf.h` enables `LV_USE_OBJ_NAME` (off by
+  default upstream) so the name API links. Consumed by the lv_obj-tree playit
+  Dispatcher (`playit/.../obj_dispatcher.*`). Full suite 45/45; both postures.
 - 2026-06-15 — FONT-05 (font registry; Wave 2) landed.
   `core/include/lvglpp/core/font_registry.hpp` (header-only) adds `FontId`
   (mirrors rlvgl `FontId(u16)`) and the heap-free `FontRegistry<Capacity=16>`

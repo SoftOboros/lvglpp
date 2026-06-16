@@ -16,6 +16,7 @@
 #include "lvglpp/playit/command.hpp"
 #include "lvglpp/playit/conversion.hpp"
 #include "lvglpp/playit/dispatcher.hpp"
+#include "lvglpp/playit/obj_dispatcher.hpp"
 #include "lvglpp/playit/event_pipeline.hpp"
 #include "lvglpp/playit/event_recorder.hpp"
 #include "lvglpp/playit/event_spec.hpp"

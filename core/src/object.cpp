@@ -399,4 +399,27 @@ void Object::on(EventCode code, std::function<void()> handler) noexcept {
     });
 }
 
+// --- LVGLPP-WRAP-0N: playit tag channel ---
+
+void Object::set_tag(const char* tag) noexcept {
+    if (obj_ != nullptr && tag != nullptr) {
+        lv_obj_set_name(obj_, tag);  // LVGL copies the string.
+    }
+}
+
+const char* Object::tag() const noexcept {
+    if (obj_ == nullptr) {
+        return "";
+    }
+    const char* name = lv_obj_get_name(obj_);
+    return name != nullptr ? name : "";
+}
+
+ObjectView Object::find_by_tag(const char* name) const noexcept {
+    if (obj_ == nullptr || name == nullptr) {
+        return ObjectView{nullptr};
+    }
+    return ObjectView{lv_obj_find_by_name(obj_, name)};
+}
+
 }  // namespace lvglpp::core

@@ -37,6 +37,16 @@ target_link_libraries(lvglpp_playit_dispatcher_test
 )
 add_test(NAME lvglpp_playit_dispatcher COMMAND lvglpp_playit_dispatcher_test)
 
+# LVGLPP-WRAP-0N: the same wire bytes drive an lv_obj tree (ObjDispatcher).
+add_executable(lvglpp_playit_obj_dispatcher_test obj_dispatcher_test.cpp)
+target_link_libraries(lvglpp_playit_obj_dispatcher_test
+    PRIVATE
+        lvglpp::playit
+        lvglpp::widgets
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_playit_obj_dispatcher COMMAND lvglpp_playit_obj_dispatcher_test)
+
 # PLAYIT-04b acceptance: format_response wire output.
 add_executable(lvglpp_playit_format_test format_test.cpp)
 target_link_libraries(lvglpp_playit_format_test

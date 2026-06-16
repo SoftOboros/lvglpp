@@ -290,6 +290,18 @@ public:
     void on(EventCode code, std::function<void(lv_event_t*)> handler) noexcept;
     void on(EventCode code, std::function<void()> handler) noexcept;
 
+    // --- LVGLPP-WRAP-0N: playit tag channel (over the lv_obj name) ---
+    // The LVGL object name doubles as the playit tag (WRAP-00 §5.4 reserves
+    // the name field for exactly this). set_tag copies the string
+    // (lv_obj_set_name), so `tag` need not outlive the call. No-op when empty.
+    void set_tag(const char* tag) noexcept;
+    // The object's tag, or "" if unset / empty (lv_obj_get_name).
+    [[nodiscard]] const char* tag() const noexcept;
+    // Breadth-first search this object's subtree for a descendant whose tag
+    // matches `name` (lv_obj_find_by_name). Does NOT match this object itself.
+    // Returns an empty ObjectView if not found or this Object is empty.
+    [[nodiscard]] ObjectView find_by_tag(const char* name) const noexcept;
+
 protected:
     // Adopt an already-created lv_obj (used by try_make and by Screen).
     // Installs the user-data back-pointer and the delete-safety callback.
