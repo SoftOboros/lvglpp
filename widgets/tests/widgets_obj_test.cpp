@@ -99,7 +99,7 @@ void test_container(const Screen& screen) {
     assert(!c.empty());
     // Inherited core::Object surface works.
     c.set_size(120, 80);
-    c.set_flex_flow(lvglpp::core::FlexFlow::Column);
+    c.set_flex_flow(LV_FLEX_FLOW_COLUMN);
     lw::Label child = lw::Label::make(c.view());
     child.set_text("inside");
     assert(c.child_count() == 1U);

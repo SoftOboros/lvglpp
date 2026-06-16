@@ -30,9 +30,17 @@
 #define LV_TICK_CUSTOM      0
 
 /* Enable the widgets we expect to wrap first. Add as bindings land. */
+/* LVGLPP-WRAP-00 baseline (docs/wrap/00-concepts.md §5.6): LV_USE_OBJ is
+ * the object core the RAII Object/Screen wrappers require. */
 #define LV_USE_OBJ          1
 #define LV_USE_LABEL        1
 #define LV_USE_BUTTON       1
+
+/* LVGLPP-WRAP-0N: the lv_obj name doubles as the playit tag channel
+ * (WRAP-00 §5.4). The lv_obj-tree Dispatcher resolves tags via
+ * lv_obj_set_name / lv_obj_get_name / lv_obj_find_by_name, all gated on
+ * LV_USE_OBJ_NAME (off by default upstream). */
+#define LV_USE_OBJ_NAME     1
 
 /* I18N-02: lv_translation bridge (docs/i18n/01-lv-translation-bridge.md). */
 #define LV_USE_TRANSLATION  1

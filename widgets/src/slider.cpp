@@ -72,7 +72,7 @@ std::int32_t Slider::max() const noexcept {
 }
 
 void Slider::set_on_change(std::function<void(std::int32_t)> handler) noexcept {
-    on(::lvglpp::core::EventCode::ValueChanged,
+    on(LV_EVENT_VALUE_CHANGED,
        [fn = std::move(handler)](lv_event_t* e) {
            if (fn) {
                lv_obj_t* target = lv_event_get_target_obj(e);

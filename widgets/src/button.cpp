@@ -68,7 +68,7 @@ const char* Button::text() const noexcept {
 void Button::set_on_click(std::function<void()> handler) noexcept {
     // Inherited Object::on stores the handler by holder address (stable across
     // moves) and does not capture `this` — move-safe.
-    on(::lvglpp::core::EventCode::Clicked, std::move(handler));
+    on(LV_EVENT_CLICKED, std::move(handler));
 }
 
 }  // namespace lvglpp::widgets

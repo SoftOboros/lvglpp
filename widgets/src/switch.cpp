@@ -56,7 +56,7 @@ bool Switch::is_on() const noexcept {
 }
 
 void Switch::set_on_change(std::function<void(bool)> handler) noexcept {
-    on(::lvglpp::core::EventCode::ValueChanged,
+    on(LV_EVENT_VALUE_CHANGED,
        [fn = std::move(handler)](lv_event_t* e) {
            if (fn) {
                lv_obj_t* target = lv_event_get_target_obj(e);

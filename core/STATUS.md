@@ -369,3 +369,7 @@ Local glossary. Forms follow `CLAUDE.md` §
   helper feeds `set_local_text_font(ObjectView, ...)`. Test target
   `lvglpp_core_font_registry` covers default-id resolution, replacement,
   capacity failure, lookup, and application to a real LVGL object.
+- 2026-06-30 — LVGLPP-WRAP-0N support from `lpar-bootstrap`
+  reconciled onto `LvObject`. Added `view()`, `set_size`, tag helpers
+  over LVGL object names, and owned event callback holders for
+  lv_obj-backed widget wrappers and playit `ObjDispatcher`.
