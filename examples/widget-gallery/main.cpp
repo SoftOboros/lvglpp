@@ -1,14 +1,14 @@
-// main.cpp — widget-gallery conformance sim (WID-05/WID-06 bar).
+// main.cpp — widget-gallery conformance sim (WID-05/WID-06 bar), lv_obj path
+// (LVGLPP-WRAP-0N).
 //
-// PARITY: reuses the DEMO-07 automation surface (PLAYIT_READY
-//         handshake, headless ASCII, playit TCP + D dumps); the
-//         scene is gallery_scene.hpp. No SDL, no window — this
-//         binary exists so the List+Image composition is drivable
-//         and dump-verifiable headlessly.
-// LVGL:   N/A.
-// DELTA:  flag subset of DEMO-07 §5.1: --headless[=path],
-//         --automation-headless, --playit-port[=N]. No windowed
-//         mode (use disco-sim for windows).
+// PARITY: reuses the DEMO-07 automation surface (PLAYIT_READY handshake,
+//         headless ASCII, playit TCP + D dumps); the scene is
+//         gallery_scene_obj.hpp. No SDL, no window — this binary exists so the
+//         List+Image composition is drivable and dump-verifiable headlessly.
+// LVGL:   the scene renders through a headless lv_display (lv_framebuffer.hpp).
+// DELTA:  migrated off the hand-rolled core::Renderer/WidgetNode path onto
+//         lv_obj widgets + the lv_obj ObjDispatcher. Flag subset unchanged:
+//         --headless[=path], --automation-headless, --playit-port[=N].
 
 #include <chrono>
 #include <cstdint>
@@ -16,37 +16,36 @@
 #include <cstring>
 #include <fstream>
 #include <optional>
+#include <span>
 #include <string>
 #include <thread>
 
-#include "../disco-sim/memory_renderer.hpp"
 #include "gallery_assets.inc"  // generated: GALLERY_ICON_BYTES
-#include "gallery_scene.hpp"
-#include "lvglpp/playit/dispatcher.hpp"
+#include "gallery_scene_obj.hpp"
+#include "lv_framebuffer.hpp"
+#include "lvglpp/core/runtime.hpp"
 #include "lvglpp/playit/executor.hpp"
 #include "lvglpp/playit/framebuffer.hpp"
+#include "lvglpp/playit/obj_dispatcher.hpp"
 #include "lvglpp/playit/tcp_transport.hpp"
 
-namespace lc = lvglpp::core;
 namespace lpit = lvglpp::playit;
 
 namespace {
 
 constexpr std::uint32_t W = 800, H = 480;
 
+// FramebufferReader over the headless lv_display framebuffer (PLAYIT-07a `D`).
 class Reader final : public lpit::FramebufferReader {
 public:
-    Reader(const lvglpp::sim::MemoryRenderer& fb,
-           const std::uint32_t& present) noexcept
+    Reader(const lvglpp::gallery::LvFramebuffer& fb, const std::uint32_t& present) noexcept
         : fb_{&fb}, present_{&present} {}
-    [[nodiscard]] std::uint32_t read_pixel(std::int32_t x,
-                                           std::int32_t y) const override {
+
+    [[nodiscard]] std::uint32_t read_pixel(std::int32_t x, std::int32_t y) const override {
         if (x < 0 || y < 0) return 0;
-        return fb_->pixel(static_cast<std::uint32_t>(x),
-                          static_cast<std::uint32_t>(y));
+        return fb_->pixel(static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y));
     }
-    std::size_t read_row(std::int32_t x, std::int32_t y,
-                         std::uint16_t width,
+    std::size_t read_row(std::int32_t x, std::int32_t y, std::uint16_t width,
                          std::span<std::uint32_t> out) const override {
         std::size_t n = 0;
         for (std::uint16_t i = 0; i < width && n < out.size(); ++i) {
@@ -59,13 +58,11 @@ public:
         }
         return n;
     }
-    [[nodiscard]] std::uint32_t present_count() const override {
-        return *present_;
-    }
+    [[nodiscard]] std::uint32_t present_count() const override { return *present_; }
 
 private:
-    const lvglpp::sim::MemoryRenderer* fb_;  // observes
-    const std::uint32_t* present_;           // observes
+    const lvglpp::gallery::LvFramebuffer* fb_;  // observes
+    const std::uint32_t* present_;              // observes
 };
 
 }  // namespace
@@ -80,30 +77,32 @@ int main(int argc, char** argv) {
         else if (a.rfind("--headless=", 0) == 0) headless_path = a.substr(11);
         else if (a == "--automation-headless") automation = true;
         else if (a.rfind("--playit-port=", 0) == 0)
-            port = static_cast<std::uint16_t>(
-                std::strtoul(a.c_str() + 14, nullptr, 10));
+            port = static_cast<std::uint16_t>(std::strtoul(a.c_str() + 14, nullptr, 10));
         else {
             std::fprintf(stderr, "unknown arg: %s\n", a.c_str());
             return 1;
         }
     }
 
-    auto scene = lvglpp::gallery::build_scene(
-        std::span<const std::uint8_t>(
-            lvglpp::gallery::detail::GALLERY_ICON_BYTES));
-    if (!scene.has_value()) {
+    auto runtime = lvglpp::Runtime::try_make();
+    if (!runtime.has_value()) {
+        std::fprintf(stderr, "lv_init failed\n");
+        return 1;
+    }
+
+    lvglpp::gallery::LvFramebuffer fb{W, H};
+    lvglpp::gallery::ObjScene scene;
+    if (!lvglpp::gallery::build_obj_scene(
+            scene, std::span<const std::uint8_t>(
+                       lvglpp::gallery::detail::GALLERY_ICON_BYTES))) {
         std::fprintf(stderr, "icon decode failed\n");
         return 1;
     }
 
-    lvglpp::sim::MemoryRenderer renderer{W, H};
     std::uint32_t tick = 0, present = 0;
     auto render = [&] {
-        renderer.fill_rect(
-            lc::Rect{0, 0, static_cast<std::int32_t>(W),
-                     static_cast<std::int32_t>(H)},
-            lc::Color{8, 10, 16, 255});
-        scene->root.draw(renderer);
+        lv_tick_inc(16);
+        fb.render();
         ++present;
     };
 
@@ -111,7 +110,7 @@ int main(int argc, char** argv) {
         render();
         std::ofstream out{*headless_path, std::ios::binary};
         if (!out) return 1;
-        out << renderer.ascii_frame();
+        out << fb.ascii_frame();
         return 0;
     }
 
@@ -128,9 +127,9 @@ int main(int argc, char** argv) {
                 static_cast<unsigned>(tcp->local_port()));
     std::fflush(stdout);
 
-    lpit::Dispatcher dispatcher{scene->root};
+    lpit::ObjDispatcher dispatcher{scene.screen.view()};
     lpit::Executor executor{*tcp, dispatcher};
-    Reader reader{renderer, present};
+    Reader reader{fb, present};
     executor.set_framebuffer_reader(&reader);
 
     constexpr auto FRAME = std::chrono::microseconds{16'667};
