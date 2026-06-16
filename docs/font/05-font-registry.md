@@ -109,12 +109,18 @@ selection setter.
 
 ## §12 Acceptance checklist
 
-- [ ] `FontId` strong `uint16_t` type mirroring rlvgl, with `default_id()`.
-- [ ] `FontRegistry` fixed-capacity, heap-free: `register_font`, `lookup`
-      (default-id always resolves), `apply(Object&, FontId, Selector)`.
-- [ ] Over-capacity registration fails visibly; registry observes (no
-      ownership transfer), lifetime rule documented.
-- [ ] Builds + tests under both postures; `core/STATUS.md` records FONT-05.
+- [x] `FontId` strong `uint16_t` type mirroring rlvgl, with `default_id()`.
+      `core/include/lvglpp/core/font_registry.hpp` (constexpr, value-comparable).
+- [x] `FontRegistry` fixed-capacity, heap-free: `register_font`, `lookup`
+      (default-id always resolves to `Font::default_font()`),
+      `apply(Object&, FontId, Selector)` over `Object::set_local_text_font`.
+      `std::array<Slot, Capacity>` inline storage, default `Capacity == 16`.
+- [x] Over-capacity registration returns `false` (no silent drop); replacing
+      an existing id still works when full. Registry observes (no ownership
+      transfer); outlives-objects lifetime rule documented on `register_font`.
+- [x] Builds + tests under both postures
+      (`core/tests/font_registry_test.cpp`, host + `LVGLPP_EMBEDDED_POSTURE`);
+      `core/STATUS.md` records FONT-05.
 
 ## §13 Files cited
 

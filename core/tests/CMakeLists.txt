@@ -106,6 +106,15 @@ target_link_libraries(lvglpp_core_font_select_test
 )
 add_test(NAME lvglpp_core_font_select COMMAND lvglpp_core_font_select_test)
 
+# FONT-05 acceptance (FontId + heap-free FontRegistry register/lookup/apply).
+add_executable(lvglpp_core_font_registry_test font_registry_test.cpp)
+target_link_libraries(lvglpp_core_font_registry_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_font_registry COMMAND lvglpp_core_font_registry_test)
+
 # LPAR-04 acceptance (Object::on event cbs + FocusGroup/InputDevice + seam).
 add_executable(lvglpp_core_input_test input_test.cpp)
 target_link_libraries(lvglpp_core_input_test

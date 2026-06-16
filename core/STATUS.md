@@ -218,6 +218,16 @@ Implemented:
   `lv_obj_get_style_text_font`). lvglpp adds NO rasterization — AA is the
   font asset's property. Borrowed-font outlives-objects rule on every setter.
   Test `lvglpp_core_font_select`. See `docs/font/00-concepts.md`.
+- **FONT-05** (font registry; Wave 2): `FontId` (strong `uint16_t` mirroring
+  rlvgl `FontId(u16)`, `default_id()==0`, Standards Action) + `FontRegistry`
+  (`font_registry.hpp`) — a **heap-free** `std::array<Slot, Capacity>`
+  (default 16) `FontId→Font` map usable under embedded posture. `register_font`
+  (replace-or-append; visible failure when full + new), `lookup` (default id
+  always resolves to `Font::default_font()`), `apply(Object&, FontId, Selector)`
+  over `Object::set_local_text_font`. Observes fonts (no ownership transfer).
+  The cascade→object bridge is native LVGL (`lv_obj_set_style_text_font`), not
+  re-implemented. Header-only. Test `lvglpp_core_font_registry`. See
+  `docs/font/05-font-registry.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -401,6 +411,13 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
   Test `lvglpp_core_asset` green (full suite 38/38); both postures.
   Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
+- 2026-06-15 — FONT-05 (font registry; Wave 2) landed.
+  `core/include/lvglpp/core/font_registry.hpp` (header-only) adds `FontId`
+  (mirrors rlvgl `FontId(u16)`) and the heap-free `FontRegistry<Capacity=16>`
+  (`register_font`/`lookup`/`apply`). The cascade→object bridge is native LVGL,
+  consumed not re-implemented. Test `lvglpp_core_font_registry` green (full
+  suite 42/42); both postures. Additive. Completes Wave 2. Ratified chapter:
+  `docs/font/05-font-registry.md`.
 - 2026-06-15 — FONT-00 (font selection & AA; Wave 2) landed. `draw.{hpp,cpp}`
   extend the `Font` handle (`builtin(BuiltinFont)`, `glyph_metrics`,
   `is_anti_aliased`, `base_line`); `style_cascade.hpp` adds
