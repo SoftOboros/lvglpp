@@ -97,7 +97,7 @@ void Executor::dispatch_line() noexcept {
             }
         }
 
-        return dispatcher_->dispatch(*parsed);
+        return dispatch(*parsed);
     }();
 
     // Skip the formatter on the recorder-handled sentinel

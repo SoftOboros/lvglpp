@@ -6,8 +6,14 @@
 // LVGL:   N/A.
 // DELTA:  rlvgl's PlayitExecutor owns transport + dispatcher +
 //         recorder + dump-state. lvglpp splits these: Executor is a
-//         thin pump that holds Transport& + Dispatcher&. Recorder
-//         (PLAYIT-06) lives behind the Dispatcher.
+//         thin pump that holds Transport& + any dispatcher. Recorder
+//         (PLAYIT-06) lives behind the dispatcher.
+//
+//         LVGLPP-WRAP-0N: Executor is dispatcher-AGNOSTIC. The constructor
+//         is a template that type-erases the dispatcher to a function
+//         pointer (no virtual, embedded-safe), so it pumps either the
+//         hand-rolled WidgetNode Dispatcher or the lv_obj ObjDispatcher —
+//         any type with `Response dispatch(const Command&)`.
 //
 // docs/playit-transport/00-transport-and-executor.md (PLAYIT-07).
 
@@ -20,9 +26,9 @@
 #include <optional>
 
 #include "lvglpp/playit/command.hpp"
-#include "lvglpp/playit/dispatcher.hpp"
 #include "lvglpp/playit/event_recorder.hpp"
 #include "lvglpp/playit/framebuffer.hpp"
+#include "lvglpp/playit/response.hpp"
 #include "lvglpp/playit/transport.hpp"
 
 namespace lvglpp::playit {
@@ -36,9 +42,16 @@ class Executor {
 public:
     // Args:
     //   transport:  borrows for the executor's lifetime.
-    //   dispatcher: borrows for the executor's lifetime.
-    Executor(Transport& transport, Dispatcher& dispatcher) noexcept
-        : transport_{&transport}, dispatcher_{&dispatcher} {}
+    //   dispatcher: borrows for the executor's lifetime. Any type exposing
+    //               `Response dispatch(const Command&)` (Dispatcher or
+    //               ObjDispatcher). Type-erased to a function pointer.
+    template <class Dispatch>
+    Executor(Transport& transport, Dispatch& dispatcher) noexcept
+        : transport_{&transport},
+          dispatcher_{&dispatcher},
+          dispatch_fn_{[](void* d, const Command& cmd) noexcept -> Response {
+              return static_cast<Dispatch*>(d)->dispatch(cmd);
+          }} {}
 
     // Attach an EventRecorder. While set, the Executor intercepts
     // RS / RE / RD commands (handling them at the Executor level
@@ -86,9 +99,15 @@ private:
     void dump_recording() noexcept;
     void emit_dump_if_ready() noexcept;
 
+    // Dispatch through the type-erased dispatcher.
+    [[nodiscard]] Response dispatch(const Command& cmd) noexcept {
+        return dispatch_fn_(dispatcher_, cmd);
+    }
+
     // borrows: caller-owned.
     Transport*         transport_;
-    Dispatcher*        dispatcher_;
+    void*              dispatcher_;  // borrows: the concrete dispatcher.
+    Response (*dispatch_fn_)(void*, const Command&) noexcept;  // trampoline.
     EventRecorder*     recorder_ = nullptr;
     FramebufferReader* fb_       = nullptr;
 

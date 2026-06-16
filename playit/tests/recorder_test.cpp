@@ -3,15 +3,14 @@
 
 #include "lvglpp/playit/playit.hpp"
 
-#include "lvglpp/core/widget_node.hpp"
-#include "lvglpp/widgets/legacy/button.hpp"
-#include "lvglpp/widgets/legacy/label.hpp"
+#include "lvglpp/core/object.hpp"
+#include "lvglpp/core/runtime.hpp"
+#include "lvglpp/widgets/button.hpp"
 
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <deque>
-#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -19,7 +18,7 @@
 
 namespace lc = lvglpp::core;
 namespace lp = lvglpp::playit;
-namespace lw = lvglpp::widgets::legacy;
+namespace lw = lvglpp::widgets;
 
 namespace {
 
@@ -46,18 +45,18 @@ struct MemoryTransport final : lp::Transport {
     }
 };
 
+// lv_obj fixture: screen [tag=root] with an ok button [tag=ok] {0,0,100,50}.
 struct Fixture {
-    lc::WidgetNode root;
-    int            clicks = 0;
+    int        clicks = 0;
+    lc::Screen screen = lc::Screen::make();
+    lw::Button ok     = lw::Button::make(screen.view());
     Fixture() {
-        auto root_w = std::make_unique<lw::Label>(std::string{""},
-                                                   lc::Rect{-1, -1, 0, 0});
-        root = lc::WidgetNode{std::move(root_w), "root"};
-
-        auto btn = std::make_unique<lw::Button>(std::string{"OK"},
-                                                 lc::Rect{0, 0, 100, 50});
-        btn->set_on_click([this](lw::Button&) { ++clicks; });
-        root.add_child(lc::WidgetNode{std::move(btn), "ok"});
+        screen.set_tag("root");
+        ok.set_tag("ok");
+        lv_obj_set_pos(ok.borrow_raw(), 0, 0);
+        ok.set_size(100, 50);
+        ok.set_on_click([this] { ++clicks; });
+        lv_obj_update_layout(screen.borrow_raw());
     }
 };
 
@@ -222,7 +221,7 @@ void test_recorder_tick_while_stopped_is_noop() {
 
 void test_executor_rs_emits_recording_line() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport tx;
     lp::EventRecorder rec;
     lp::Executor exec{tx, dispatcher};
@@ -236,7 +235,7 @@ void test_executor_rs_emits_recording_line() {
 
 void test_executor_records_inject_then_dumps() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport tx;
     lp::EventRecorder rec;
     lp::Executor exec{tx, dispatcher};
@@ -273,7 +272,7 @@ void test_executor_records_inject_then_dumps() {
 // recorder.tick() runs between Inject commands.
 void test_executor_dump_with_tick_advance() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport tx;
     lp::EventRecorder rec;
     lp::Executor exec{tx, dispatcher};
@@ -305,7 +304,7 @@ void test_executor_dump_with_tick_advance() {
 
 void test_executor_re_dumps_then_stops() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport tx;
     lp::EventRecorder rec;
     lp::Executor exec{tx, dispatcher};
@@ -327,7 +326,7 @@ void test_executor_re_dumps_then_stops() {
 
 void test_executor_without_recorder_falls_through() {
     Fixture fx;
-    lp::Dispatcher dispatcher{fx.root};
+    lp::ObjDispatcher dispatcher{fx.screen.view()};
     MemoryTransport tx;
     lp::Executor exec{tx, dispatcher};  // no recorder attached
 
@@ -337,9 +336,24 @@ void test_executor_without_recorder_falls_through() {
     assert(tx.drain() == "ERR: not implemented\r\n");
 }
 
+void noop_flush(lv_display_t* disp, const lv_area_t* /*area*/, std::uint8_t* /*px*/) {
+    lv_display_flush_ready(disp);
+}
+
 }  // namespace
 
 int main() {
+    auto runtime = lvglpp::Runtime::try_make();
+    assert(runtime.has_value());
+
+    static std::uint8_t draw_buf[100 * 20 * 4];
+    lv_display_t* disp = lv_display_create(100, 100);
+    assert(disp != nullptr);
+    lv_display_set_flush_cb(disp, noop_flush);
+    lv_display_set_buffers(disp, draw_buf, nullptr,
+                           static_cast<std::uint32_t>(sizeof(draw_buf)),
+                           LV_DISPLAY_RENDER_MODE_PARTIAL);
+
     test_format_event_spec_variants();
     test_format_event_spec_touch_frame();
     test_recorder_idle_drops_records();
@@ -354,5 +368,7 @@ int main() {
     test_executor_dump_with_tick_advance();
     test_executor_re_dumps_then_stops();
     test_executor_without_recorder_falls_through();
+
+    lv_display_delete(disp);
     return 0;
 }
