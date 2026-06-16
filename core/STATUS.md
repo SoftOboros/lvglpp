@@ -363,3 +363,9 @@ Local glossary. Forms follow `CLAUDE.md` §
   helpers over LVGL style APIs. Test target `lvglpp_core_font_select`
   covers default, built-in, empty, local, and style-driven font
   selection.
+- 2026-06-30 — FONT-05 from `lpar-bootstrap` reconciled onto the
+  current LVGL-backed core surface. `FontId` and `FontRegistry` add a
+  fixed-capacity, heap-free `FontId -> LvFontView` map whose `apply`
+  helper feeds `set_local_text_font(ObjectView, ...)`. Test target
+  `lvglpp_core_font_registry` covers default-id resolution, replacement,
+  capacity failure, lookup, and application to a real LVGL object.

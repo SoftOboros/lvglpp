@@ -115,6 +115,15 @@ target_link_libraries(lvglpp_core_font_select_test
 )
 add_test(NAME lvglpp_core_font_select COMMAND lvglpp_core_font_select_test)
 
+# FONT-05 acceptance.
+add_executable(lvglpp_core_font_registry_test font_registry_test.cpp)
+target_link_libraries(lvglpp_core_font_registry_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_font_registry COMMAND lvglpp_core_font_registry_test)
+
 # LPAR-CPP-09 acceptance.
 add_executable(lvglpp_core_asset_lvgl_test asset_lvgl_test.cpp)
 target_link_libraries(lvglpp_core_asset_lvgl_test

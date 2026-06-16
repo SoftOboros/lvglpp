@@ -39,8 +39,8 @@ LVGL cascade + AA built-ins** (FONT-00) and **a `FontId` registry** (FONT-05).
 
 | Chapter | Phase | Mirrors | Status |
 | --- | --- | --- | --- |
-| [00-concepts.md](./00-concepts.md) | FONT-00 | `rlvgl/docs/concepts/FONT-00-CONCEPTS.md` | **Ratified 2026-06-15** |
-| [05-font-registry.md](./05-font-registry.md) | FONT-05 | `rlvgl/docs/concepts/FONT-05-FONT-REGISTRY.md` | **Ratified 2026-06-15** |
+| [00-concepts.md](./00-concepts.md) | FONT-00 | `rlvgl/docs/concepts/FONT-00-CONCEPTS.md` | ✅ **Landed 2026-06-15** |
+| [05-font-registry.md](./05-font-registry.md) | FONT-05 | `rlvgl/docs/concepts/FONT-05-FONT-REGISTRY.md` | ✅ **Landed 2026-06-15** |
 
 FONT-01..04 (ArcLabel migration, rotated-renderer throughput, the AA
 fixture) have **no lvglpp execution phase** — see the reframe table; they are

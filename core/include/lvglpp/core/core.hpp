@@ -15,6 +15,7 @@
 #include "lvglpp/core/draw_lvgl.hpp"
 #include "lvglpp/core/display.hpp"
 #include "lvglpp/core/event.hpp"
+#include "lvglpp/core/font_registry.hpp"
 #include "lvglpp/core/input.hpp"
 #include "lvglpp/core/layout.hpp"
 #include "lvglpp/core/object.hpp"
