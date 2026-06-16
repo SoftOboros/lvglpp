@@ -32,6 +32,27 @@ extern "C" {
 
 namespace lvglpp {
 
+enum class BuiltinFont : std::uint8_t {
+    Montserrat12,
+    Montserrat14,
+    Montserrat16,
+    Montserrat18,
+    Montserrat24,
+    Montserrat28,
+    Montserrat48,
+};
+
+struct GlyphMetrics {
+    std::uint32_t advance_width = 0;
+    std::uint32_t box_width = 0;
+    std::uint32_t box_height = 0;
+    std::int32_t offset_x = 0;
+    std::int32_t offset_y = 0;
+
+    [[nodiscard]] constexpr bool operator==(
+        const GlyphMetrics&) const noexcept = default;
+};
+
 class LvFontView {
 public:
     // Args:
@@ -40,16 +61,21 @@ public:
     explicit LvFontView(const lv_font_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] static LvFontView default_font() noexcept;
+    [[nodiscard]] static LvFontView builtin(BuiltinFont font) noexcept;
 
     [[nodiscard]] const lv_font_t* borrow_raw() const noexcept { return raw_; }
     [[nodiscard]] bool             empty() const noexcept { return raw_ == nullptr; }
 
     [[nodiscard]] std::int32_t line_height() const noexcept;
+    [[nodiscard]] std::int32_t base_line() const noexcept;
     [[nodiscard]] std::uint16_t glyph_width(char32_t letter,
                                             char32_t next = 0) const noexcept;
+    [[nodiscard]] GlyphMetrics glyph_metrics(char32_t letter,
+                                             char32_t next = 0) const noexcept;
     [[nodiscard]] bool glyph_descriptor(lv_font_glyph_dsc_t& out,
                                         char32_t letter,
                                         char32_t next = 0) const noexcept;
+    [[nodiscard]] bool is_anti_aliased() const noexcept;
 
 private:
     // observes: LVGL/static font; never released by this view.

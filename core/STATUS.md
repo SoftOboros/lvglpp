@@ -356,3 +356,10 @@ Local glossary. Forms follow `CLAUDE.md` §
   target `lvglpp_core_layout` validates enum mappings, real LVGL
   geometry reads, flex/grid layout updates, grid descriptor sentinels,
   and typed style property writes.
+- 2026-06-30 — FONT-00 from `lpar-bootstrap` reconciled onto the
+  current LVGL-backed core surface. `LvFontView` now exposes built-in
+  Montserrat selection, glyph metrics, baseline, and anti-aliasing
+  queries; `style_lvgl` exposes object-local and resolved text-font
+  helpers over LVGL style APIs. Test target `lvglpp_core_font_select`
+  covers default, built-in, empty, local, and style-driven font
+  selection.

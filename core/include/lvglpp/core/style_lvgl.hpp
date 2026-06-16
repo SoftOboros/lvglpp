@@ -251,6 +251,12 @@ void set_local_style_prop(ObjectView object,
                           lv_style_prop_t prop,
                           lv_style_value_t value,
                           StyleSelector selector) noexcept;
+// Args:
+//   font: observes external/static LVGL font storage. LVGL stores the raw
+//         pointer; caller guarantees it outlives every object that uses it.
+void set_local_text_font(ObjectView object,
+                         const lv_font_t* font,
+                         StyleSelector selector) noexcept;
 [[nodiscard]] lv_style_res_t local_style_prop(ObjectView object,
                                               lv_style_prop_t prop,
                                               lv_style_value_t& value,
@@ -271,6 +277,8 @@ void set_local_style_prop(ObjectView object,
                                            StylePart part) noexcept;
 [[nodiscard]] core::Color resolved_text_color(ObjectView object,
                                               StylePart part) noexcept;
+[[nodiscard]] const lv_font_t* resolved_text_font(ObjectView object,
+                                                  StylePart part) noexcept;
 [[nodiscard]] std::int32_t resolved_radius(ObjectView object,
                                            StylePart part) noexcept;
 

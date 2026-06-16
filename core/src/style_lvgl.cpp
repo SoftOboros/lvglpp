@@ -321,6 +321,16 @@ void set_local_style_prop(ObjectView object,
     }
 }
 
+void set_local_text_font(ObjectView object,
+                         const lv_font_t* font,
+                         StyleSelector selector) noexcept {
+    if (lv_obj_t* raw = raw_or_null(object)) {
+        if (font != nullptr) {
+            lv_obj_set_style_text_font(raw, font, to_lv(selector));
+        }
+    }
+}
+
 lv_style_res_t local_style_prop(ObjectView object,
                                 lv_style_prop_t prop,
                                 lv_style_value_t& value,
@@ -377,6 +387,13 @@ core::Color resolved_text_color(ObjectView object, StylePart part) noexcept {
         return color_from_lv(lv_obj_get_style_text_color(raw, to_lv(part)));
     }
     return color_from_lv(style_prop_default(LV_STYLE_TEXT_COLOR).color);
+}
+
+const lv_font_t* resolved_text_font(ObjectView object, StylePart part) noexcept {
+    if (lv_obj_t* raw = raw_or_null(object)) {
+        return lv_obj_get_style_text_font(raw, to_lv(part));
+    }
+    return nullptr;
 }
 
 std::int32_t resolved_radius(ObjectView object, StylePart part) noexcept {

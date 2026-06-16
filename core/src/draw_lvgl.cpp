@@ -49,11 +49,66 @@ LvFontView LvFontView::default_font() noexcept {
     return LvFontView{lv_font_get_default()};
 }
 
+LvFontView LvFontView::builtin(BuiltinFont font) noexcept {
+    switch (font) {
+        case BuiltinFont::Montserrat12:
+#if LV_FONT_MONTSERRAT_12
+            return LvFontView{&lv_font_montserrat_12};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat14:
+#if LV_FONT_MONTSERRAT_14
+            return LvFontView{&lv_font_montserrat_14};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat16:
+#if LV_FONT_MONTSERRAT_16
+            return LvFontView{&lv_font_montserrat_16};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat18:
+#if LV_FONT_MONTSERRAT_18
+            return LvFontView{&lv_font_montserrat_18};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat24:
+#if LV_FONT_MONTSERRAT_24
+            return LvFontView{&lv_font_montserrat_24};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat28:
+#if LV_FONT_MONTSERRAT_28
+            return LvFontView{&lv_font_montserrat_28};
+#else
+            break;
+#endif
+        case BuiltinFont::Montserrat48:
+#if LV_FONT_MONTSERRAT_48
+            return LvFontView{&lv_font_montserrat_48};
+#else
+            break;
+#endif
+    }
+    return LvFontView{nullptr};
+}
+
 std::int32_t LvFontView::line_height() const noexcept {
     if (raw_ == nullptr) {
         return 0;
     }
     return lv_font_get_line_height(raw_);
+}
+
+std::int32_t LvFontView::base_line() const noexcept {
+    if (raw_ == nullptr) {
+        return 0;
+    }
+    return raw_->base_line;
 }
 
 std::uint16_t LvFontView::glyph_width(char32_t letter,
@@ -64,6 +119,21 @@ std::uint16_t LvFontView::glyph_width(char32_t letter,
     return lv_font_get_glyph_width(raw_,
                                    static_cast<std::uint32_t>(letter),
                                    static_cast<std::uint32_t>(next));
+}
+
+GlyphMetrics LvFontView::glyph_metrics(char32_t letter, char32_t next) const
+    noexcept {
+    lv_font_glyph_dsc_t descriptor{};
+    if (!glyph_descriptor(descriptor, letter, next)) {
+        return GlyphMetrics{};
+    }
+    return GlyphMetrics{
+        static_cast<std::uint32_t>(descriptor.adv_w),
+        static_cast<std::uint32_t>(descriptor.box_w),
+        static_cast<std::uint32_t>(descriptor.box_h),
+        static_cast<std::int32_t>(descriptor.ofs_x),
+        static_cast<std::int32_t>(descriptor.ofs_y),
+    };
 }
 
 bool LvFontView::glyph_descriptor(lv_font_glyph_dsc_t& out,
@@ -77,6 +147,25 @@ bool LvFontView::glyph_descriptor(lv_font_glyph_dsc_t& out,
                                  &out,
                                  static_cast<std::uint32_t>(letter),
                                  static_cast<std::uint32_t>(next));
+}
+
+bool LvFontView::is_anti_aliased() const noexcept {
+    constexpr char32_t kProbeGlyphs[] = {U'M', U'A', U'0', U' '};
+    for (const char32_t glyph : kProbeGlyphs) {
+        lv_font_glyph_dsc_t descriptor{};
+        if (glyph_descriptor(descriptor, glyph)) {
+            switch (descriptor.format) {
+                case LV_FONT_GLYPH_FORMAT_A2:
+                case LV_FONT_GLYPH_FORMAT_A3:
+                case LV_FONT_GLYPH_FORMAT_A4:
+                case LV_FONT_GLYPH_FORMAT_A8:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    }
+    return false;
 }
 
 GlyphBitmapView::GlyphBitmapView(GlyphBitmapView&& other) noexcept
