@@ -1,5 +1,15 @@
 # lvglpp::widgets per-module tests.
 
+# LVGLPP-WRAP-01: lv_obj-backed Label (core::Object over lv_label).
+add_executable(lvglpp_widgets_label_obj_test label_obj_test.cpp)
+target_link_libraries(lvglpp_widgets_label_obj_test
+    PRIVATE
+        lvglpp::widgets
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_widgets_label_obj COMMAND lvglpp_widgets_label_obj_test)
+
+# WID-01 (legacy hand-rolled Label) acceptance.
 add_executable(lvglpp_widgets_label_test label_test.cpp)
 target_link_libraries(lvglpp_widgets_label_test
     PRIVATE
