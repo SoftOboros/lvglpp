@@ -356,6 +356,24 @@ void Object::set_local_pad_all(std::int32_t p, style::Selector sel) noexcept {
     }
 }
 
+// --- FONT-00: text-font selection ---
+
+void Object::set_local_text_font(const Font& font, style::Selector sel) noexcept {
+    if (obj_ != nullptr && !font.empty()) {
+        // borrows: LVGL stores font.borrow_raw() (the lv_font_t*, not a copy).
+        // The caller guarantees the font outlives this object (FONT-00 §5.2).
+        lv_obj_set_style_text_font(obj_, font.borrow_raw(), sel.raw());
+    }
+}
+
+Font Object::text_font() const noexcept {
+    if (obj_ == nullptr) {
+        return Font{};
+    }
+    // Resolved effective font for the main part (cascade + theme + inherit).
+    return Font{lv_obj_get_style_text_font(obj_, LV_PART_MAIN)};
+}
+
 // --- LPAR-04: per-object event callbacks ---
 
 void Object::on(EventCode code, std::function<void(lv_event_t*)> handler) noexcept {

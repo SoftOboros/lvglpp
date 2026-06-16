@@ -97,6 +97,15 @@ target_link_libraries(lvglpp_core_draw_test
 )
 add_test(NAME lvglpp_core_draw COMMAND lvglpp_core_draw_test)
 
+# FONT-00 acceptance (Font builtins/metrics/AA + cascade font selection).
+add_executable(lvglpp_core_font_select_test font_select_test.cpp)
+target_link_libraries(lvglpp_core_font_select_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_font_select COMMAND lvglpp_core_font_select_test)
+
 # LPAR-04 acceptance (Object::on event cbs + FocusGroup/InputDevice + seam).
 add_executable(lvglpp_core_input_test input_test.cpp)
 target_link_libraries(lvglpp_core_input_test

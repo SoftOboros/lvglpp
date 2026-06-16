@@ -27,6 +27,33 @@ extern "C" {
 
 namespace lvglpp::core {
 
+// FONT-00 — names LVGL's built-in anti-aliased lv_font_montserrat_* sizes.
+// Specification Required (local enum; rlvgl has no built-in size enum). A
+// size whose LV_FONT_MONTSERRAT_<n> build flag is off yields an empty Font
+// from Font::builtin (the caller falls back to Font::default_font). See
+// docs/font/00-concepts.md §3, §6.
+enum class BuiltinFont : std::uint8_t {
+    Montserrat12,
+    Montserrat14,
+    Montserrat16,
+    Montserrat18,
+    Montserrat24,
+    Montserrat28,
+    Montserrat48,
+};
+
+// FONT-00 — the layout-relevant subset of lv_font_glyph_dsc_t (§3). All zero
+// for an empty Font or an absent glyph.
+struct GlyphMetrics {
+    std::uint32_t adv_w = 0;  // advance width (pen movement) in pixels.
+    std::uint32_t box_w = 0;  // glyph bounding-box width.
+    std::uint32_t box_h = 0;  // glyph bounding-box height.
+    std::int32_t  ofs_x = 0;  // bounding-box x offset.
+    std::int32_t  ofs_y = 0;  // bounding-box y offset.
+
+    constexpr bool operator==(const GlyphMetrics&) const noexcept = default;
+};
+
 // Non-owning handle over an lv_font_t. LVGL fonts are typically static or
 // otherwise externally owned (concepts §5.2), so Font observes; it never
 // frees. Glyph metrics come straight from lv_font_get_glyph_dsc.
@@ -49,6 +76,11 @@ public:
     // via lv_font_get_default(). Returns: observes a static font.
     [[nodiscard]] static Font default_font() noexcept;
 
+    // FONT-00: a built-in anti-aliased montserrat font. Returns an empty Font
+    // if that size's LV_FONT_MONTSERRAT_<n> build flag is disabled (the caller
+    // falls back to default_font()). Returns: observes a static font.
+    [[nodiscard]] static Font builtin(BuiltinFont which) noexcept;
+
     // observes: valid only while the underlying font is alive (external).
     [[nodiscard]] constexpr const lv_font_t* borrow_raw() const noexcept { return font_; }
     [[nodiscard]] constexpr bool empty() const noexcept { return font_ == nullptr; }
@@ -61,6 +93,21 @@ public:
     // Line height in pixels (the lv_font_t::line_height field). Returns 0
     // for an empty font.
     [[nodiscard]] std::int32_t line_height() const noexcept;
+
+    // FONT-00: base line measured from the bottom of the line height
+    // (lv_font_t::base_line). Returns 0 for an empty font.
+    [[nodiscard]] std::int32_t base_line() const noexcept;
+
+    // FONT-00: full layout metrics for `codepoint` via lv_font_get_glyph_dsc
+    // (no kerning). All-zero GlyphMetrics for an empty font or an absent glyph.
+    [[nodiscard]] GlyphMetrics glyph_metrics(std::uint32_t codepoint) const noexcept;
+
+    // FONT-00: whether a representative glyph rasterizes as multi-bit AA
+    // coverage (A2/A3/A4/A8) rather than 1-bit (A1). This is a query on the
+    // font asset; lvglpp adds no rasterization (§6). Uses 'M' (U+004D) as the
+    // probe glyph, falling back to the font's first available glyph. Returns
+    // false for an empty font or a font with no probeable glyph.
+    [[nodiscard]] bool is_anti_aliased() const noexcept;
 
 private:
     // observes: const lv_font_t owned externally (static storage or a font

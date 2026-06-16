@@ -20,6 +20,7 @@
 #include <memory>      // LPAR-04: std::unique_ptr handler holders
 #include <vector>      // LPAR-04: per-Object handler list
 
+#include "lvglpp/core/draw.hpp"     // FONT-00: Font handle (text_font selection)
 #include "lvglpp/core/runtime.hpp"  // lvglpp::ObjectView
 #include "lvglpp/std/expected.hpp"
 
@@ -262,6 +263,17 @@ public:
     void set_local_border_width(std::int32_t w, style::Selector sel) noexcept;
     void set_local_radius(std::int32_t r, style::Selector sel) noexcept;
     void set_local_pad_all(std::int32_t p, style::Selector sel) noexcept;
+
+    // --- FONT-00: text-font selection (over lv_obj_*_style_text_font) ---
+    // Set this object's text font for `sel` (lv_obj_set_style_text_font). The
+    // Font is borrowed into LVGL (its lv_font_t* is stored, not copied), so it
+    // MUST outlive this object (FONT-00 §5.2). An empty Font is a no-op.
+    //   font: borrows; must outlive this object.
+    void set_local_text_font(const Font& font, style::Selector sel) noexcept;
+    // The resolved effective text font of this object (cascade + theme +
+    // inheritance) via lv_obj_get_style_text_font(MAIN). Empty Font when this
+    // Object is empty. This is FONT-00's font-resolution read path.
+    [[nodiscard]] Font text_font() const noexcept;
 
     // --- LPAR-04: per-object event callbacks (over lv_obj_add_event_cb) ---
     // Register a C++ handler for `code`. The handler is OWNED by this Object:

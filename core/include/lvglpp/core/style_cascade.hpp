@@ -21,6 +21,7 @@
 
 #include <cstdint>
 
+#include "lvglpp/core/draw.hpp"    // FONT-00: Font handle (set_text_font)
 #include "lvglpp/core/object.hpp"  // ObjectState (mirrors lv_state_t), ObjectView
 
 extern "C" {
@@ -133,6 +134,17 @@ public:
     }
     Style& set_height(std::int32_t h) noexcept {
         lv_style_set_height(&style_, h);
+        return *this;
+    }
+    // FONT-00: select the text font for objects using this style. The Font is
+    // borrowed into LVGL (the lv_font_t* is stored, not copied), so it MUST
+    // outlive every object this Style is added to — the same outlives-objects
+    // rule as the Style itself (§5.1; FONT-00 §5.2). Setting an empty Font is
+    // a no-op (leaves the cascade default).
+    Style& set_text_font(const Font& font) noexcept {
+        if (!font.empty()) {
+            lv_style_set_text_font(&style_, font.borrow_raw());
+        }
         return *this;
     }
 

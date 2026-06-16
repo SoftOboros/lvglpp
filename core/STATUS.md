@@ -209,6 +209,15 @@ Implemented:
   `bind_to_display`). CORE-05 value-type `Style`/`Theme` retained for now
   (reconciliation DELTA). Test `lvglpp_core_style_cascade`. See
   `docs/core-style/01-style-cascade-theme.md`.
+- **FONT-00** (font selection & AA; Wave 2): `Font` (draw.hpp) extended with
+  `builtin(BuiltinFont)` (per-size `#if LV_FONT_MONTSERRAT_<n>`; empty Font if
+  off), `glyph_metrics(cp)`, `is_anti_aliased()` (A2/A3/A4/A8 vs 1-bit A1),
+  `base_line()`. Cascade font selection: `style::Style::set_text_font`,
+  `Object::set_local_text_font` (over `lv_obj_set_style_text_font`),
+  `Object::text_font()` (resolved effective font via
+  `lv_obj_get_style_text_font`). lvglpp adds NO rasterization — AA is the
+  font asset's property. Borrowed-font outlives-objects rule on every setter.
+  Test `lvglpp_core_font_select`. See `docs/font/00-concepts.md`.
 
 Stubbed (chapter ratified, no implementation yet):
 
@@ -392,6 +401,14 @@ Local glossary. Forms follow `CLAUDE.md` §
   `lv_fs_drv_unregister` in 9.6, so the registration outlives the wrapper).
   Test `lvglpp_core_asset` green (full suite 38/38); both postures.
   Additive. Ratified chapter: `docs/core-asset/00-asset-filesystem.md`.
+- 2026-06-15 — FONT-00 (font selection & AA; Wave 2) landed. `draw.{hpp,cpp}`
+  extend the `Font` handle (`builtin(BuiltinFont)`, `glyph_metrics`,
+  `is_anti_aliased`, `base_line`); `style_cascade.hpp` adds
+  `Style::set_text_font`; `object.{hpp,cpp}` add `set_local_text_font` +
+  `text_font()` over `lv_obj_set/get_style_text_font`. lvglpp adds no glyph
+  rasterization (LVGL owns it natively). Test `lvglpp_core_font_select` green
+  (full suite 41/41); both postures. Additive. Ratified chapter:
+  `docs/font/00-concepts.md`.
 - 2026-06-15 — LPAR-04 (event/focus/input) landed. `object.{hpp,cpp}` gain
   `Object::on` (two overloads) + `EventCode`; handlers are `unique_ptr`-pinned
   in a per-Object list (holder = per-cb `user_data`, survives moves).

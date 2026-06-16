@@ -69,8 +69,10 @@ Rust. LPAR unifies everything onto a single `lv_obj_t*`-backed model:
 | LPAR-09 | [`../core-asset/00-asset-filesystem.md`](../core-asset/00-asset-filesystem.md) | `lv_fs_*`, `lv_image_decoder_*` | ✅ landed |
 | LPAR-10 | [`../core-layout/00-layout.md`](../core-layout/00-layout.md) | `lv_obj_set_flex_*`, `lv_obj_set_grid_*` | ✅ landed |
 
-Later waves (FONT-00..05, LPAR-11..16) land their chapters per wave per
-LPAR-00 §7.
+Later waves land their chapters per wave per LPAR-00 §7. **Wave 2 — Font**
+is ratified and underway under [`../font/`](../font/) (FONT-00 selection +
+AA landed; FONT-05 registry next). Waves 3–7 (LVGLPP-WRAP migration,
+LPAR-11..16 widgets) follow.
 
 ## Conformance target
 
