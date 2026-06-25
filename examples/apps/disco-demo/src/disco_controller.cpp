@@ -44,13 +44,13 @@
 #include "lvglpp/core/widget.hpp"
 #include "lvglpp/core/widget_node.hpp"
 #include "lvglpp/ui/event_window.hpp"
-#include "lvglpp/widgets/container.hpp"
-#include "lvglpp/widgets/label.hpp"
+#include "lvglpp/widgets/legacy/container.hpp"
+#include "lvglpp/widgets/legacy/label.hpp"
 
 namespace lvglpp::app::disco_demo {
 
 namespace lc = ::lvglpp::core;
-namespace lw = ::lvglpp::widgets;
+namespace lw = ::lvglpp::widgets::legacy;
 namespace lu = ::lvglpp::ui;
 
 // Controller-internal slot enums (mirror lib.rs:170-243). Named-namespace

@@ -145,7 +145,7 @@ enum class EventCode : std::uint32_t {
     ValueChanged = LV_EVENT_VALUE_CHANGED,
     Focused      = LV_EVENT_FOCUSED,
     Defocused    = LV_EVENT_DEFOCUSED,
-    Key          = LV_EVENT_KEY,
+    EventKey     = LV_EVENT_KEY,
 };
 
 // RAII owner of a single lv_obj_t. See docs/wrap/00-concepts.md (§5).
