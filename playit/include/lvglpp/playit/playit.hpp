@@ -20,6 +20,7 @@
 #include "lvglpp/playit/event_recorder.hpp"
 #include "lvglpp/playit/event_spec.hpp"
 #include "lvglpp/playit/gesture.hpp"
+#include "lvglpp/playit/lvgl_input_bridge.hpp"
 #include "lvglpp/playit/executor.hpp"
 #include "lvglpp/playit/format.hpp"
 #include "lvglpp/playit/parser.hpp"

@@ -4,13 +4,13 @@
 # the List+Image composition. docs/widgets-list/00-list.md §12 /
 # docs/widgets-image/00-image.md §12.
 
-# One icon blob from the rlvgl asset set (same configure-time
+# One icon blob from the lvglpp-owned disco-demo asset set (same configure-time
 # embed pattern as apps/disco-demo).
 set(_gal_icon
-    "${CMAKE_SOURCE_DIR}/rlvgl/examples/stm32h747i-disco/assets/icons/settings.rle")
+    "${CMAKE_SOURCE_DIR}/examples/apps/disco-demo/assets/icons/settings.rle")
 if(NOT EXISTS "${_gal_icon}")
     message(FATAL_ERROR "widget-gallery: missing ${_gal_icon} "
-        "(rlvgl submodule not initialized?)")
+        "(lvglpp disco-demo assets not present?)")
 endif()
 file(READ "${_gal_icon}" _gal_hex HEX)
 string(REGEX MATCHALL "[0-9a-f][0-9a-f]" _gal_bytes "${_gal_hex}")

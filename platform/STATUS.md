@@ -5,8 +5,8 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::platform — STATUS
 
-Tracks `rlvgl/platform` @ `v0.2.0` (commit `79f730d`). Last reconciled:
-2026-04-28.
+Tracks `rlvgl/platform` @ `v0.2.5` (commit `f999f75`). Last reconciled:
+2026-06-29.
 
 ## Roadmap intent
 
@@ -382,3 +382,8 @@ Stubbed:
   BLOCKER: examples/linux-fbdev-smoke console rendering needs a
   Linux host — none on this bench. Owner: external fbdev consumer
   / project lead.
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. FireBeetle 2 ESP32-P4 work is
+  scoped by LPAR-CPP-00/SCTD-CPP-03 as ESP-IDF C hardware ownership plus
+  C++ app payload ownership.

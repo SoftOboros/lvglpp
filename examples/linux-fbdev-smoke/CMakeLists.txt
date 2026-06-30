@@ -4,7 +4,7 @@
 
 # Reuse the gallery icon embed.
 set(_smoke_icon
-    "${CMAKE_SOURCE_DIR}/rlvgl/examples/stm32h747i-disco/assets/icons/settings.rle")
+    "${CMAKE_SOURCE_DIR}/examples/apps/disco-demo/assets/icons/settings.rle")
 file(READ "${_smoke_icon}" _smoke_hex HEX)
 string(REGEX MATCHALL "[0-9a-f][0-9a-f]" _smoke_bytes "${_smoke_hex}")
 list(LENGTH _smoke_bytes _smoke_len)

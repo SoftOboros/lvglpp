@@ -74,3 +74,13 @@ target_link_libraries(lvglpp_playit_gesture_test
         lvglpp_warnings
 )
 add_test(NAME lvglpp_playit_gesture COMMAND lvglpp_playit_gesture_test)
+
+# LPAR-CPP-04 acceptance: existing playit specs feed LVGL-backed indevs.
+add_executable(lvglpp_playit_lvgl_input_bridge_test lvgl_input_bridge_test.cpp)
+target_link_libraries(lvglpp_playit_lvgl_input_bridge_test
+    PRIVATE
+        lvglpp::playit
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_playit_lvgl_input_bridge
+    COMMAND lvglpp_playit_lvgl_input_bridge_test)

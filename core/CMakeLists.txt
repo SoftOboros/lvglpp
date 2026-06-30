@@ -52,7 +52,12 @@ file(WRITE "${LVGLPP_FONT_6X10_INC}"
 
 target_sources(lvglpp_core
     PRIVATE
+        src/display.cpp
+        src/input.cpp
+        src/object.cpp
         src/runtime.cpp
+        src/scroll.cpp
+        src/timer.cpp
         src/fonts/font_6x10.cpp
 )
 

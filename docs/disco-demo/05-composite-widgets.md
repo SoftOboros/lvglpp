@@ -12,7 +12,8 @@ DEMO-00.
 Inherits DEMO-00 §0. Canonical: the rlvgl disco-demo app crate —
 `rlvgl/examples/apps/disco-demo/src/{icon_strip,wing,dashboard_panel,
 hotspot,assets}.rs` (rlvgl `v0.2.0`). Icon blobs:
-`rlvgl/examples/stm32h747i-disco/assets/icons/*.rle`. Mirrored as a new
+`examples/apps/disco-demo/assets/icons/*.rle`, mirrored from rlvgl.
+Implemented as a new
 **lvglpp app module** at `examples/apps/disco-demo/`, paralleling the
 rlvgl crate `rlvgl-app-disco-demo`.
 
@@ -45,17 +46,18 @@ Mirrors the `include_bytes!` of `assets.rs:1` with the font-blob pattern
 already used in `core/CMakeLists.txt` (`font_6x10.bin` → `.inc`):
 
 - At CMake **configure** time, read each required `*.rle` from
-  `rlvgl/examples/stm32h747i-disco/assets/icons/` and emit a byte-array
+  `examples/apps/disco-demo/assets/icons/` and emit a byte-array
   `.inc` into the build dir.
 - `assets.hpp` exposes each icon as
   `std::span<const std::uint8_t>` (e.g. `ICON_SETTINGS`, `ICON_FILE`,
   `ICON_INFO`, and the 48px set `ICON_AUDIO_48` … `ICON_PLAY_48` named in
   `assets.rs:11-40`). Consumers decode them with `core::rle` (DEMO-04)
   and blit via `core::Renderer::draw_pixels`.
-- This stays **consume-only**: lvglpp reads rlvgl-produced `.rle` assets;
-  it does not generate them (CLAUDE.md § "`creator-cpp` is deferred").
-- If the `rlvgl/` submodule is absent (e.g. a CI without it), the
-  generator MUST fail loudly OR fall back to a checked-in copy — the
+- This stays **consume-only**: lvglpp reads checked-in `.rle` assets
+  mirrored from rlvgl; it does not generate them (CLAUDE.md §
+  "`creator-cpp` is deferred").
+- If an expected local `.rle` asset is absent, the
+  generator MUST fail loudly — the
   implementer picks one and records it; silent empty icons are
   forbidden.
 
@@ -142,8 +144,7 @@ way the buffer is owned, never aliased with DMA (host has no DMA).
 - [ ] App module `lvglpp::app_disco_demo` builds on a plain host
       configure (no SDL) and under embedded posture.
 - [ ] Asset `.inc` generation produces non-empty icon spans from the
-      rlvgl `.rle` files (and fails loudly / falls back if absent — which
-      one is recorded).
+      lvglpp-owned `.rle` files and fails loudly if one is absent.
 - [ ] Per-widget tests mirror the rlvgl unit behavior: icon-strip focus
       + tap-index; wing visibility toggle + collapse-to-zero bounds +
       clear_region; dashboard show/hide + close-hit consume + wrap;

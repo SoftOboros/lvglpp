@@ -16,6 +16,7 @@ target_sources(lvglpp_playit
         src/dispatcher.cpp
         src/executor.cpp
         src/format.cpp
+        src/lvgl_input_bridge.cpp
         src/parser.cpp
 )
 

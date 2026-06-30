@@ -3,7 +3,7 @@
 // PARITY: rlvgl/examples/apps/disco-demo/src/assets.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A (app composite asset table).
 // DELTA:  rlvgl uses `include_bytes!`; lvglpp generates the byte arrays at
-//         CMake-configure time from the same rlvgl `.rle` files and exposes
+//         CMake-configure time from lvglpp-owned `.rle` files and exposes
 //         each as a `std::span<const std::uint8_t>` accessor function.
 //
 // docs/disco-demo/05-composite-widgets.md (DEMO-05) §3. Layout constants are
@@ -47,7 +47,7 @@ inline constexpr std::uint8_t FOCUS_BORDER_WIDTH = 2;
 
 // ---------------------------------------------------------------------------
 // Icon-asset accessors. Each returns a non-owning view into a static byte
-// array generated at CMake-configure time from the rlvgl `.rle` file named
+// array generated at CMake-configure time from the lvglpp-owned `.rle` file named
 // in assets.rs. Ownership: the returned span `borrows` immortal static
 // storage (lifetime is the program's). Consumers decode with core::rle.
 // ---------------------------------------------------------------------------

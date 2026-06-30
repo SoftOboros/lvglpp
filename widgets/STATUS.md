@@ -5,8 +5,8 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::widgets — STATUS
 
-Tracks `rlvgl/widgets` @ `v0.2.0` (commit `79f730d`). Last reconciled:
-2026-04-27.
+Tracks `rlvgl/widgets` @ `v0.2.5` (commit `f999f75`). Last reconciled:
+2026-06-29.
 
 ## Roadmap intent
 
@@ -159,3 +159,8 @@ Stubbed:
   example (List+Image composition) driven over playit TCP; tagged
   tap changes the selected item's pixel color and D dumps return
   the RLE-decoded icon content.
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. Current widgets are classified as
+  compatibility widgets; LVGL-backed parity wrappers start in the
+  LPAR-CPP phases.

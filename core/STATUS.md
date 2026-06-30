@@ -9,8 +9,8 @@ history.
 
 # lvglpp::core — STATUS
 
-Tracks `rlvgl/core` @ `v0.2.0` (commit `d99f793`). Last reconciled:
-2026-04-27.
+Tracks `rlvgl/core` @ `v0.2.5` (commit `f999f75`). Last reconciled:
+2026-06-29.
 
 ## Roadmap intent
 
@@ -50,6 +50,23 @@ Implemented:
   `lvglpp::expected<Runtime, RuntimeError>` regardless of posture.
 - **CORE-01:** `lvglpp::ObjectView` — non-owning view over `lv_obj_t*`,
   `external` lifetime tag enforced by comment.
+- **LPAR-CPP-02:** `lvglpp::LvObject` — move-only RAII owner for real
+  LVGL `lv_obj_t` nodes, with `make_screen`, `make_child`, explicit
+  `borrow`/`release`, tree/order helpers, and typed `ObjectFlag` /
+  `ObjectState` wrappers. Test target: `lvglpp_core_object`.
+- **LPAR-CPP-03:** `lvglpp::LvDisplay` — move-only RAII owner for real
+  LVGL `lv_display_t` handles, plus non-owning `DisplayView`, inclusive
+  `LvArea`, draw-buffer / flush-callback wrappers, and object
+  invalidation helpers. Test target: `lvglpp_core_display`.
+- **LPAR-CPP-04:** `lvglpp::EventCode`, `EventView`,
+  `EventSubscription`, `LvGroup`, `GroupView`, `LvInputDevice`, and
+  `InputDeviceView` — LVGL-backed event callback, focus-group, and
+  input-device wrappers over `lv_event_t`, `lv_group_t`, and
+  `lv_indev_t`. Test target: `lvglpp_core_input`.
+- **LPAR-CPP-05:** `lvglpp::AnimationMode`, `ScrollDirection`,
+  `ScrollbarMode`, `ScrollSnap`, `ScrollOffset`, `ScrollExtents`,
+  `ScrollbarAreas`, and LVGL-backed scroll helpers over
+  `lv_obj_scroll_*`. Test target: `lvglpp_core_scroll`.
 - **CORE-02:** `lvglpp::core::Event` (10-variant `std::variant`),
   `lvglpp::core::TouchState`, `lvglpp::core::TouchPoint`,
   `lvglpp::core::Key` (10-variant `std::variant` with named-key empty
@@ -83,8 +100,8 @@ Implemented:
   `core/CMakeLists.txt`. `core/src/plugins/.gitkeep` marks the
   per-plugin landing zone. No actual plugin source landed — that's
   per-sub-phase work (CORE-07a, ...).
-- Module umbrella `core.hpp` re-exports `event.hpp` + `renderer.hpp`
-  + `runtime.hpp` + `style.hpp` + `widget.hpp`.
+- Module umbrella `core.hpp` re-exports the core public headers,
+  including the LVGL-backed object/display/input/scroll surfaces.
 - Seam header `lvglpp/std/expected.hpp`.
 
 - **CORE-03a** (Widget tree): `lvglpp::core::WidgetNode` in
@@ -192,6 +209,27 @@ Local glossary. Forms follow `CLAUDE.md` §
   is `std::span<core::Color>` (RGB565 palette converted at decode
   time, a=255) instead of a native-u32 buffer. Frozen constants are
   Standards Action (must agree with rlvgl).
+- **`LvObject`, `ObjectFlag`, `ObjectState`** — As defined in
+  `core/include/lvglpp/core/object.hpp`; owned by
+  `docs/lvgl-parity/02-object-substrate.md`. `LvObject` owns deletion
+  authority for one `lv_obj_t*`; `ObjectView` remains the borrow/view
+  type.
+- **`LvDisplay`, `DisplayView`, `LvArea`** — As defined in
+  `core/include/lvglpp/core/display.hpp`; owned by
+  `docs/lvgl-parity/03-invalidation-display.md`. `LvDisplay` owns
+  deletion authority for one `lv_display_t*`; `DisplayView` observes;
+  `LvArea` mirrors LVGL's inclusive `lv_area_t` bounds.
+- **`EventCode`, `EventView`, `EventSubscription`, `LvGroup`,
+  `GroupView`, `LvInputDevice`, `InputDeviceView`** — As defined in
+  `core/include/lvglpp/core/input.hpp`; owned by
+  `docs/lvgl-parity/04-event-focus-input.md`. These wrappers delegate
+  event routing, focus traversal, and input-device reads to LVGL.
+- **`AnimationMode`, `ScrollDirection`, `ScrollbarMode`, `ScrollSnap`,
+  `ScrollOffset`, `ScrollExtents`, `ScrollbarAreas`** — As defined in
+  `core/include/lvglpp/core/scroll.hpp`; owned by
+  `docs/lvgl-parity/05-scroll-runtime.md`. These wrappers delegate
+  scroll state, movement, snap, scrollbar, and lifecycle behavior to
+  LVGL.
 
 ## Change log
 
@@ -256,3 +294,46 @@ Local glossary. Forms follow `CLAUDE.md` §
   `rle.hpp`. Test target `lvglpp_core_rle` (index / short-repeat /
   inline single+double / long-repeat decode, four frozen error paths,
   plus a real `file.rle` asset decode); 20/20 ctest entries green.
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. Existing core surfaces remain
+  compatibility surfaces unless a future LPAR-CPP phase migrates them to
+  LVGL-backed wrappers.
+- 2026-06-29 — LPAR-CPP-02 execution landed.
+  `core/include/lvglpp/core/object.hpp` and `core/src/object.cpp` add
+  `LvObject`, `ObjectFlag`, `ObjectState`, and LVGL-backed tree /
+  flag / state wrappers. `core.hpp` re-exports the new surface. Test
+  target `lvglpp_core_object` passes; full default build and all 33 host
+  tests pass.
+- 2026-06-29 — CORE-07n portability fix. `core/src/plugins/rle.cpp`
+  now returns `lvglpp::unexpected<Error>{...}` explicitly so the
+  expected polyfill builds on AppleClang. The RLE fixture now reads
+  `examples/apps/disco-demo/assets/icons/file.rle` instead of the
+  rlvgl submodule path.
+- 2026-06-29 — LPAR-CPP-03 execution landed.
+  `core/include/lvglpp/core/display.hpp` and `core/src/display.cpp` add
+  `LvDisplay`, `DisplayView`, `LvArea`, draw-buffer / flush-callback
+  wrappers, and object invalidation helpers over LVGL. `core.hpp`
+  re-exports the new surface. Test target `lvglpp_core_display`
+  validates display lifecycle, default selection, inclusive area
+  conversion, invalidation-area events, and flush callbacks over real
+  LVGL displays. Full default build and all 34 host tests pass;
+  embedded-posture `lvglpp_core` compile passes.
+- 2026-06-29 — LPAR-CPP-04 core execution landed.
+  `core/include/lvglpp/core/input.hpp` and `core/src/input.cpp` add
+  `EventCode`, `EventView`, `EventSubscription`, `LvGroup`,
+  `GroupView`, `LvInputDevice`, and `InputDeviceView` over LVGL
+  event/group/indev APIs. `core.hpp` re-exports the new surface. Test
+  target `lvglpp_core_input` validates event-code mapping,
+  subscription removal, target/current-target bubbling, group focus
+  traversal, and synthetic pointer/keypad/encoder reads.
+- 2026-06-29 — LPAR-CPP-05 execution landed.
+  `core/include/lvglpp/core/scroll.hpp` and `core/src/scroll.cpp` add
+  LVGL-backed scroll flags, event-code mappings, animation mode,
+  direction/mode/snap enums, offset/extent/scrollbar-area value types,
+  and scroll helpers over `lv_obj_scroll_*`. Test target
+  `lvglpp_core_scroll` validates real LVGL scroll containers,
+  programmatic scroll event order, offsets/extents, scrollbar/snap
+  wrappers, scroll-to-view helpers, and a synthetic pointer-driven
+  scroll path. Full default build and all 37 host tests pass;
+  embedded-posture `lvglpp_core`/`lvglpp_playit` compile passes.

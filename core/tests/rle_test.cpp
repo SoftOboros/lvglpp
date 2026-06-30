@@ -3,7 +3,7 @@
 // Hand-builds tiny RLEC blobs with known pixels and asserts decode_into
 // reproduces them, exercising every stream encoding (palette index, short
 // repeat, single/double inline pixel, long repeat). Then the four frozen
-// error paths, and finally a real rlvgl icon asset if its path is provided.
+// error paths, and finally a real lvglpp-owned icon asset if its path is provided.
 
 #include "lvglpp/core/rle.hpp"
 

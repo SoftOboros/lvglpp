@@ -97,7 +97,7 @@ later chapters implement against it.
    `draw_border_straight`, `fill_rounded_rect`, `draw_widget_bg`).
 
 4. **Icons are RLE blobs.** `IconStrip`/`Wing` render RLE-decoded icons
-   from `rlvgl/examples/stm32h747i-disco/assets/icons/*.rle`
+   from `examples/apps/disco-demo/assets/icons/*.rle`
    (`assets.rs:1`). lvglpp has no RLE decoder and the creator path is
    deferred (CLAUDE.md § "`creator-cpp` is deferred").
 
@@ -382,11 +382,11 @@ no first-milestone shortcuts):
   first run.
 - **D2 — Icons — RESOLVED: RLE decode up front.** Port an
   `rlvgl-decomp`-equivalent RLE decoder and consume
-  `rlvgl/examples/stm32h747i-disco/assets/icons/*.rle` so icons render
+  `examples/apps/disco-demo/assets/icons/*.rle` so icons render
   pixel-faithful from the first run (chapter **DEMO-04**). This is a
   deliberate, scoped touch of the otherwise-deferred asset path
-  (CLAUDE.md § "`creator-cpp` is deferred"): we *consume* rlvgl assets
-  and decode at runtime; we do **not** add lvglpp-side asset
+  (CLAUDE.md § "`creator-cpp` is deferred"): we *consume* locally mirrored
+  rlvgl assets and decode at runtime; we do **not** add lvglpp-side asset
   *generation*. That boundary stays intact.
 - **D3 — `Container` home — RESOLVED: `widgets/`.** Add `Container` as a
   general-purpose widget under `widgets/`, mirroring
@@ -462,7 +462,7 @@ host loop calls `controller.root().draw(renderer)` and
   the shell only *queues* `StartEffect`/`StopEffect`; the runtime
   executes. Host stubs these.
 - `creator-cpp` / lvglpp-side asset generation — deferred (CLAUDE.md).
-  This initiative *consumes* rlvgl-produced assets at most (D2).
+  This initiative consumes locally mirrored RLE assets at most (D2).
 - FreeRTOS/Zephyr entry parity — the rlvgl binary's RTOS glue is board
   bringup, not app shell.
 - Wrapping every rlvgl widget — only the four composites the demo needs.
@@ -513,13 +513,13 @@ Canonical (rlvgl `v0.2.0`):
 `rlvgl/core/src/event.rs:43,89,105,118,126,136`,
 `rlvgl/ui/src/event_window.rs:34,279,295`,
 `rlvgl/ui/src/draw_helpers.rs:41,98`,
-`rlvgl/platform/src/screen.rs:142`,
-`rlvgl/examples/stm32h747i-disco/assets/icons/*.rle`.
+`rlvgl/platform/src/screen.rs:142`.
 
 Mirror target (lvglpp):
 `core/include/lvglpp/core/event.hpp`,
 `core/include/lvglpp/core/widget.hpp`,
 `core/include/lvglpp/core/widget_node.hpp:43`,
+`examples/apps/disco-demo/assets/icons/*.rle`,
 `core/include/lvglpp/core/renderer.hpp`,
 `core/include/lvglpp/core/style.hpp`,
 `core/include/lvglpp/core/draw_helpers.hpp`,

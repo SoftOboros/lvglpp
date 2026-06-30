@@ -25,8 +25,9 @@ tap callbacks are `std::function`. No widget holds a `WidgetNode*` or an
 - `ActionHotspot` — invisible tap target with an activation closure and a
   visibility predicate (for playit `T@<tag>` automation).
 - `assets` — frozen layout constants (DEMO-00 §6) plus icon-byte accessors
-  generated at CMake-configure time from the rlvgl `.rle` files; decoded at
-  runtime via `core::rle` (DEMO-04) and blitted with `Renderer::draw_pixels`.
+  generated at CMake-configure time from lvglpp-owned `.rle` files mirrored
+  from rlvgl; decoded at runtime via `core::rle` (DEMO-04) and blitted with
+  `Renderer::draw_pixels`.
 
 ## Where it is used
 

@@ -3,17 +3,17 @@
 # PARITY: rlvgl crate rlvgl-app-disco-demo
 #         (rlvgl/examples/apps/disco-demo). Platform-independent: the four
 #         composite widgets + the consume-only icon-asset pipeline.
-# DELTA:  icon byte arrays are generated at configure time from the rlvgl
-#         `.rle` assets (mirrors core/'s font_6x10.bin -> .inc pattern).
+# DELTA:  icon byte arrays are generated at configure time from lvglpp-owned
+#         `.rle` assets mirrored from rlvgl (font_6x10.bin -> .inc pattern).
 #
 # docs/disco-demo/05-composite-widgets.md.
 
 # ---------------------------------------------------------------------------
 # Icon-asset pipeline (DEMO-05 §3) — generate disco_demo_assets.inc from the
-# rlvgl `.rle` files at configure time. Consume-only; FAIL LOUDLY if absent.
+# lvglpp-owned `.rle` files at configure time. Consume-only; FAIL LOUDLY if absent.
 # ---------------------------------------------------------------------------
 set(LVGLPP_DISCO_DEMO_ICON_DIR
-    "${CMAKE_SOURCE_DIR}/rlvgl/examples/stm32h747i-disco/assets/icons")
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/icons")
 
 # (symbol|relative-path) for each icon named in assets.rs:18-45.
 set(_lvglpp_disco_icons
@@ -40,7 +40,7 @@ foreach(_entry ${_lvglpp_disco_icons})
     if(NOT EXISTS "${_path}")
         message(FATAL_ERROR
             "DEMO-05 icon asset missing: ${_path}\n"
-            "Initialize the rlvgl submodule: git submodule update --init rlvgl")
+            "Expected lvglpp-owned assets under examples/apps/disco-demo/assets/icons")
     endif()
     file(READ "${_path}" _hex HEX)
     string(REGEX MATCHALL "[0-9a-f][0-9a-f]" _bytes "${_hex}")
@@ -57,7 +57,7 @@ foreach(_entry ${_lvglpp_disco_icons})
 endforeach()
 
 file(WRITE "${_lvglpp_disco_inc}"
-"// Auto-generated from rlvgl .rle icon assets at CMake configure time.\n"
+"// Auto-generated from lvglpp .rle icon assets at CMake configure time.\n"
 "// DO NOT EDIT — regenerated whenever the assets change.\n"
 "#pragma once\n"
 "#include <array>\n"

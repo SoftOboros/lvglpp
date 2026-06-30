@@ -9,13 +9,14 @@ DEMO-00 (D2). RFC 2119 keywords per DEMO-00.
 
 Inherits DEMO-00 §0. Canonical: `rlvgl/rlvgl-decomp/src/lib.rs`
 (rlvgl `v0.2.0`), the RLEC codec. Assets:
-`rlvgl/examples/stm32h747i-disco/assets/icons/*.rle`.
+`examples/apps/disco-demo/assets/icons/*.rle`, mirrored from the rlvgl
+STM32H747I-DISCO icon set.
 
 **Scope boundary (load-bearing).** D2 resolved to port RLE *decode* up
 front but **consume-only**: mirror the parser + ARGB decoder, **not** the
 encoder (`write_rle_blob`/`encode`). This keeps the CLAUDE.md §
-"`creator-cpp` is deferred" boundary intact — lvglpp decodes
-rlvgl-produced assets at runtime; it does not generate them.
+"`creator-cpp` is deferred" boundary intact - lvglpp decodes checked-in
+RLE assets at runtime; it does not generate them.
 
 ## §1 Purpose
 
@@ -86,11 +87,10 @@ delta.
 - `core/include/lvglpp/core/core.hpp` — add the include
 - `core/STATUS.md` — append change-log line
 - Icon assets: consumed from
-  `rlvgl/examples/stm32h747i-disco/assets/icons/*.rle`; the demo module
+  `examples/apps/disco-demo/assets/icons/*.rle`; the demo module
   (DEMO-05/06) wires the specific blobs named in
   `rlvgl/examples/apps/disco-demo/src/assets.rs` (settings/file/info +
-  the 48px set). Whether to reference in-tree or copy into the demo dir
-  is a DEMO-05 file-layout detail, noted there.
+  the 48px set).
 
 Triangulation cite block per file
 (`// PARITY: rlvgl/rlvgl-decomp/src/lib.rs` / `// LVGL: N/A (asset codec)`

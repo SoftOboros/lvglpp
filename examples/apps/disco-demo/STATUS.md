@@ -1,7 +1,7 @@
 # app_disco_demo — STATUS
 
-Tracks rlvgl/examples/apps/disco-demo @ v0.2.0 (commit 79f730d). Last
-reconciled: 2026-06-07.
+Tracks rlvgl/examples/apps/disco-demo @ v0.2.5 (commit f999f75). Last
+reconciled: 2026-06-29.
 
 ## Roadmap intent
 
@@ -20,7 +20,8 @@ C++ port of the rlvgl disco-demo app crate. Phase plan:
 ### Implemented
 - `assets.hpp` — frozen layout constants (DEMO-00 §6) + 10 icon accessors
   (`icon_settings`/`icon_file`/`icon_info` + the 48px set). Byte arrays are
-  generated at CMake-configure time from the rlvgl `.rle` files.
+  generated at CMake-configure time from lvglpp-owned `.rle` files mirrored
+  from rlvgl.
 - `IconStrip` / `IconSlot` (`SLOT_COUNT = 3`): focus get/set, per-draw icon
   decode + blit, focus-highlight border, PressRelease tap-index dispatch.
 - `Wing` / `WingSlot` (`MAX_SLOTS = 6`, `CLEAR_FRAMES = 3`): visibility
@@ -118,3 +119,12 @@ C++ port of the rlvgl disco-demo app crate. Phase plan:
   tests can reach `focused_slot()`; `FocusState`/`WingKind` are exposed for
   the same reason; app lib now links `lvglpp::platform` (for
   `platform::Screen`).
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. The existing disco-demo port remains
+  an app-specific compatibility surface; SCTD state-chart demo work is
+  tracked separately by LPAR-CPP-00/SCTD-CPP phases.
+- 2026-06-29 — RLE icon assets moved into lvglpp ownership under
+  `examples/apps/disco-demo/assets/icons/`. Disco-demo, widget-gallery,
+  linux-fbdev-smoke, and the core RLE fixture now read local lvglpp assets
+  instead of paths inside the rlvgl submodule.

@@ -15,9 +15,9 @@ None. The module exposes no `LVGLPP_APP_DISCO_DEMO_*` feature flags.
 
 ## Asset pipeline
 
-Icon byte arrays are generated at **CMake configure time** from the rlvgl
-`.rle` files under
-`rlvgl/examples/stm32h747i-disco/assets/icons/` into
+Icon byte arrays are generated at **CMake configure time** from the
+lvglpp-owned `.rle` files under
+`examples/apps/disco-demo/assets/icons/` into
 `${CMAKE_CURRENT_BINARY_DIR}/generated/disco_demo_assets.inc` (mirrors the
 `core/` `font_6x10.bin` → `.inc` pattern). If a required `.rle` is missing
 the configure step **fails loudly** (`FATAL_ERROR`) — there is no silent

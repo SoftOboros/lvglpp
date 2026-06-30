@@ -5,8 +5,8 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::playit — STATUS
 
-Tracks `rlvgl/playit` @ `v0.2.0` (commit `79f730d`). Last reconciled:
-2026-04-27.
+Tracks `rlvgl/playit` @ `v0.2.5` (commit `f999f75`). Last reconciled:
+2026-06-29.
 
 ## Roadmap intent
 
@@ -51,6 +51,11 @@ Implemented (PLAYIT-01 + PLAYIT-02 — landed 2026-04-27):
 
 - `EventPipeline` abstract base + `NullPipeline` passthrough in
   `event_pipeline.hpp`. Test target: `lvglpp_playit_event_pipeline`.
+- **LPAR-CPP-04 bridge:** `LvglInputBridge` in
+  `playit/include/lvglpp/playit/lvgl_input_bridge.hpp` binds existing
+  playit `EventSpec` pointer/key commands to LVGL-backed synthetic
+  pointer/keypad input devices without changing the wire grammar. Test
+  target: `lvglpp_playit_lvgl_input_bridge`.
 
 Stubbed (later phases):
 
@@ -65,10 +70,6 @@ Stubbed (later phases):
   `rlvgl/playit/README.md` first, then mirrors here. The rlvgl
   protocol doc is the source of truth; do not extend playit
   unilaterally on the lvglpp side.
-- **CORE-02 execution (Event).** PLAYIT-02 onwards depends on the
-  `core::Event` runtime type. Concepts doc ratified
-  (`docs/core-event/00-event-surface.md`); execution unblocked.
-  Owner: next implementation pass.
 
 ## Definitions
 
@@ -102,6 +103,11 @@ Stubbed (later phases):
   owns transport + recorder; lvglpp's Dispatcher owns only the
   command→Response routing. Transport lives in PLAT-NN; recorder
   is PLAYIT-06.
+- **`LvglInputBridge`** — As defined in
+  `playit/include/lvglpp/playit/lvgl_input_bridge.hpp` (this repo).
+  Owned by `docs/lvgl-parity/04-event-focus-input.md`; adapted from
+  playit `EventSpec` injection to feed LVGL `lv_indev_t` read state
+  instead of the compatibility `WidgetNode` dispatcher.
 
 ## Change log
 
@@ -194,3 +200,15 @@ Stubbed (later phases):
   pipeline (PLAYIT-04a §10 — deferred PLAYIT-04a-1); existing
   dispatcher/executor tests remain unaffected. 16/16 ctest
   entries green; embedded posture clean.
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. Wire parsing/formatting remains
+  first-class; LVGL-backed dispatch is deferred to LPAR-CPP-04 after
+  object/event wrappers exist.
+- 2026-06-29 — LPAR-CPP-04 playit bridge landed.
+  `LvglInputBridge` consumes existing `EventSpec` pointer/key variants
+  and feeds synthetic LVGL pointer/keypad input-device reads. The
+  wire grammar is unchanged. Test target
+  `lvglpp_playit_lvgl_input_bridge` verifies `PressRelease` drives an
+  LVGL click and `KeyDown` reaches the focused object through an
+  `LvGroup`.

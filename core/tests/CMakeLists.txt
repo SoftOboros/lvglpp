@@ -43,6 +43,51 @@ target_link_libraries(lvglpp_core_widget_node_test
 )
 add_test(NAME lvglpp_core_widget_node COMMAND lvglpp_core_widget_node_test)
 
+# LPAR-CPP-02 acceptance.
+add_executable(lvglpp_core_object_test object_test.cpp)
+target_link_libraries(lvglpp_core_object_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_object COMMAND lvglpp_core_object_test)
+
+# LPAR-CPP-03 acceptance.
+add_executable(lvglpp_core_display_test display_test.cpp)
+target_link_libraries(lvglpp_core_display_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_display COMMAND lvglpp_core_display_test)
+
+# LPAR-CPP-04 acceptance.
+add_executable(lvglpp_core_input_test input_test.cpp)
+target_link_libraries(lvglpp_core_input_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_input COMMAND lvglpp_core_input_test)
+
+# LPAR-CPP-05 acceptance.
+add_executable(lvglpp_core_scroll_test scroll_test.cpp)
+target_link_libraries(lvglpp_core_scroll_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_scroll COMMAND lvglpp_core_scroll_test)
+
+# LPAR-CPP-06 acceptance.
+add_executable(lvglpp_core_timer_test timer_test.cpp)
+target_link_libraries(lvglpp_core_timer_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_timer COMMAND lvglpp_core_timer_test)
+
 # DEMO-04 acceptance (consume-only RLEC decoder).
 add_executable(lvglpp_core_rle_test rle_test.cpp)
 target_link_libraries(lvglpp_core_rle_test
@@ -50,11 +95,10 @@ target_link_libraries(lvglpp_core_rle_test
         lvglpp::core
         lvglpp_warnings
 )
-# Point the test at a real rlvgl icon asset when the (non-recursive) rlvgl
-# submodule is checked out; otherwise the test skips that sub-case. The
-# decoder itself is fully covered by the hand-built fixtures.
+# Point the test at a real lvglpp-owned icon asset; the decoder itself is
+# fully covered by the hand-built fixtures.
 set(LVGLPP_RLE_ASSET
-    "${CMAKE_SOURCE_DIR}/rlvgl/examples/stm32h747i-disco/assets/icons/file.rle")
+    "${CMAKE_SOURCE_DIR}/examples/apps/disco-demo/assets/icons/file.rle")
 if(EXISTS "${LVGLPP_RLE_ASSET}")
     target_compile_definitions(lvglpp_core_rle_test
         PRIVATE LVGLPP_RLE_ASSET_PATH="${LVGLPP_RLE_ASSET}")

@@ -5,8 +5,8 @@ Canonical shape: see CLAUDE.md § "Doc Co-Location Policy".
 
 # lvglpp::ui — STATUS
 
-Tracks `rlvgl/ui` @ `v0.2.0` (commit `79f730d`). Last reconciled:
-2026-06-07.
+Tracks `rlvgl/ui` @ `v0.2.5` (commit `f999f75`). Last reconciled:
+2026-06-29.
 
 ## Roadmap intent
 
@@ -94,3 +94,8 @@ Stubbed:
   hooks deferred. Bg via `core::fill_rounded_rect`, border via
   `core::detail::draw_border_straight` (rounded corners deferred to
   CORE-04b). Test `lvglpp_ui_event_window`; embedded-posture clean.
+- 2026-06-29 — Status reconciled to the `rlvgl` `v0.2.5` submodule pin
+  (`f999f75`) and the lvglpp LVGL-backed parity baseline at
+  `docs/lvgl-parity/01-baseline.md`. Existing UI helpers remain
+  app/compatibility surfaces until LPAR-CPP layout/style/widget wrapper
+  phases consume them.

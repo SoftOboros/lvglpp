@@ -9,8 +9,8 @@
 // mirrors the rlvgl-decomp parser (`parse_rle_blob`, lib.rs:341) and the
 // ARGB decode loop (`decode_argb_into`, lib.rs:382), and ONLY those. The
 // encoder side (`write_rle_blob`, `encode_rgba`) is deliberately NOT
-// ported: lvglpp consumes rlvgl-produced assets at runtime, it does not
-// generate them (CLAUDE.md § "`creator-cpp` is deferred"). Frozen
+// ported: lvglpp consumes locally mirrored RLE assets at runtime, it does
+// not generate them (CLAUDE.md § "`creator-cpp` is deferred"). Frozen
 // constants and the error set are Standards Action (must match rlvgl).
 
 #ifndef LVGLPP_CORE_RLE_HPP

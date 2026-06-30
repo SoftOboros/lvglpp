@@ -89,6 +89,30 @@ coverage/
 *.dep
 *.dot
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+dist/
+*.whl
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
 # -----------------------------------------------------------------------------
 # Debug / core dumps
 # -----------------------------------------------------------------------------
@@ -121,6 +145,10 @@ clang-tidy.log
 cppcheck-*.xml
 scan-build-*/
 infer-out/
+
+# Local agent / MCP configuration
+.codex/
+.mcp.json
 
 # Sanitizer / fuzzer output
 *.asan
@@ -225,6 +253,10 @@ CMakeLists.txt.user*
 .AppleDouble
 .LSOverride
 Icon?
+!examples/apps/disco-demo/assets/
+!examples/apps/disco-demo/assets/icons/
+!examples/apps/disco-demo/assets/icons/**/
+!examples/apps/disco-demo/assets/icons/**/*.rle
 ._*
 .Spotlight-V100
 .Trashes

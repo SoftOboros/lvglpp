@@ -3,12 +3,12 @@
 // PARITY: rlvgl/examples/apps/disco-demo/src/assets.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A (app composite asset table).
 // DELTA:  rlvgl's `include_bytes!` statics become accessor functions over
-//         arrays generated from the same `.rle` files at CMake-configure
-//         time (consume-only — lvglpp never encodes assets).
+//         arrays generated from lvglpp-owned `.rle` files at CMake-configure
+//         time (consume-only - lvglpp never encodes assets).
 
 #include "lvglpp/app/disco_demo/assets.hpp"
 
-// Generated at CMake-configure time from the rlvgl icon `.rle` files.
+// Generated at CMake-configure time from the lvglpp-owned icon `.rle` files.
 // Defines lvglpp::app::disco_demo::detail::ICON_*_BYTES arrays. Configure
 // FAILs (FATAL_ERROR) if any asset is missing, so these spans are never
 // silently empty (DEMO-05 §3).
