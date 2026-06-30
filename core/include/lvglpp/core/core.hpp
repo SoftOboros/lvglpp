@@ -10,6 +10,7 @@
 #ifndef LVGLPP_CORE_CORE_HPP
 #define LVGLPP_CORE_CORE_HPP
 
+#include "lvglpp/core/asset_lvgl.hpp"
 #include "lvglpp/core/draw_helpers.hpp"
 #include "lvglpp/core/draw_lvgl.hpp"
 #include "lvglpp/core/display.hpp"

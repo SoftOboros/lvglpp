@@ -52,6 +52,7 @@ file(WRITE "${LVGLPP_FONT_6X10_INC}"
 
 target_sources(lvglpp_core
     PRIVATE
+        src/asset_lvgl.cpp
         src/display.cpp
         src/draw_lvgl.cpp
         src/input.cpp

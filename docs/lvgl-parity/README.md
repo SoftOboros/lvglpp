@@ -33,6 +33,9 @@ The normative artifacts are:
 - [`08-text-draw-image-mask.md`](08-text-draw-image-mask.md) — ratified and implemented
   LVGL text, font, label, image descriptor, image widget, draw
   descriptor, and mask wrapper plan using LVGL public APIs underneath.
+- [`09-asset-filesystem.md`](09-asset-filesystem.md) — ratified and implemented LVGL
+  filesystem driver, file/directory, path-buffer, image decoder, image
+  cache, and static asset catalog plan using LVGL public APIs underneath.
 
 The README is informative. Per-phase chapters own implementation
 contracts once they are split out.
