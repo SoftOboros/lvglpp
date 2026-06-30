@@ -16,6 +16,7 @@
 #include "lvglpp/core/display.hpp"
 #include "lvglpp/core/event.hpp"
 #include "lvglpp/core/input.hpp"
+#include "lvglpp/core/layout.hpp"
 #include "lvglpp/core/object.hpp"
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/rle.hpp"

@@ -115,6 +115,15 @@ target_link_libraries(lvglpp_core_asset_lvgl_test
 )
 add_test(NAME lvglpp_core_asset_lvgl COMMAND lvglpp_core_asset_lvgl_test)
 
+# LPAR-CPP-10 acceptance.
+add_executable(lvglpp_core_layout_test layout_test.cpp)
+target_link_libraries(lvglpp_core_layout_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_layout COMMAND lvglpp_core_layout_test)
+
 # DEMO-04 acceptance (consume-only RLEC decoder).
 add_executable(lvglpp_core_rle_test rle_test.cpp)
 target_link_libraries(lvglpp_core_rle_test

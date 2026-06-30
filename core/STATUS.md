@@ -67,6 +67,12 @@ Implemented:
   `ScrollbarMode`, `ScrollSnap`, `ScrollOffset`, `ScrollExtents`,
   `ScrollbarAreas`, and LVGL-backed scroll helpers over
   `lv_obj_scroll_*`. Test target: `lvglpp_core_scroll`.
+- **LPAR-CPP-10:** `lvglpp::SizeValue`, `Align`, `LayoutKind`,
+  gated `FlexFlow` / `FlexAlign`, gated `GridAlign` /
+  `GridTrackList`, and LVGL-backed geometry, alignment, dirty/update,
+  flex, grid, and layout style helpers in
+  `core/include/lvglpp/core/layout.hpp`. Test target:
+  `lvglpp_core_layout`.
 - **CORE-02:** `lvglpp::core::Event` (10-variant `std::variant`),
   `lvglpp::core::TouchState`, `lvglpp::core::TouchPoint`,
   `lvglpp::core::Key` (10-variant `std::variant` with named-key empty
@@ -230,6 +236,12 @@ Local glossary. Forms follow `CLAUDE.md` §
   `docs/lvgl-parity/05-scroll-runtime.md`. These wrappers delegate
   scroll state, movement, snap, scrollbar, and lifecycle behavior to
   LVGL.
+- **`SizeValue`, `Align`, `LayoutKind`, `FlexFlow`, `FlexAlign`,
+  `GridAlign`, `GridTrackList`** — As defined in
+  `core/include/lvglpp/core/layout.hpp`; owned by
+  `docs/lvgl-parity/10-layout.md`. These wrappers delegate object
+  geometry, percent/content sizing, dirty layout, flex, grid, and layout
+  style property behavior to LVGL.
 
 ## Change log
 
@@ -337,3 +349,10 @@ Local glossary. Forms follow `CLAUDE.md` §
   wrappers, scroll-to-view helpers, and a synthetic pointer-driven
   scroll path. Full default build and all 37 host tests pass;
   embedded-posture `lvglpp_core`/`lvglpp_playit` compile passes.
+- 2026-06-30 — LPAR-CPP-10 execution landed.
+  `core/include/lvglpp/core/layout.hpp` and `core/src/layout.cpp` add
+  LVGL-backed geometry, percent/content size, alignment, dirty/update,
+  flex, grid, grid track descriptor, and layout style helpers. Test
+  target `lvglpp_core_layout` validates enum mappings, real LVGL
+  geometry reads, flex/grid layout updates, grid descriptor sentinels,
+  and typed style property writes.

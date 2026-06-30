@@ -56,6 +56,7 @@ target_sources(lvglpp_core
         src/display.cpp
         src/draw_lvgl.cpp
         src/input.cpp
+        src/layout.cpp
         src/object.cpp
         src/runtime.cpp
         src/scroll.cpp

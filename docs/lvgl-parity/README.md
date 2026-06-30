@@ -36,6 +36,9 @@ The normative artifacts are:
 - [`09-asset-filesystem.md`](09-asset-filesystem.md) — ratified and implemented LVGL
   filesystem driver, file/directory, path-buffer, image decoder, image
   cache, and static asset catalog plan using LVGL public APIs underneath.
+- [`10-layout.md`](10-layout.md) — ratified and implemented LVGL geometry,
+  layout dirty/update, flex, grid, and layout style wrapper plan using
+  LVGL public APIs underneath.
 
 The README is informative. Per-phase chapters own implementation
 contracts once they are split out.
