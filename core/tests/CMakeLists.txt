@@ -88,6 +88,15 @@ target_link_libraries(lvglpp_core_timer_test
 )
 add_test(NAME lvglpp_core_timer COMMAND lvglpp_core_timer_test)
 
+# LPAR-CPP-07 acceptance.
+add_executable(lvglpp_core_style_lvgl_test style_lvgl_test.cpp)
+target_link_libraries(lvglpp_core_style_lvgl_test
+    PRIVATE
+        lvglpp::core
+        lvglpp_warnings
+)
+add_test(NAME lvglpp_core_style_lvgl COMMAND lvglpp_core_style_lvgl_test)
+
 # DEMO-04 acceptance (consume-only RLEC decoder).
 add_executable(lvglpp_core_rle_test rle_test.cpp)
 target_link_libraries(lvglpp_core_rle_test

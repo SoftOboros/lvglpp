@@ -20,6 +20,7 @@
 #include "lvglpp/core/runtime.hpp"
 #include "lvglpp/core/scroll.hpp"
 #include "lvglpp/core/style.hpp"
+#include "lvglpp/core/style_lvgl.hpp"
 #include "lvglpp/core/timer.hpp"
 #include "lvglpp/core/widget.hpp"
 #include "lvglpp/core/widget_node.hpp"

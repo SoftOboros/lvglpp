@@ -27,6 +27,9 @@ The normative artifacts are:
   implemented
   LVGL timer and animation wrapper plan using LVGL `lv_timer_t`,
   `lv_anim_t`, and explicit tick-driving underneath.
+- [`07-style-theme.md`](07-style-theme.md) — ratified and implemented
+  LVGL style and theme wrapper plan using LVGL `lv_style_t`, object
+  style selectors, transition descriptors, and `lv_theme_t` underneath.
 
 The README is informative. Per-phase chapters own implementation
 contracts once they are split out.
