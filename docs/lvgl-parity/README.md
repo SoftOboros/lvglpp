@@ -30,6 +30,9 @@ The normative artifacts are:
 - [`07-style-theme.md`](07-style-theme.md) — ratified and implemented
   LVGL style and theme wrapper plan using LVGL `lv_style_t`, object
   style selectors, transition descriptors, and `lv_theme_t` underneath.
+- [`08-text-draw-image-mask.md`](08-text-draw-image-mask.md) — ratified and implemented
+  LVGL text, font, label, image descriptor, image widget, draw
+  descriptor, and mask wrapper plan using LVGL public APIs underneath.
 
 The README is informative. Per-phase chapters own implementation
 contracts once they are split out.
