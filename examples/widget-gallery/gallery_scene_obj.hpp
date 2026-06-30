@@ -7,8 +7,8 @@
 // DELTA:  ObjScene is NON-movable: the Image stores a pointer to the member
 //         lv_image_dsc_t (and the dsc points at the member pixel buffer), so
 //         the scene's address must stay stable. Build it in place via
-//         build_obj_scene(); never move or copy it. Styling uses the cascade
-//         local setters (no shared style::Style → no extra lifetime hazard).
+//         build_obj_scene(); never move or copy it. Styling uses LVGL local
+//         style setters directly while the lvglpp wrapper surface catches up.
 
 #pragma once
 
@@ -20,7 +20,6 @@
 #include "lvglpp/core/object.hpp"
 #include "lvglpp/core/plugins/rle.hpp"  // CORE-07n (LVGLPP_CORE_RLE)
 #include "lvglpp/core/runtime.hpp"
-#include "lvglpp/core/style_cascade.hpp"
 #include "lvglpp/widgets/container.hpp"
 #include "lvglpp/widgets/image.hpp"
 #include "lvglpp/widgets/list.hpp"
@@ -55,22 +54,23 @@ struct ObjScene {
 // icon. Returns false if the icon blob fails to decode (scene left partial).
 //   icon_blob: borrows an RLEC blob for the call (decoded into scene.icon_pixels).
 inline bool build_obj_scene(ObjScene& scene, std::span<const std::uint8_t> icon_blob) {
-    using core::style::Part;
-    using core::style::Selector;
-
-    scene.screen.load();  // make it the active screen so lv_refr_now renders it.
+    lv_screen_load(scene.screen.borrow_raw());
 
     scene.root.set_tag("gallery.root");
     scene.root.set_size(800, 480);
-    scene.root.set_local_bg_color(lv_color_make(16, 24, 48), Selector{Part::Main});
+    lv_obj_set_style_bg_color(scene.root.borrow_raw(), lv_color_make(16, 24, 48),
+                              LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(scene.root.borrow_raw(), LV_OPA_COVER, LV_PART_MAIN);
 
     scene.list.set_tag("gallery.list");
     lv_obj_set_pos(scene.list.borrow_raw(), 40, 40);
     scene.list.set_size(200, 80);
-    scene.list.set_local_bg_color(lv_color_make(16, 24, 48), Selector{Part::Main});
-    scene.list.set_local_border_width(2, Selector{Part::Main});
-    scene.list.set_local_text_color(lv_color_make(255, 255, 255), Selector{Part::Main});
-    // border color has no wrapper local-setter yet; set it directly.
+    lv_obj_set_style_bg_color(scene.list.borrow_raw(), lv_color_make(16, 24, 48),
+                              LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(scene.list.borrow_raw(), LV_OPA_COVER, LV_PART_MAIN);
+    lv_obj_set_style_border_width(scene.list.borrow_raw(), 2, LV_PART_MAIN);
+    lv_obj_set_style_text_color(scene.list.borrow_raw(), lv_color_make(255, 255, 255),
+                                LV_PART_MAIN);
     lv_obj_set_style_border_color(scene.list.borrow_raw(), lv_color_make(255, 200, 0),
                                   LV_PART_MAIN);
     static_cast<void>(scene.list.add_text("alpha"));
