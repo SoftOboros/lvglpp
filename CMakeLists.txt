@@ -27,6 +27,16 @@ option(LVGLPP_BUILD_TESTS    "Build lvglpp tests"     ON)
 option(LVGLPP_BUILD_EXAMPLES "Build lvglpp examples"  ON)
 option(LVGLPP_USE_RLVGL      "Expose rlvgl reference paths to consumers" OFF)
 
+# Preserve the minimal DISCO/Generic build by default. Consumers can opt
+# into the wrapper libraries with their own freestanding configuration.
+if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
+    set(_lvglpp_libraries_default OFF)
+else()
+    set(_lvglpp_libraries_default ON)
+endif()
+option(LVGLPP_BUILD_LIBRARIES "Build LVGL and the lvglpp wrapper libraries"
+    ${_lvglpp_libraries_default})
+
 # PLAT-02 STM32H747I-DISCO target. Requires the arm-none-eabi
 # cross-toolchain (cmake/toolchains/arm-none-eabi.cmake); see
 # examples/stm32h747i-disco/CMakeLists.txt for the gate. Default OFF
@@ -74,11 +84,8 @@ if(LVGLPP_EMBEDDED_POSTURE)
 endif()
 
 # ---------------------------------------------------------------------------
-# Host vs. cross. The lvglpp module set + lvgl submodule + ctest are all
-# host-targeted today; PLAT-02a's cross build is deliberately minimal
-# (just the disco example links the warnings + posture INTERFACE libs).
-# Subsequent PLAT-02 sub-phases will grow the cross surface as they
-# need core/playit on-target.
+# Generic board examples retain their minimal default. Library builds
+# are independently selectable, including with a cross toolchain.
 # ---------------------------------------------------------------------------
 if(CMAKE_SYSTEM_NAME STREQUAL "Generic")
     set(LVGLPP_HOST_BUILD OFF)
@@ -86,10 +93,15 @@ else()
     set(LVGLPP_HOST_BUILD ON)
 endif()
 
+if(CMAKE_CROSSCOMPILING AND LVGLPP_BUILD_LIBRARIES AND NOT LVGLPP_EMBEDDED_POSTURE)
+    message(FATAL_ERROR
+        "Cross-built lvglpp libraries require LVGLPP_EMBEDDED_POSTURE=ON.")
+endif()
+
 # ---------------------------------------------------------------------------
-# LVGL submodule (the C library we wrap) — host-only today.
+# LVGL submodule (the C library we wrap).
 # ---------------------------------------------------------------------------
-if(LVGLPP_HOST_BUILD)
+if(LVGLPP_BUILD_LIBRARIES)
     set(LVGLPP_LVGL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lvgl"
         CACHE PATH "Path to the LVGL C source tree (default: top-level submodule)")
 
@@ -99,20 +111,38 @@ if(LVGLPP_HOST_BUILD)
             "Run: git submodule update --init lvgl")
     endif()
 
-    # Provide an lv_conf.h before adding LVGL. LVGL's CMake reads
-    # LV_BUILD_CONF_PATH (absolute path to the config header) and
-    # LV_BUILD_CONF_DIR (directory holding lv_conf.h, used with simple include).
-    set(LV_BUILD_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/lvglpp/lv_conf.h"
-        CACHE FILEPATH "Path to lv_conf.h" FORCE)
+    # Honor upstream configuration inputs from either -D or a parent
+    # project. A non-cache fallback avoids pinning the bundled header in
+    # the cache, so later reconfigures can select LV_BUILD_CONF_DIR too.
+    # Declare typed entries first: upstream's older CMake policy scope
+    # would otherwise remove a normal variable when creating its cache entry.
+    set(LV_BUILD_CONF_PATH "${LV_BUILD_CONF_PATH}" CACHE FILEPATH "Path to a consumer lv_conf.h")
+    set(LV_BUILD_CONF_DIR "${LV_BUILD_CONF_DIR}" CACHE PATH "Directory containing a consumer lv_conf.h")
+    if(NOT LV_BUILD_CONF_PATH AND NOT LV_BUILD_CONF_DIR AND NOT LV_BUILD_USE_KCONFIG)
+        set(LV_BUILD_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include/lvglpp/lv_conf.h")
+    endif()
 
-    add_subdirectory(${LVGLPP_LVGL_DIR} ${CMAKE_BINARY_DIR}/_deps/lvgl EXCLUDE_FROM_ALL)
+    # A library-only build must not pull in upstream demos/examples
+    # through LVGL's public link interface. Explicit consumer settings
+    # still take precedence over these defaults.
+    if(NOT LVGLPP_BUILD_EXAMPLES)
+        foreach(_lvglpp_upstream_option CONFIG_LV_BUILD_EXAMPLES CONFIG_LV_BUILD_DEMOS)
+            if(NOT DEFINED ${_lvglpp_upstream_option})
+                set(${_lvglpp_upstream_option} OFF)
+            endif()
+            set(${_lvglpp_upstream_option} "${${_lvglpp_upstream_option}}"
+                CACHE BOOL "Build upstream LVGL examples/demos")
+        endforeach()
+    endif()
+
+    add_subdirectory("${LVGLPP_LVGL_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_deps/lvgl" EXCLUDE_FROM_ALL)
 endif()
 
 # Enable testing before adding modules so that per-module tests/
 # subdirectories can register ctest entries via add_test(). Cross
-# builds skip ctest entirely.
-if(NOT LVGLPP_HOST_BUILD)
-    set(LVGLPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+# builds skip ctest entirely. Do not rewrite consumer cache preferences.
+if(CMAKE_CROSSCOMPILING OR NOT LVGLPP_BUILD_LIBRARIES)
+    set(LVGLPP_BUILD_TESTS OFF)
 endif()
 if(LVGLPP_BUILD_TESTS)
     enable_testing()
@@ -161,12 +191,9 @@ target_link_libraries(lvglpp_expected
 )
 
 # ---------------------------------------------------------------------------
-# Per-module libraries — host-targeted today (each depends transitively on
-# lvgl). PLAT-02a's cross build skips them; the smoke target only links
-# lvglpp_warnings + lvglpp_posture. Subsequent sub-phases will land
-# embedded-clean cross paths for the modules that need them on-target.
+# Per-module libraries — selectable independently of tests and examples.
 # ---------------------------------------------------------------------------
-if(LVGLPP_HOST_BUILD)
+if(LVGLPP_BUILD_LIBRARIES)
     # CORE-07n §5.3: in-repo example consumers (disco-demo icons,
     # widget gallery) force the RLE plugin on; the bare library
     # build stays plugin-free.
@@ -204,6 +231,7 @@ if(LVGLPP_HOST_BUILD)
     # DEMO-02: lvglpp_ui is now a compiled STATIC library (was INTERFACE),
     # so posture flags apply to its own translation units via PUBLIC.
     target_link_libraries(lvglpp_ui        PUBLIC    lvglpp_posture)
+    target_link_libraries(lvglpp_i18n      PUBLIC    lvglpp_posture)
 
     get_target_property(_lvglpp_platform_type lvglpp_platform TYPE)
     if(_lvglpp_platform_type STREQUAL "INTERFACE_LIBRARY")

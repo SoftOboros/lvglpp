@@ -255,12 +255,12 @@ bool AnimationKey::cancel() const noexcept {
 
 AnimationKey::AnimationKey(void* var,
                            AnimationCallbackFamily family,
-                           lv_anim_exec_xcb_t exec_callback,
-                           lv_anim_custom_exec_cb_t custom_callback) noexcept
+                           lv_anim_exec_xcb_t exec_fn,
+                           lv_anim_custom_exec_cb_t custom_fn) noexcept
     : var_{var},
       family_{family},
-      exec_callback_{exec_callback},
-      custom_callback_{custom_callback} {}
+      exec_callback_{exec_fn},
+      custom_callback_{custom_fn} {}
 
 void AnimationView::pause() const noexcept {
     if (raw_ != nullptr) {

@@ -37,7 +37,10 @@ namespace {
     descriptor.header.flags = flags;
     descriptor.header.w = width;
     descriptor.header.h = height;
-    descriptor.header.stride = normalized_stride(width, color_format, stride);
+    // LVGL stores stride in a 16-bit field; make the existing narrowing
+    // explicit for GCC's -Wconversion diagnostics on cross builds.
+    descriptor.header.stride = static_cast<std::uint16_t>(
+        normalized_stride(width, color_format, stride));
     descriptor.data_size = static_cast<std::uint32_t>(data.size());
     descriptor.data = data.data();
     return descriptor;

@@ -23,6 +23,7 @@ These are defined at the top-level `CMakeLists.txt` and apply to
 
 | Option | Default | Effect |
 | --- | --- | --- |
+| `LVGLPP_BUILD_LIBRARIES` | `ON` (`OFF` for `Generic`) | Builds LVGL and the wrapper modules; set `ON` for library-only freestanding cross builds. |
 | `LVGLPP_EMBEDDED_POSTURE` | `OFF` | Adds `-fno-exceptions -fno-rtti`; throwing `Runtime()` constructor calls `std::abort()` instead of throwing. Mirrors rlvgl `no_std` + `panic = abort`. |
 | `LVGLPP_BUILD_TESTS` | `ON` | Builds host smoke tests under `tests/`. |
 | `LVGLPP_BUILD_EXAMPLES` | `ON` | Builds desktop and board examples under `examples/`. |
@@ -30,10 +31,14 @@ These are defined at the top-level `CMakeLists.txt` and apply to
 
 ## LVGL configuration
 
-`lvglpp::core` includes `<lvgl.h>`, which is configured by the
-top-level `include/lvglpp/lv_conf.h`. Override by setting
-`LV_BUILD_CONF_PATH` on the CMake command line, or by replacing
-`lv_conf.h` in a downstream consumer.
+`lvglpp::core` includes `<lvgl.h>`. Set upstream `LV_BUILD_CONF_PATH`
+to a consumer configuration header, or `LV_BUILD_CONF_DIR` to the
+directory containing it, before configuring or adding lvglpp as a
+subdirectory. Set only one. The bundled `include/lvglpp/lv_conf.h`
+is used only when neither is supplied and Kconfig is disabled. The
+same configuration propagates through LVGL to wrapper consumers.
+See [consumer and Buildroot builds](../README.md#consumer-and-buildroot-builds)
+for library-only cross builds and upstream backend dependency options.
 
 The host default is documented in
 [`include/lvglpp/lv_conf.h`](../include/lvglpp/lv_conf.h):

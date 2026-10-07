@@ -36,6 +36,10 @@ Phase plan:
 
 ## As-built
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 Implemented (WID-01 — landed 2026-04-27):
 
 - Compiled CMake target `lvglpp::widgets` (was INTERFACE).
@@ -164,3 +168,4 @@ Stubbed:
   `docs/lvgl-parity/01-baseline.md`. Current widgets are classified as
   compatibility widgets; LVGL-backed parity wrappers start in the
   LPAR-CPP phases.
+- 2026-10-07 — Module builds can be selected for library-only cross compilation using LVGLPP_BUILD_LIBRARIES, independently of tests/examples and without a Rust reference checkout.

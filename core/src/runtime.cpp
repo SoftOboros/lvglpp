@@ -2,10 +2,12 @@
 //
 // PARITY: rlvgl/core/src/application.rs (v0.2.0 @ d99f793).
 // LVGL:   lvgl/src/core/lv_obj.c (lv_init).
+// DELTA:  C++ RAII lifecycle with abort on embedded initialization failure.
 
 #include "lvglpp/core/runtime.hpp"
 
 #include <atomic>
+#include <cstdlib>
 
 #if !defined(LVGLPP_EMBEDDED_POSTURE)
 #  include <stdexcept>

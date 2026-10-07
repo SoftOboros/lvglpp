@@ -44,6 +44,10 @@ Phase plan (informal until a concepts doc lands under `docs/`):
 
 Implemented:
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 - **CORE-01:** `lvglpp::Runtime` — RAII guard around `lv_init()` with
   single-instance enforcement. Throws on host posture, calls
   `std::abort()` on embedded posture, exposes `try_make()` returning
@@ -356,3 +360,5 @@ Local glossary. Forms follow `CLAUDE.md` §
   target `lvglpp_core_layout` validates enum mappings, real LVGL
   geometry reads, flex/grid layout updates, grid descriptor sentinels,
   and typed style property writes.
+- 2026-10-07 — Consumer builds now honor upstream LV_BUILD_CONF_PATH / LV_BUILD_CONF_DIR and can opt into library-only cross builds with LVGLPP_BUILD_LIBRARIES; the bundled configuration is a fallback only.
+- 2026-10-07 — Cortex-M GCC portability: include the abort declaration directly, avoid callback parameter shadowing, and make the existing LVGL 16-bit image stride narrowing explicit.
