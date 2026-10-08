@@ -101,6 +101,25 @@ class SourceReleaseTests(unittest.TestCase):
         with self.assertRaises(subprocess.CalledProcessError):
             self.make(self.root / 'off-main', 'v0.1.0')
 
+    def test_stable_tag_with_canonical_public_version_header(self):
+        lvgl = self.repo / 'lvgl'
+        canonical = lvgl / 'include/lvgl/lv_version.h'
+        canonical.parent.mkdir(parents=True)
+        canonical.write_text((lvgl / 'lv_version.h').read_text().replace('"dev"', '""'))
+        (lvgl / 'lv_version.h').write_text('#include "include/lvgl/lv_version.h"\n')
+        self.commit(lvgl)
+        git(lvgl, 'tag', 'v9.6.0')
+        self.policy.update(lvgl_commit=git(lvgl, 'rev-parse', 'HEAD').decode().strip(),
+                           lvgl_tag='v9.6.0', lvgl_version='9.6.0')
+        git(self.repo, 'update-index', '--cacheinfo',
+            '160000,' + self.policy['lvgl_commit'] + ',lvgl')
+        self.update_policy()
+        self.make()
+        manifest = verify(self.out)
+        self.assertEqual(manifest['lvgl']['tag'], 'v9.6.0')
+        self.assertEqual(manifest['lvgl']['archive'], 'lvgl-v9.6.0.tar.gz')
+        self.assertEqual(manifest['lvgl']['version'], '9.6.0')
+
     def test_gitlink_and_declared_tag_mismatch(self):
         self.policy['lvgl_commit'] = '0' * 40
         self.update_policy()

@@ -43,7 +43,7 @@ for library-only cross builds and upstream backend dependency options.
 The host default is documented in
 [`include/lvglpp/lv_conf.h`](../include/lvglpp/lv_conf.h):
 
-- `LV_COLOR_DEPTH = 32`
+- `LV_COLOR_FORMAT_DEFAULT = LV_COLOR_FORMAT_ARGB8888`
 - `LV_USE_LOG = 1`
 - `LV_LOG_LEVEL = LV_LOG_LEVEL_WARN`
 - `LV_USE_OBJ`, `LV_USE_LABEL`, `LV_USE_BUTTON` enabled
@@ -80,3 +80,8 @@ roadmap.
   `lvglpp::expected<Runtime, RuntimeError>`.
 - Code size and runtime cost of the base library are dominated by
   upstream LVGL itself, not by this wrapper.
+
+The LVGL v9.6.0 host fallback selects `LV_COLOR_FORMAT_DEFAULT` as
+`LV_COLOR_FORMAT_ARGB8888`. Consumer headers can select other supported
+formats (the CMake consumer probes use RGB565). Use this upstream format
+setting rather than deprecated `LV_COLOR_DEPTH` in strict builds.

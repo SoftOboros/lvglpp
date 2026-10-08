@@ -1,7 +1,7 @@
 // object.cpp - LVGL-backed object owner implementation.
 //
 // PARITY: rlvgl/docs/concepts/LPAR-02-OBJECT-SUBSTRATE.md (v0.2.5 @ f999f75).
-// LVGL:   lvgl/src/core/lv_obj.h and lvgl/src/core/lv_obj_tree.h.
+// LVGL:   lvgl/include/lvgl/core/lv_obj.h and lvgl/src/core/lv_obj_tree.h.
 // DELTA:  delegates object storage and tree semantics to LVGL.
 
 #include "lvglpp/core/object.hpp"
@@ -9,6 +9,61 @@
 namespace lvglpp {
 
 namespace {
+
+// The published ObjectFlag values retain their LVGL bit values. Delegate
+// each requested property to LVGL's v9.6 setters/getters; LVGL owns storage
+// and side effects. ScrollChain is the combination of horizontal/vertical.
+struct FlagAccess {
+    ObjectFlag flag;
+    // external: function address has static program lifetime; borrows object for call.
+    void (*set)(lv_obj_t*, bool);
+    // external: function address has static program lifetime; observes object for call.
+    bool (*get)(const lv_obj_t*);
+};
+
+constexpr FlagAccess flag_access[] = {
+    {ObjectFlag::Hidden, lv_obj_set_hidden, lv_obj_is_hidden},
+    {ObjectFlag::Clickable, lv_obj_set_clickable, lv_obj_is_clickable},
+    {ObjectFlag::ClickFocusable, lv_obj_set_click_focusable, lv_obj_is_click_focusable},
+    {ObjectFlag::Checkable, lv_obj_set_checkable, lv_obj_is_checkable},
+    {ObjectFlag::Scrollable, lv_obj_set_scrollable, lv_obj_is_scrollable},
+    {ObjectFlag::ScrollElastic, lv_obj_set_scroll_elastic, lv_obj_is_scroll_elastic},
+    {ObjectFlag::ScrollMomentum, lv_obj_set_scroll_momentum, lv_obj_is_scroll_momentum},
+    {ObjectFlag::ScrollOne, lv_obj_set_scroll_one, lv_obj_is_scroll_one},
+    {ObjectFlag::ScrollChainHorizontal, lv_obj_set_scroll_chain_hor, lv_obj_is_scroll_chain_hor},
+    {ObjectFlag::ScrollChainVertical, lv_obj_set_scroll_chain_ver, lv_obj_is_scroll_chain_ver},
+    {ObjectFlag::ScrollOnFocus, lv_obj_set_scroll_on_focus, lv_obj_is_scroll_on_focus},
+    {ObjectFlag::ScrollWithArrow, lv_obj_set_scroll_with_arrow, lv_obj_is_scroll_with_arrow},
+    {ObjectFlag::Snappable, lv_obj_set_snappable, lv_obj_is_snappable},
+    {ObjectFlag::EventBubble, lv_obj_set_event_bubble, lv_obj_is_event_bubble},
+    {ObjectFlag::EventTrickle, lv_obj_set_event_trickle, lv_obj_is_event_trickle},
+    {ObjectFlag::Floating, lv_obj_set_floating, lv_obj_is_floating},
+};
+
+// Args: raw borrows a live LVGL object for this call; no ownership transfer.
+void borrow_update_flags(lv_obj_t* raw, ObjectFlag flags, bool enabled) noexcept {
+    const auto mask = static_cast<std::uint32_t>(flags);
+    for (const auto& access : flag_access) {
+        if ((mask & static_cast<std::uint32_t>(access.flag)) != 0) {
+            access.set(raw, enabled);
+        }
+    }
+}
+
+// Args: raw observes a live LVGL object for this call; no ownership transfer.
+[[nodiscard]] bool view_flags(const lv_obj_t* raw, ObjectFlag flags) noexcept {
+    auto remaining = static_cast<std::uint32_t>(flags);
+    for (const auto& access : flag_access) {
+        const auto bit = static_cast<std::uint32_t>(access.flag);
+        if ((remaining & bit) != 0) {
+            if (!access.get(raw)) {
+                return false;
+            }
+            remaining &= ~bit;
+        }
+    }
+    return remaining == 0;
+}
 
 [[nodiscard]] bool is_live(lv_obj_t* raw) noexcept {
     return raw != nullptr && lv_obj_is_valid(raw);
@@ -124,24 +179,24 @@ void LvObject::clean_children() noexcept {
 
 void LvObject::add_flag(ObjectFlag flag) noexcept {
     if (is_live(raw_)) {
-        lv_obj_add_flag(raw_, to_lv(flag));
+        borrow_update_flags(raw_, flag, true);
     }
 }
 
 void LvObject::remove_flag(ObjectFlag flag) noexcept {
     if (is_live(raw_)) {
-        lv_obj_remove_flag(raw_, to_lv(flag));
+        borrow_update_flags(raw_, flag, false);
     }
 }
 
 void LvObject::set_flag(ObjectFlag flag, bool enabled) noexcept {
     if (is_live(raw_)) {
-        lv_obj_set_flag(raw_, to_lv(flag), enabled);
+        borrow_update_flags(raw_, flag, enabled);
     }
 }
 
 bool LvObject::has_flag(ObjectFlag flag) const noexcept {
-    return is_live(raw_) && lv_obj_has_flag(raw_, to_lv(flag));
+    return is_live(raw_) && view_flags(raw_, flag);
 }
 
 void LvObject::add_state(ObjectState state) noexcept {

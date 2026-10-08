@@ -18,15 +18,18 @@ committed gitlink and version macros to match this policy. If a release tag
 is declared, it must resolve to that same commit and describe stable version
 macros. No moving branch is accepted as a source identity.
 
-The initial consumer package retains the previously validated LVGL
-`9.6.0-dev @ ee436e8520b9c44752e22142448b1dda5bf452a9`. This is an explicit
-development snapshot, not an upstream stable release. Stable v9.6.0 introduces
-header/configuration deprecations that fail the current strict build; v9.5.0
-predates the dependency setup used by this consumer integration. Neither was
-adopted by this packaging change. A stable LVGL migration requires its own
-qualification and the baseline amendment ordering in
-[AGENTS.md](AGENTS.md#execution-discipline) and
-[LPAR-CPP-01](docs/lvgl-parity/01-baseline.md#0-authority-policy).
+The consumer package uses upstream **LVGL v9.6.0**, pinned to
+`80ca777e37a2b176770726a02e07a6fb79ef0b39`. Its public headers use the
+canonical `lvgl/include/lvgl/` paths. The host fallback selects
+`LV_COLOR_FORMAT_DEFAULT=LV_COLOR_FORMAT_ARGB8888`; consumer RGB565 is tested
+independently. Downstream headers should use `LV_COLOR_FORMAT_DEFAULT`:
+`LV_COLOR_DEPTH` is deprecated upstream and triggers strict-build warnings.
+
+The source-baseline amendment in
+[LPAR-CPP-01](docs/lvgl-parity/01-baseline.md#0-authority-policy) must land
+before this dependent gitlink/configuration migration. Future LVGL upgrades
+follow the same baseline amendment and qualification order in
+[AGENTS.md](AGENTS.md#execution-discipline).
 
 ## Workflow
 
