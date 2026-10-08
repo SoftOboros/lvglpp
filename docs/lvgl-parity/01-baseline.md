@@ -7,6 +7,11 @@
 Status: **RATIFIED** (2026-06-29). Normative for lvglpp Wave 0 baseline
 reconciliation.
 
+Amendment status: **PROPOSED** (2026-10-07). The v9.6.0 values below
+are the consumer-release candidate. Merge/ratify this amendment before the
+dependent gitlink/configuration migration lands. Until then, the ratified
+source baseline remains `9.6.0-dev @ ee436e8`.
+
 Parent initiative: [`00-concepts.md`](00-concepts.md), ratified
 2026-06-29.
 
@@ -17,7 +22,7 @@ Parent initiative: [`00-concepts.md`](00-concepts.md), ratified
 | LVGL source baseline | `lvgl/` submodule | Pins the exact C source and version macros for lvglpp wrapper parity claims. |
 | rlvgl parity baseline | `rlvgl/docs/concepts/LPAR-01-BASELINE.md` at `v0.2.5 @ f999f75` | Canonical phase/status vocabulary. lvglpp mirrors the matrix while adapting implementation to LVGL-backed C++ wrappers. |
 | Current lvglpp C++ surface | `core/`, `widgets/`, `ui/`, `platform/`, `playit/`, `examples/apps/disco-demo/` | Repo is canonical for current coverage and compatibility surfaces. |
-| LVGL config baseline | `lvgl/lv_conf_template.h`, `lvgl/src/lv_conf_internal.h` | Used as source inventory until a project `lv_conf.h` lands. |
+| LVGL config baseline | `lvgl/lv_conf_template.h`, `lvgl/include/lvgl/config/lv_conf_internal.h` | Upstream inventory; `include/lvglpp/lv_conf.h` supplies the host fallback. Consumers may supply their own header. |
 
 If the `lvgl/` or `rlvgl/` submodule pin advances, or if a project
 `lv_conf.h` lands, this document MUST be amended before later phases
@@ -53,7 +58,7 @@ wrapper."
 
 | Term | Definition |
 | --- | --- |
-| **LVGL source baseline** | `lvgl/` at commit `ee436e8520b9c44752e22142448b1dda5bf452a9`; owned by this chapter. |
+| **LVGL source baseline** | `lvgl/` at commit `80ca777e37a2b176770726a02e07a6fb79ef0b39`; owned by this chapter. |
 | **rlvgl reference baseline** | `rlvgl/` at branch `v0.2.5`, commit `f999f75ace7f61d3a4766b46f461498ff885aec8`; owned by `.gitmodules` and the gitlink. |
 | **Compatibility surface** | Existing C++ API that mirrors earlier rlvgl concepts but does not delegate to real LVGL widgets/subsystems. |
 | **Parity wrapper** | LVGL-backed C++ wrapper introduced by LPAR-CPP phases. |
@@ -63,7 +68,7 @@ wrapper."
 
 | Concept | Canonical artifact |
 | --- | --- |
-| LVGL version macros | `lvgl/lv_version.h` |
+| LVGL version macros | `lvgl/include/lvgl/lv_version.h` |
 | LVGL widget inventory | `lvgl/src/widgets/` |
 | Current lvglpp core surface | `core/include/lvglpp/core/` |
 | Current lvglpp widget surface | `widgets/include/lvglpp/widgets/` |
@@ -76,14 +81,16 @@ wrapper."
 | Field | Value |
 | --- | --- |
 | LVGL source path | `lvgl/` |
-| LVGL source commit | `ee436e8520b9c44752e22142448b1dda5bf452a9` |
-| LVGL version macros | `LVGL_VERSION_MAJOR=9`, `LVGL_VERSION_MINOR=6`, `LVGL_VERSION_PATCH=0`, `LVGL_VERSION_INFO="dev"` |
-| Effective target label | `LVGL 9.6.0-dev @ ee436e8` |
+| LVGL source commit | `80ca777e37a2b176770726a02e07a6fb79ef0b39` |
+| LVGL version macros | `LVGL_VERSION_MAJOR=9`, `LVGL_VERSION_MINOR=6`, `LVGL_VERSION_PATCH=0`, `LVGL_VERSION_INFO=""` |
+| Effective target label | `LVGL v9.6.0 @ 80ca777` |
 | rlvgl source path | `rlvgl/` |
 | rlvgl source commit | `f999f75ace7f61d3a4766b46f461498ff885aec8` |
 | rlvgl branch | `v0.2.5` |
-| Config source | `lvgl/lv_conf_template.h` plus `lvgl/src/lv_conf_internal.h` defaults |
-| Project `lv_conf.h` | Not present in this checkout |
+| Config source | `include/lvglpp/lv_conf.h` plus `lvgl/include/lvgl/config/lv_conf_internal.h` defaults, or a supplied consumer header |
+| Project `lv_conf.h` | `include/lvglpp/lv_conf.h`, minimal host fallback; downstream `LV_BUILD_CONF_PATH`/`LV_BUILD_CONF_DIR` overrides it |
+| Default color format | `LV_COLOR_FORMAT_DEFAULT=LV_COLOR_FORMAT_ARGB8888`; consumer RGB565 is independently tested |
+| Upstream release tag | `v9.6.0`, resolving to the exact source commit above |
 
 The baseline is a source-feature inventory. A later C-reference fixture
 MAY compile LVGL with a project config, but that config must cite this
@@ -212,7 +219,7 @@ Status meanings mirror rlvgl LPAR-01:
 
 - [x] LVGL submodule commit and version macros are pinned.
 - [x] rlvgl submodule branch/commit is pinned.
-- [x] Config baseline is stated, including absence of project `lv_conf.h`.
+- [x] Config baseline is stated, including the host fallback and consumer override.
 - [x] Conformance levels are defined.
 - [x] Naming policy is defined.
 - [x] Runtime/substrate matrix maps each area to a phase.
@@ -223,9 +230,9 @@ Status meanings mirror rlvgl LPAR-01:
 
 ## 13. Files Cited
 
-- `lvgl/lv_version.h`
+- `lvgl/include/lvgl/lv_version.h`
 - `lvgl/lv_conf_template.h`
-- `lvgl/src/lv_conf_internal.h`
+- `lvgl/include/lvgl/config/lv_conf_internal.h`
 - `lvgl/src/widgets/`
 - `rlvgl/docs/concepts/LPAR-01-BASELINE.md`
 - `core/include/lvglpp/core/`
@@ -248,3 +255,5 @@ Status meanings mirror rlvgl LPAR-01:
 | --- | --- | --- |
 | 2026-06-29 | DRAFT | Initial baseline for lvglpp at LVGL `9.6.0-dev @ ee436e8` and rlvgl `v0.2.5 @ f999f75`. Records current compatibility surfaces and missing LVGL-backed parity wrappers. |
 | 2026-06-29 | RATIFIED | Owner accepted the baseline and directed execution to proceed. LPAR-CPP-02 may now draft the LVGL-backed object substrate. |
+
+| 2026-10-07 | PROPOSED | Owner requested LVGL v9.6.0 for the consumer release. Proposes exact tag/commit, canonical version/config header paths, and the existing host fallback/consumer override. Preserves rlvgl pin, conformance levels, naming, widget/phase ownership, and the prohibition on generic parity claims. Qualification belongs to the dependent implementation PR; this entry does not claim ratification or hardware parity. |

@@ -4,7 +4,7 @@ project(lvglpp_consumer_probe LANGUAGES C CXX)
 # Exercise parent-project normal variables, a header path containing spaces,
 # and transitive C/C++ configuration without a Rust reference checkout.
 file(READ "${LVGLPP_SOURCE_DIR}/include/lvglpp/lv_conf.h" _config)
-string(REGEX REPLACE "(#define LV_COLOR_DEPTH)[ \t]+32" "\\1 16" _config "${_config}")
+string(REPLACE "LV_COLOR_FORMAT_ARGB8888" "LV_COLOR_FORMAT_RGB565" _config "${_config}")
 string(APPEND _config "\n#define LVGLPP_CONSUMER_CONFIG_MARKER 1234\n")
 set(_config_dir "${CMAKE_CURRENT_BINARY_DIR}/consumer config")
 file(MAKE_DIRECTORY "${_config_dir}")
@@ -39,21 +39,23 @@ endforeach()
 
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/probe.c" [=[
 #include <lvgl.h>
-#if LVGLPP_CONSUMER_CONFIG_MARKER != 1234 || LV_COLOR_DEPTH != 16
+#if LVGLPP_CONSUMER_CONFIG_MARKER != 1234
 #error Consumer C configuration was not propagated
 #endif
-int consumer_c_probe(void) { return LV_COLOR_DEPTH; }
+_Static_assert(LV_COLOR_FORMAT_DEFAULT == LV_COLOR_FORMAT_RGB565, "Consumer C color format");
+int consumer_c_probe(void) { return LV_COLOR_FORMAT_DEFAULT; }
 ]=])
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/probe.cpp" [=[
 #include <lvglpp/core/runtime.hpp>
 #include <lvgl.h>
-#if LVGLPP_CONSUMER_CONFIG_MARKER != 1234 || LV_COLOR_DEPTH != 16
+#if LVGLPP_CONSUMER_CONFIG_MARKER != 1234
 #error Consumer C++ configuration was not propagated
 #endif
+static_assert(LV_COLOR_FORMAT_DEFAULT == LV_COLOR_FORMAT_RGB565, "Consumer C++ color format");
 extern "C" int consumer_c_probe(void);
 int main() {
     lvglpp::Runtime runtime;
-    return consumer_c_probe() == 16 ? 0 : 1;
+    return consumer_c_probe() == LV_COLOR_FORMAT_RGB565 ? 0 : 1;
 }
 ]=])
 add_executable(consumer_probe
