@@ -53,9 +53,9 @@ void test_selector_mapping() {
         lvglpp::StylePart::Knob,
         lvglpp::StyleState::Pressed | lvglpp::StyleState::Checked};
     assert(lvglpp::to_lv(selector) ==
-           static_cast<lv_style_selector_t>(LV_PART_KNOB |
-                                            LV_STATE_PRESSED |
-                                            LV_STATE_CHECKED));
+           (static_cast<lv_style_selector_t>(LV_PART_KNOB) |
+            static_cast<lv_style_selector_t>(LV_STATE_PRESSED) |
+            static_cast<lv_style_selector_t>(LV_STATE_CHECKED)));
     assert(selector.part() == lvglpp::StylePart::Knob);
     assert(selector.state() ==
            (lvglpp::StyleState::Pressed | lvglpp::StyleState::Checked));
