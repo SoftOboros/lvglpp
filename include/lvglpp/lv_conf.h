@@ -21,7 +21,7 @@
 
 /* 32-bit ARGB host default; downstream targets (e.g. STM32H747I-DISCO) will
  * override with a board-specific lv_conf.h. */
-#define LV_COLOR_DEPTH 32
+#define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_ARGB8888
 #define LV_USE_LOG 1
 #define LV_LOG_LEVEL LV_LOG_LEVEL_WARN
 

@@ -1,5 +1,5 @@
 {
-  "lvgl_commit": "ee436e8520b9c44752e22142448b1dda5bf452a9",
-  "lvgl_tag": null,
-  "lvgl_version": "9.6.0-dev"
+  "lvgl_commit": "80ca777e37a2b176770726a02e07a6fb79ef0b39",
+  "lvgl_tag": "v9.6.0",
+  "lvgl_version": "9.6.0"
 }

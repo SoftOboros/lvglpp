@@ -68,7 +68,12 @@ def package(repo, out, release_tag=''):
             raise ValueError('Invalid LVGL release tag')
         if git(lvgl, 'rev-parse', 'refs/tags/' + tag + '^{commit}').decode().strip() != lvgl_sha:
             raise ValueError('LVGL release tag does not resolve to its pinned commit')
-    macros = blob(lvgl, lvgl_sha, 'lv_version.h').decode()
+    version_path = 'include/lvgl/lv_version.h'
+    exists = subprocess.run(['git', '-C', str(lvgl), 'cat-file', '-e', lvgl_sha + ':' + version_path],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if exists.returncode:
+        version_path = 'lv_version.h'  # Older explicitly pinned snapshots and test fixtures.
+    macros = blob(lvgl, lvgl_sha, version_path).decode()
     numbers = [re.search(r'#define\s+LVGL_VERSION_' + part + r'\s+(\d+)', macros).group(1)
                for part in ('MAJOR', 'MINOR', 'PATCH')]
     info = re.search(r'#define\s+LVGL_VERSION_INFO\s+"([^"]*)"', macros).group(1)
