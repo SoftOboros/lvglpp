@@ -17,7 +17,7 @@ permissions:
 
 concurrency:
   group: source-release-${{ github.event_name }}-${{ inputs.tag || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')) }}
 
 jobs:
   package:
@@ -87,7 +87,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build python3-venv pkg-config libwayland-dev wayland-protocols libxkbcommon-dev libevdev-dev gcc-arm-none-eabi libnewlib-arm-none-eabi
+          sudo apt-get install -y ninja-build python3-venv pkg-config libwayland-dev wayland-protocols libxkbcommon-dev libevdev-dev gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-dev
       - name: Use the declared CMake minimum
         if: matrix.cmake == '3.20.5'
         run: |
@@ -117,8 +117,11 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$SOURCE/cmake/toolchains/arm-none-eabi.cmake" \
             -DLVGLPP_BUILD_LIBRARIES=ON -DLVGLPP_BUILD_TESTS=OFF \
             -DLVGLPP_BUILD_EXAMPLES=OFF -DLVGLPP_USE_RLVGL=OFF \
-            -DLVGLPP_EMBEDDED_POSTURE=ON -DCMAKE_CXX_FLAGS=-Werror \
+            -DLVGLPP_EMBEDDED_POSTURE=ON \
             -DLV_FETCH_DEPENDENCIES=OFF -DCONFIG_LV_USE_THORVG_INTERNAL=OFF
+          # Preserve the architecture/ABI flags initialized by the toolchain.
+          flags=$(sed -n 's/^CMAKE_CXX_FLAGS:STRING=//p' "$RUNNER_TEMP/arm/CMakeCache.txt")
+          cmake -S "$SOURCE" -B "$RUNNER_TEMP/arm" "-DCMAKE_CXX_FLAGS=$flags -Werror"
           cmake --build "$RUNNER_TEMP/arm" --parallel 4
 
   draft-release:
