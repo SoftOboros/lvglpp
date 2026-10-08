@@ -276,3 +276,11 @@ TODO.local.md
 NOTES.local.md
 scratch/
 tmp/
+
+# Source release policy/tooling (Release/ above also matches on macOS).
+!/release/
+!/release/**
+!/scripts/release/
+!/scripts/release/**
+scripts/release/__pycache__/
+scripts/release/*.py[cod]

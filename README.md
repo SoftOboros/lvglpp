@@ -108,3 +108,13 @@ or `lvglpp::core` / `lvglpp::lvglpp` for the wrapper surface. Build all
 consumers against the same configuration header to preserve the LVGL ABI.
 DisplayManager can continue building LVGL inside its existing package;
 this integration does not require a separate Buildroot package.
+
+## Source releases and license
+
+Use the fixed release assets, manifest, and checksums described in
+[RELEASING.md](RELEASING.md) for archive-based consumer builds. The LVGL
+archive must be extracted into `lvgl/`; GitHub automatic source downloads
+do not contain submodule contents.
+
+lvglpp is licensed under the [MIT License](LICENSE). LVGL and bundled
+third-party components retain their own license notices.
