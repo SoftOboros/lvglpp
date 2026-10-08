@@ -2,10 +2,10 @@
 //
 // PARITY: rlvgl/docs/concepts/LPAR-08-TEXT-DRAW-IMAGE-MASK.md
 //         (v0.2.5 @ f999f75).
-// LVGL:   lvgl/src/font/lv_font.h, lvgl/src/widgets/label/lv_label.h,
-//         lvgl/src/widgets/image/lv_image.h, lvgl/src/draw/lv_draw_label.h,
-//         lvgl/src/draw/lv_draw_image.h, lvgl/src/draw/lv_draw_rect.h,
-//         and lvgl/src/draw/lv_draw_mask.h.
+// LVGL:   lvgl/src/font/lv_font.h, lvgl/include/lvgl/widgets/lv_label.h,
+//         lvgl/include/lvgl/widgets/lv_image.h, lvgl/include/lvgl/draw/lv_draw_label.h,
+//         lvgl/include/lvgl/draw/lv_draw_image.h, lvgl/include/lvgl/draw/lv_draw_rect.h,
+//         and lvgl/include/lvgl/draw/lv_draw_mask.h.
 // DELTA:  lvglpp delegates fonts, labels, image sources, draw descriptors,
 //         and masks to LVGL public APIs instead of porting rlvgl's software
 //         renderer and font traits.
@@ -22,12 +22,12 @@
 #include <vector>
 
 extern "C" {
-#include "src/draw/lv_draw_image.h"
-#include "src/draw/lv_draw_label.h"
-#include "src/draw/lv_draw_mask.h"
-#include "src/draw/lv_draw_rect.h"
-#include "src/widgets/image/lv_image.h"
-#include "src/widgets/label/lv_label.h"
+#include <lvgl/draw/lv_draw_image.h>
+#include <lvgl/draw/lv_draw_label.h>
+#include <lvgl/draw/lv_draw_mask.h>
+#include <lvgl/draw/lv_draw_rect.h>
+#include <lvgl/widgets/lv_image.h>
+#include <lvgl/widgets/lv_label.h>
 }
 
 namespace lvglpp {

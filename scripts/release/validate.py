@@ -30,7 +30,7 @@ def main():
     project = build.parent / (build.name + '-consumer')
     project.mkdir(parents=True)
     config = (source / 'include/lvglpp/lv_conf.h').read_text().replace(
-        '#define LV_COLOR_DEPTH 32', '#define LV_COLOR_DEPTH 16')
+        'LV_COLOR_FORMAT_ARGB8888', 'LV_COLOR_FORMAT_RGB565')
     config = config.replace('#endif /* LV_CONF_H */', '''
 #define LVGLPP_RELEASE_CONFIG_MARKER 1234
 #define LV_USE_WAYLAND 1
@@ -66,9 +66,10 @@ add_executable(consumer_link probe.cpp)
 target_link_libraries(consumer_link PRIVATE lvglpp::core)
 ''')
     (project / 'probe.cpp').write_text('''#include "lvgl.h"
-#if LVGLPP_RELEASE_CONFIG_MARKER != 1234 || LV_COLOR_DEPTH != 16
+#if LVGLPP_RELEASE_CONFIG_MARKER != 1234
 #error Consumer configuration was not propagated
 #endif
+static_assert(LV_COLOR_FORMAT_DEFAULT == LV_COLOR_FORMAT_RGB565);
 int main() {
     lv_init();
     (void)lv_linux_fbdev_create();

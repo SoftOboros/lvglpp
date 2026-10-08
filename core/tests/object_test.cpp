@@ -60,6 +60,19 @@ void test_flags_and_states() {
     auto screen = lvglpp::LvObject::make_screen();
     auto child  = lvglpp::LvObject::make_child(screen.borrow());
 
+    // A compound flag retains all-of query and independent-axis update semantics.
+    child.set_flag(lvglpp::ObjectFlag::ScrollChain, true);
+    assert(lv_obj_is_scroll_chain_hor(child.borrow_raw()));
+    assert(lv_obj_is_scroll_chain_ver(child.borrow_raw()));
+    child.remove_flag(lvglpp::ObjectFlag::ScrollChainHorizontal);
+    assert(!child.has_flag(lvglpp::ObjectFlag::ScrollChain));
+    assert(child.has_flag(lvglpp::ObjectFlag::ScrollChainVertical));
+    child.add_flag(lvglpp::ObjectFlag::ScrollChainHorizontal);
+    assert(child.has_flag(lvglpp::ObjectFlag::ScrollChain));
+    child.remove_flag(lvglpp::ObjectFlag::ScrollChain);
+    assert(!lv_obj_is_scroll_chain_hor(child.borrow_raw()));
+    assert(!lv_obj_is_scroll_chain_ver(child.borrow_raw()));
+
     child.add_flag(lvglpp::ObjectFlag::Hidden);
     assert(child.has_flag(lvglpp::ObjectFlag::Hidden));
     child.remove_flag(lvglpp::ObjectFlag::Hidden);
