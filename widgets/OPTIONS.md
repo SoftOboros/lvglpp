@@ -31,3 +31,12 @@ fails at compile time rather than link time.
   option to manage today.
 - Code size is driven by which widgets you instantiate (and which
   `LV_USE_*` symbols you enable in `lv_conf.h`), not by lvglpp options.
+
+## Consumer builds
+
+`LVGLPP_BUILD_LIBRARIES` enables this module (`ON` by default, `OFF`
+for `Generic` targets). Set it `ON` for library-only cross builds, with
+`LVGLPP_BUILD_TESTS=OFF`, `LVGLPP_BUILD_EXAMPLES=OFF`, and
+`LVGLPP_EMBEDDED_POSTURE=ON`. Consumer LVGL configurations are selected
+through upstream `LV_BUILD_CONF_PATH` or `LV_BUILD_CONF_DIR`; see
+[consumer and Buildroot builds](../README.md#consumer-and-buildroot-builds).

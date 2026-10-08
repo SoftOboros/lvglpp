@@ -33,6 +33,10 @@ Phase plan:
 
 ## As-built
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 Implemented (PLAYIT-01 + PLAYIT-02 — landed 2026-04-27):
 
 - Compiled CMake target `lvglpp::playit` with `src/parser.cpp`.
@@ -212,3 +216,4 @@ Stubbed (later phases):
   `lvglpp_playit_lvgl_input_bridge` verifies `PressRelease` drives an
   LVGL click and `KeyDown` reaches the focused object through an
   `LvGroup`.
+- 2026-10-07 — Module builds can be selected for library-only cross compilation using LVGLPP_BUILD_LIBRARIES, independently of tests/examples and without a Rust reference checkout.

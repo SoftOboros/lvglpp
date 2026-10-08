@@ -10,7 +10,7 @@ history.
 # lvglpp::core — STATUS
 
 Tracks `rlvgl/core` @ `v0.2.5` (commit `f999f75`). Last reconciled:
-2026-06-29.
+2026-10-07.
 
 ## Roadmap intent
 
@@ -43,6 +43,10 @@ Phase plan (informal until a concepts doc lands under `docs/`):
 ## As-built
 
 Implemented:
+
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
 
 - **CORE-01:** `lvglpp::Runtime` — RAII guard around `lv_init()` with
   single-instance enforcement. Throws on host posture, calls
@@ -356,3 +360,9 @@ Local glossary. Forms follow `CLAUDE.md` §
   target `lvglpp_core_layout` validates enum mappings, real LVGL
   geometry reads, flex/grid layout updates, grid descriptor sentinels,
   and typed style property writes.
+- 2026-10-07 — Consumer builds now honor upstream LV_BUILD_CONF_PATH / LV_BUILD_CONF_DIR and can opt into library-only cross builds with LVGLPP_BUILD_LIBRARIES; the bundled configuration is a fallback only.
+- 2026-10-07 — Cortex-M GCC portability: include the abort declaration directly, avoid callback parameter shadowing, and make the existing LVGL 16-bit image stride narrowing explicit.
+
+- 2026-10-07: Consumer release candidate migrates the LVGL pin to upstream v9.6.0, canonical public image/draw/fs headers, and explicit default color format. Depends on the separate LPAR-CPP-01 baseline amendment; does not change cross-language enums or claim hardware parity.
+
+- 2026-10-07: LVGL v9.6.0 flag access delegates the existing named ObjectFlag values/combinations to per-property LVGL setters/getters; style disabled/enabled inversion is preserved. No new enum values, ownership transfers, or cross-language invariants.

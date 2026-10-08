@@ -1,0 +1,153 @@
+name: Source release
+
+on:
+  pull_request:
+  push:
+    branches: [main, feature/source-release]
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag on main to prepare as a draft release
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-release-${{ github.event_name }}-${{ inputs.tag || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')) }}
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    outputs:
+      release_tag: ${{ steps.tag.outputs.value }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Identify release or candidate
+        id: tag
+        env:
+          DISPATCH_TAG: ${{ inputs.tag }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          tag=""
+          if [[ "$EVENT" == workflow_dispatch ]]; then
+            tag="$DISPATCH_TAG"
+          elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="${GITHUB_REF#refs/tags/}"
+          fi
+          if [[ -n "$tag" && ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo 'Expected a stable vMAJOR.MINOR.PATCH tag' >&2
+            exit 1
+          fi
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+      - name: Test release tooling
+        run: python3 -m unittest discover -s scripts/release -p 'test_*.py' -v
+      - name: Initialize only the pinned LVGL tree
+        run: |
+          git submodule update --init lvgl
+          # A future stable LVGL pin must have its declared tag available too.
+          tag=$(python3 -c 'import json; print(json.load(open("release/source.json"))["lvgl_tag"] or "")')
+          if [[ -n "$tag" ]]; then
+            git -C lvgl fetch origin "refs/tags/$tag:refs/tags/$tag"
+          fi
+      - name: Produce source archives and checksums
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.value }}
+        run: python3 scripts/release/source_release.py package --output dist --release-tag "$RELEASE_TAG"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: source-assets
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  validate:
+    needs: package
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake: ['3.20.5', runner]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag || github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: source-assets
+          path: dist
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build python3-venv pkg-config libwayland-dev wayland-protocols libxkbcommon-dev libevdev-dev gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-dev
+      - name: Use the declared CMake minimum
+        if: matrix.cmake == '3.20.5'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cmake-floor"
+          "$RUNNER_TEMP/cmake-floor/bin/pip" install cmake==3.20.5
+          echo "$RUNNER_TEMP/cmake-floor/bin" >> "$GITHUB_PATH"
+      - name: Verify and compose archives without Git or Rust
+        id: source
+        run: |
+          source=$(python3 scripts/release/source_release.py extract dist "$RUNNER_TEMP/source")
+          echo "path=$source" >> "$GITHUB_OUTPUT"
+          test -z "$(find "$source" -name .git -print -quit)"
+          cmake --version
+      - name: Host warnings and tests from the released sources
+        env:
+          SOURCE: ${{ steps.source.outputs.path }}
+        run: python3 scripts/release/validate.py "$SOURCE" "$RUNNER_TEMP/host"
+      - name: Linux Wayland SHM, FBDEV and EVDEV consumer compile and link
+        env:
+          SOURCE: ${{ steps.source.outputs.path }}
+        run: python3 scripts/release/validate.py "$SOURCE" "$RUNNER_TEMP/backends" --linux-backends
+      - name: Cortex-M7 library cross-build from the archives
+        env:
+          SOURCE: ${{ steps.source.outputs.path }}
+        run: |
+          cmake -S "$SOURCE" -B "$RUNNER_TEMP/arm" -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="$SOURCE/cmake/toolchains/arm-none-eabi.cmake" \
+            -DLVGLPP_BUILD_LIBRARIES=ON -DLVGLPP_BUILD_TESTS=OFF \
+            -DLVGLPP_BUILD_EXAMPLES=OFF -DLVGLPP_USE_RLVGL=OFF \
+            -DLVGLPP_EMBEDDED_POSTURE=ON \
+            -DLV_FETCH_DEPENDENCIES=OFF -DCONFIG_LV_USE_THORVG_INTERNAL=OFF
+          # Preserve the architecture/ABI flags initialized by the toolchain.
+          flags=$(sed -n 's/^CMAKE_CXX_FLAGS:STRING=//p' "$RUNNER_TEMP/arm/CMakeCache.txt")
+          cmake -S "$SOURCE" -B "$RUNNER_TEMP/arm" "-DCMAKE_CXX_FLAGS=$flags -Werror"
+          cmake --build "$RUNNER_TEMP/arm" --parallel 4
+
+  draft-release:
+    needs: [package, validate]
+    if: >-
+      needs.package.outputs.release_tag != '' &&
+      github.repository == 'SoftOboros/lvglpp' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.package.outputs.release_tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: source-assets
+          path: dist
+      - name: Prepare draft with all verified assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.package.outputs.release_tag }}
+        run: |
+          python3 scripts/release/source_release.py verify dist
+          python3 scripts/release/draft_release.py "$RELEASE_TAG" dist

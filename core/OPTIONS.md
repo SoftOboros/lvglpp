@@ -23,6 +23,7 @@ These are defined at the top-level `CMakeLists.txt` and apply to
 
 | Option | Default | Effect |
 | --- | --- | --- |
+| `LVGLPP_BUILD_LIBRARIES` | `ON` (`OFF` for `Generic`) | Builds LVGL and the wrapper modules; set `ON` for library-only freestanding cross builds. |
 | `LVGLPP_EMBEDDED_POSTURE` | `OFF` | Adds `-fno-exceptions -fno-rtti`; throwing `Runtime()` constructor calls `std::abort()` instead of throwing. Mirrors rlvgl `no_std` + `panic = abort`. |
 | `LVGLPP_BUILD_TESTS` | `ON` | Builds host smoke tests under `tests/`. |
 | `LVGLPP_BUILD_EXAMPLES` | `ON` | Builds desktop and board examples under `examples/`. |
@@ -30,15 +31,19 @@ These are defined at the top-level `CMakeLists.txt` and apply to
 
 ## LVGL configuration
 
-`lvglpp::core` includes `<lvgl.h>`, which is configured by the
-top-level `include/lvglpp/lv_conf.h`. Override by setting
-`LV_BUILD_CONF_PATH` on the CMake command line, or by replacing
-`lv_conf.h` in a downstream consumer.
+`lvglpp::core` includes `<lvgl.h>`. Set upstream `LV_BUILD_CONF_PATH`
+to a consumer configuration header, or `LV_BUILD_CONF_DIR` to the
+directory containing it, before configuring or adding lvglpp as a
+subdirectory. Set only one. The bundled `include/lvglpp/lv_conf.h`
+is used only when neither is supplied and Kconfig is disabled. The
+same configuration propagates through LVGL to wrapper consumers.
+See [consumer and Buildroot builds](../README.md#consumer-and-buildroot-builds)
+for library-only cross builds and upstream backend dependency options.
 
 The host default is documented in
 [`include/lvglpp/lv_conf.h`](../include/lvglpp/lv_conf.h):
 
-- `LV_COLOR_DEPTH = 32`
+- `LV_COLOR_FORMAT_DEFAULT = LV_COLOR_FORMAT_ARGB8888`
 - `LV_USE_LOG = 1`
 - `LV_LOG_LEVEL = LV_LOG_LEVEL_WARN`
 - `LV_USE_OBJ`, `LV_USE_LABEL`, `LV_USE_BUTTON` enabled
@@ -75,3 +80,8 @@ roadmap.
   `lvglpp::expected<Runtime, RuntimeError>`.
 - Code size and runtime cost of the base library are dominated by
   upstream LVGL itself, not by this wrapper.
+
+The LVGL v9.6.0 host fallback selects `LV_COLOR_FORMAT_DEFAULT` as
+`LV_COLOR_FORMAT_ARGB8888`. Consumer headers can select other supported
+formats (the CMake consumer probes use RGB565). Use this upstream format
+setting rather than deprecated `LV_COLOR_DEPTH` in strict builds.

@@ -48,6 +48,10 @@ where applicable):
 
 ## As-built
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 Implemented (PLAT-01 — landed 2026-04-27):
 
 - `lvglpp::platform::HostSdlBackend` (RAII over `SDL_Window` +
@@ -387,3 +391,4 @@ Stubbed:
   `docs/lvgl-parity/01-baseline.md`. FireBeetle 2 ESP32-P4 work is
   scoped by LPAR-CPP-00/SCTD-CPP-03 as ESP-IDF C hardware ownership plus
   C++ app payload ownership.
+- 2026-10-07 — Consumer-owned LVGL configurations and backend dependency selections pass through to upstream CMake; library-only cross builds can enable the wrapper modules without tests, examples, or a Rust reference checkout.

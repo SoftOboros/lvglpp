@@ -2,7 +2,7 @@
 //
 // PARITY: rlvgl/docs/concepts/LPAR-09-ASSET-FILESYSTEM.md
 //         (v0.2.5 @ f999f75).
-// LVGL:   lvgl/src/misc/lv_fs.h, lvgl/src/draw/lv_image_decoder.h,
+// LVGL:   lvgl/include/lvgl/fs/lv_fs.h, lvgl/include/lvgl/image/lv_image_decoder.h,
 //         and lvgl/src/misc/cache/instance/lv_image_cache.h.
 // DELTA:  lvglpp delegates filesystem dispatch, image decoder registration,
 //         and image cache policy to LVGL instead of porting rlvgl's Rust
@@ -19,9 +19,9 @@
 #include <span>
 
 extern "C" {
-#include "src/draw/lv_image_decoder.h"
+#include <lvgl/image/lv_image_decoder.h>
 #include "src/misc/cache/instance/lv_image_cache.h"
-#include "src/misc/lv_fs.h"
+#include <lvgl/fs/lv_fs.h>
 }
 
 namespace lvglpp {

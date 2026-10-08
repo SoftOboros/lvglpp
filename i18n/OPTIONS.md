@@ -1,8 +1,9 @@
 # lvglpp::i18n Options
 
-The runtime library is dependency-free and always built with the other
-modules on host builds; cross builds compile the sources directly into
-consuming targets (same posture as core/widgets).
+The runtime library is dependency-free and built with the other modules
+when `LVGLPP_BUILD_LIBRARIES=ON` (the default except for `Generic`
+targets). It also receives `LVGLPP_EMBEDDED_POSTURE`, including
+`-fno-exceptions -fno-rtti`, when selected for a cross build.
 
 ## CMake options
 

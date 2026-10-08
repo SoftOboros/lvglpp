@@ -29,6 +29,10 @@ Phase plan:
 
 Implemented:
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 - Compiled STATIC CMake target `lvglpp::ui` (moved off the INTERFACE
   stub in DEMO-02; first compiled unit `src/draw_helpers.cpp`).
 - `draw_panel_header` + `panel_close_hit` (DEMO-02) in
@@ -99,3 +103,4 @@ Stubbed:
   `docs/lvgl-parity/01-baseline.md`. Existing UI helpers remain
   app/compatibility surfaces until LPAR-CPP layout/style/widget wrapper
   phases consume them.
+- 2026-10-07 — Module builds can be selected for library-only cross compilation using LVGLPP_BUILD_LIBRARIES, independently of tests/examples and without a Rust reference checkout.

@@ -25,6 +25,10 @@ languages, plus a bridge for consumers keeping upstream LVGL widgets.
 
 Implemented:
 
+- Consumer build integration: `LVGLPP_BUILD_LIBRARIES=ON` makes the
+  module available in library-only cross builds; tests, examples, and
+  the rlvgl reference checkout can be omitted.
+
 - `tools/gen_i18n.py` — `keys`/`rltn`/`lv` backends; byte-identity
   with rlvgl `build.rs` locked by the golden test.
 - `format()`/`Param` (t_format parity; tail-duplication upstream bug
@@ -79,3 +83,4 @@ Stubbed: none.
   implements the documented intent instead of mirroring the bug.
 - 2026-06-11 — Module created; chapters 00/01 ratified
   (`docs/i18n/`).
+- 2026-10-07 — The runtime target now receives the shared embedded-posture interface and is available through LVGLPP_BUILD_LIBRARIES for library-only cross builds.

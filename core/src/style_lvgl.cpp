@@ -296,7 +296,7 @@ void set_style_disabled(ObjectView object,
                         bool disabled) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
-            lv_obj_style_set_disabled(raw, style.borrow_raw(), to_lv(selector), disabled);
+            lv_obj_set_style_enabled(raw, style.borrow_raw(), to_lv(selector), !disabled);
         }
     }
 }
@@ -306,7 +306,7 @@ bool style_disabled(ObjectView object,
                     StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
-            return lv_obj_style_get_disabled(raw, style.borrow_raw(), to_lv(selector));
+            return !lv_obj_get_style_enabled(raw, style.borrow_raw(), to_lv(selector));
         }
     }
     return false;

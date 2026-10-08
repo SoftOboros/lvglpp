@@ -25,7 +25,15 @@ backend choice to the example target.
 
 ## LVGL configuration
 
-Each backend supplies its own `lv_conf.h` via the
-`LV_BUILD_CONF_PATH` mechanism. The top-level
-`include/lvglpp/lv_conf.h` is the host default and is overridden when a
-board target is built.
+Consumers supply their `lv_conf.h` through upstream `LV_BUILD_CONF_PATH`
+or `LV_BUILD_CONF_DIR`; the bundled `include/lvglpp/lv_conf.h` is only
+the fallback. Backend feature macros are consumer-controlled. The
+upstream `LV_USE_WAYLAND`, `LV_USE_LINUX_FBDEV`, and `LV_USE_EVDEV`
+features are separate from lvglpp's platform adapter options. See
+[consumer and Buildroot builds](../README.md#consumer-and-buildroot-builds)
+for the matching `CONFIG_LV_*` dependency settings.
+
+`LVGLPP_BUILD_LIBRARIES` enables this module along with the other wrapper
+libraries (`ON` by default, `OFF` for `Generic` targets). Library-only
+cross builds set it `ON`, disable tests/examples, and set
+`LVGLPP_EMBEDDED_POSTURE=ON`. The rlvgl checkout is not needed.
