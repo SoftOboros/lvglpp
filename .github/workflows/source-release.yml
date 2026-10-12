@@ -20,14 +20,39 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')) }}
 
 jobs:
-  package:
+  format:
     runs-on: ubuntu-24.04
     outputs:
-      release_tag: ${{ steps.tag.outputs.value }}
+      commit_sha: ${{ steps.source.outputs.commit_sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag || github.sha }}
+          persist-credentials: false
+      - name: Install LLVM formatter
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-14
+      - name: Test formatting gate
+        env:
+          CLANG_FORMAT: clang-format-14
+        run: python3 -m unittest discover -s tests/format -p 'test_*.py' -v
+      - name: Require formatting conformance
+        run: make format-check CLANG_FORMAT=clang-format-14
+      - name: Record checked source commit
+        id: source
+        run: echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  package:
+    needs: format
+    runs-on: ubuntu-24.04
+    outputs:
+      release_tag: ${{ steps.tag.outputs.value }}
+      commit_sha: ${{ needs.format.outputs.commit_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.format.outputs.commit_sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Identify release or candidate
@@ -78,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.tag || github.sha }}
+          ref: ${{ needs.package.outputs.commit_sha }}
           persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -137,7 +162,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.package.outputs.release_tag }}
+          ref: ${{ needs.package.outputs.commit_sha }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

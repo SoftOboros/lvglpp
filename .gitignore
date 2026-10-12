@@ -33,6 +33,7 @@ build.ninja
 .ninja_deps
 .ninja_log
 Makefile
+!/Makefile
 !**/Makefile.in
 *.mk.user
 
