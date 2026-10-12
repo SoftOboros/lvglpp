@@ -19,7 +19,8 @@
 #define LVGLPP_PLATFORM_HOST_SDL_HPP
 
 #if defined(LVGLPP_EMBEDDED_POSTURE)
-#  error "lvglpp::platform::HostSdlBackend is host-only; do not include under LVGLPP_EMBEDDED_POSTURE."
+#error                                                                         \
+    "lvglpp::platform::HostSdlBackend is host-only; do not include under LVGLPP_EMBEDDED_POSTURE."
 #endif
 
 #include <cstdint>
@@ -42,10 +43,10 @@ namespace lvglpp::platform {
 // Errors that HostSdlBackend::try_make can produce. Mirrors the
 // `Result<HostSdlBackend, _>` ergonomics of CORE-01 Runtime.
 enum class SdlError : std::uint8_t {
-    AlreadyAlive   = 1,  // a HostSdlBackend is already constructed
-    InitFailed     = 2,  // SDL_Init failed
-    WindowFailed   = 3,  // SDL_CreateWindow failed
-    RendererFailed = 4,  // SDL_CreateRenderer failed
+    AlreadyAlive = 1,   // a HostSdlBackend is already constructed
+    InitFailed = 2,     // SDL_Init failed
+    WindowFailed = 3,   // SDL_CreateWindow failed
+    RendererFailed = 4, // SDL_CreateRenderer failed
 };
 
 // Concrete Renderer subclass wrapping an SDL_Renderer*. Non-owning
@@ -64,9 +65,7 @@ public:
     void fill_rect(::lvglpp::core::Rect rect,
                    ::lvglpp::core::Color color) override;
 
-    void draw_text(std::int32_t x,
-                   std::int32_t y,
-                   std::string_view text,
+    void draw_text(std::int32_t x, std::int32_t y, std::string_view text,
                    ::lvglpp::core::Color color) override;
 
     // Inherits the default Renderer::blend_rect (delegates to
@@ -92,11 +91,10 @@ public:
     //   height:  window height in pixels (>= 1).
     // Returns: owns HostSdlBackend on success; SdlError on failure.
     [[nodiscard]] static lvglpp::expected<HostSdlBackend, SdlError>
-    try_make(std::string_view title,
-             std::int32_t width,
+    try_make(std::string_view title, std::int32_t width,
              std::int32_t height) noexcept;
 
-    HostSdlBackend(const HostSdlBackend&)            = delete;
+    HostSdlBackend(const HostSdlBackend&) = delete;
     HostSdlBackend& operator=(const HostSdlBackend&) = delete;
     HostSdlBackend(HostSdlBackend&& other) noexcept;
     HostSdlBackend& operator=(HostSdlBackend&&) = delete;
@@ -105,7 +103,9 @@ public:
     // The renderer for the current frame. Borrows: caller must not
     // retain a reference past the next present_frame() / clear() /
     // destructor call.
-    [[nodiscard]] ::lvglpp::core::Renderer& renderer() noexcept { return renderer_; }
+    [[nodiscard]] ::lvglpp::core::Renderer& renderer() noexcept {
+        return renderer_;
+    }
 
     // Pump pending SDL events. Returns the next translated event, or
     // std::nullopt when the queue is drained for this frame.
@@ -122,35 +122,32 @@ public:
     // Flush the back buffer to the screen.
     void present_frame() noexcept;
 
-    [[nodiscard]] std::int32_t width()  const noexcept { return width_; }
+    [[nodiscard]] std::int32_t width() const noexcept { return width_; }
     [[nodiscard]] std::int32_t height() const noexcept { return height_; }
 
 private:
     struct PrivateTag {};
-    HostSdlBackend(PrivateTag,
-                   SDL_Window* window,
-                   SDL_Renderer* sdl_renderer,
-                   std::int32_t width,
-                   std::int32_t height) noexcept;
+    HostSdlBackend(PrivateTag, SDL_Window* window, SDL_Renderer* sdl_renderer,
+                   std::int32_t width, std::int32_t height) noexcept;
 
     // owns the SDL_Window lifetime when alive_owned_ == true; freed
     // by SDL_DestroyWindow in the destructor.
-    SDL_Window*   window_       = nullptr;
+    SDL_Window* window_ = nullptr;
     // owns the SDL_Renderer lifetime when alive_owned_ == true.
     SDL_Renderer* sdl_renderer_ = nullptr;
 
-    SdlRenderer  renderer_;
-    std::int32_t width_  = 0;
+    SdlRenderer renderer_;
+    std::int32_t width_ = 0;
     std::int32_t height_ = 0;
     // Tracks the LEFT mouse button so SDL_MOUSEMOTION emits
     // PointerMove only while pressed (per concepts §5.4).
-    bool         mouse_left_held_ = false;
-    bool         quit_            = false;
+    bool mouse_left_held_ = false;
+    bool quit_ = false;
     // owns the alive-slot when true; moved-from instances set this
     // to false so the destructor releases nothing.
-    bool         alive_owned_     = true;
+    bool alive_owned_ = true;
 };
 
-}  // namespace lvglpp::platform
+} // namespace lvglpp::platform
 
-#endif  // LVGLPP_PLATFORM_HOST_SDL_HPP
+#endif // LVGLPP_PLATFORM_HOST_SDL_HPP

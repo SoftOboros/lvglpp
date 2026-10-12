@@ -45,6 +45,14 @@ ctest --test-dir build --output-on-failure
 
 Requires CMake >= 3.20 and a C++20 toolchain.
 
+Formatting follows the four-space policy in [`.clang-format`](.clang-format).
+The policy preserves include and using-declaration order. Check the tracked
+C/C++ files before committing:
+
+```bash
+git ls-files '*.cpp' '*.hpp' '*.h' | xargs clang-format --dry-run -Werror
+```
+
 ## Consumer and Buildroot builds
 
 Only the `lvgl/` submodule is required to build. Consumers that do not

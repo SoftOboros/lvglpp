@@ -10,7 +10,7 @@
 #include <cstdlib>
 
 #if !defined(LVGLPP_EMBEDDED_POSTURE)
-#  include <stdexcept>
+#include <stdexcept>
 #endif
 
 namespace lvglpp {
@@ -26,10 +26,8 @@ bool acquire_alive_slot() noexcept {
     return g_runtime_alive.compare_exchange_strong(expected, true);
 }
 
-void release_alive_slot() noexcept {
-    g_runtime_alive.store(false);
-}
-}  // namespace
+void release_alive_slot() noexcept { g_runtime_alive.store(false); }
+} // namespace
 
 Runtime::Runtime() {
     if (!acquire_alive_slot()) {
@@ -70,4 +68,4 @@ lvglpp::expected<Runtime, RuntimeError> Runtime::try_make() noexcept {
     return Runtime{PrivateTag{}};
 }
 
-}  // namespace lvglpp
+} // namespace lvglpp

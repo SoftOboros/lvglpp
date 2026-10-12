@@ -46,8 +46,8 @@ enum class WingKind : std::uint8_t {
 struct FocusState {
     enum class Tag : std::uint8_t { Main, Wing };
 
-    Tag         tag   = Tag::Main;
-    WingKind    wing  = WingKind::Settings;  // meaningful only when tag==Wing.
+    Tag tag = Tag::Main;
+    WingKind wing = WingKind::Settings; // meaningful only when tag==Wing.
     std::size_t index = 0;
 
     [[nodiscard]] static constexpr FocusState main(std::size_t i) noexcept {
@@ -60,8 +60,8 @@ struct FocusState {
     [[nodiscard]] constexpr bool is_wing() const noexcept {
         return tag == Tag::Wing;
     }
-    [[nodiscard]] constexpr bool operator==(const FocusState&) const noexcept =
-        default;
+    [[nodiscard]] constexpr bool
+    operator==(const FocusState&) const noexcept = default;
 };
 
 // Controller-internal mutable state. Defined in disco_controller.cpp; the
@@ -93,9 +93,9 @@ public:
     [[nodiscard]] static DiscoController make(platform::Screen screen,
                                               DiscoCapabilities caps);
 
-    DiscoController(const DiscoController&)            = delete;
+    DiscoController(const DiscoController&) = delete;
     DiscoController& operator=(const DiscoController&) = delete;
-    DiscoController(DiscoController&&) noexcept;             // move-only (O-8)
+    DiscoController(DiscoController&&) noexcept; // move-only (O-8)
     DiscoController& operator=(DiscoController&&) noexcept;
     ~DiscoController();
 
@@ -129,7 +129,9 @@ public:
     // lib.rs:1240, but returns a borrow rather than a shared handle
     // (DEMO-00 §9 — single-owner tree).
     [[nodiscard]] core::WidgetNode& root() noexcept { return root_; }
-    [[nodiscard]] const core::WidgetNode& root() const noexcept { return root_; }
+    [[nodiscard]] const core::WidgetNode& root() const noexcept {
+        return root_;
+    }
 
     // Current navigation focus. Test-support accessor (rlvgl reads the
     // private field from its in-module tests).
@@ -145,6 +147,6 @@ private:
                     std::unique_ptr<ControllerState> state) noexcept;
 };
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_DISCO_CONTROLLER_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_DISCO_CONTROLLER_HPP

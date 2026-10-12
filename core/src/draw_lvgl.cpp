@@ -1,4 +1,5 @@
-// draw_lvgl.cpp - LVGL-backed text, font, image, and draw wrapper implementation.
+// draw_lvgl.cpp - LVGL-backed text, font, image, and draw wrapper
+// implementation.
 //
 // PARITY: rlvgl/docs/concepts/LPAR-08-TEXT-DRAW-IMAGE-MASK.md
 //         (v0.2.5 @ f999f75).
@@ -46,7 +47,7 @@ namespace {
     return descriptor;
 }
 
-}  // namespace
+} // namespace
 
 LvFontView LvFontView::default_font() noexcept {
     return LvFontView{lv_font_get_default()};
@@ -64,27 +65,22 @@ std::uint16_t LvFontView::glyph_width(char32_t letter,
     if (raw_ == nullptr) {
         return 0;
     }
-    return lv_font_get_glyph_width(raw_,
-                                   static_cast<std::uint32_t>(letter),
+    return lv_font_get_glyph_width(raw_, static_cast<std::uint32_t>(letter),
                                    static_cast<std::uint32_t>(next));
 }
 
-bool LvFontView::glyph_descriptor(lv_font_glyph_dsc_t& out,
-                                  char32_t letter,
+bool LvFontView::glyph_descriptor(lv_font_glyph_dsc_t& out, char32_t letter,
                                   char32_t next) const noexcept {
     if (raw_ == nullptr) {
         out = lv_font_glyph_dsc_t{};
         return false;
     }
-    return lv_font_get_glyph_dsc(raw_,
-                                 &out,
-                                 static_cast<std::uint32_t>(letter),
+    return lv_font_get_glyph_dsc(raw_, &out, static_cast<std::uint32_t>(letter),
                                  static_cast<std::uint32_t>(next));
 }
 
 GlyphBitmapView::GlyphBitmapView(GlyphBitmapView&& other) noexcept
-    : descriptor_{other.descriptor_},
-      raw_{other.raw_},
+    : descriptor_{other.descriptor_}, raw_{other.raw_},
       release_required_{other.release_required_} {
     other.raw_ = nullptr;
     other.release_required_ = false;
@@ -104,12 +100,9 @@ GlyphBitmapView& GlyphBitmapView::operator=(GlyphBitmapView&& other) noexcept {
     return *this;
 }
 
-GlyphBitmapView::~GlyphBitmapView() {
-    reset();
-}
+GlyphBitmapView::~GlyphBitmapView() { reset(); }
 
-GlyphBitmapView GlyphBitmapView::make(LvFontView font,
-                                      char32_t letter,
+GlyphBitmapView GlyphBitmapView::make(LvFontView font, char32_t letter,
                                       char32_t next,
                                       lv_draw_buf_t* scratch) noexcept {
     lv_font_glyph_dsc_t descriptor{};
@@ -120,8 +113,7 @@ GlyphBitmapView GlyphBitmapView::make(LvFontView font,
     return GlyphBitmapView{descriptor, raw, raw != nullptr};
 }
 
-GlyphBitmapView GlyphBitmapView::make_static(LvFontView font,
-                                             char32_t letter,
+GlyphBitmapView GlyphBitmapView::make_static(LvFontView font, char32_t letter,
                                              char32_t next) noexcept {
     lv_font_glyph_dsc_t descriptor{};
     if (!font.glyph_descriptor(descriptor, letter, next)) {
@@ -165,17 +157,11 @@ LvLabel& LvLabel::operator=(LvLabel&& other) noexcept {
     return *this;
 }
 
-LvLabel::~LvLabel() {
-    reset();
-}
+LvLabel::~LvLabel() { reset(); }
 
-ObjectView LvLabel::borrow() const noexcept {
-    return ObjectView{raw_};
-}
+ObjectView LvLabel::borrow() const noexcept { return ObjectView{raw_}; }
 
-bool LvLabel::valid() const noexcept {
-    return is_live(raw_);
-}
+bool LvLabel::valid() const noexcept { return is_live(raw_); }
 
 lv_obj_t* LvLabel::release() noexcept {
     lv_obj_t* released = raw_;
@@ -281,31 +267,22 @@ bool LvLabel::char_under_pos(lv_point_t point) const noexcept {
 }
 
 LvImageDescriptor LvImageDescriptor::borrowed(
-    std::uint16_t width,
-    std::uint16_t height,
-    lv_color_format_t color_format,
-    std::span<const std::uint8_t> data,
-    std::uint32_t stride,
+    std::uint16_t width, std::uint16_t height, lv_color_format_t color_format,
+    std::span<const std::uint8_t> data, std::uint32_t stride,
     std::uint16_t flags) noexcept {
     LvImageDescriptor descriptor;
-    descriptor.raw_ = make_descriptor(width, height, color_format, data, stride, flags);
+    descriptor.raw_ =
+        make_descriptor(width, height, color_format, data, stride, flags);
     return descriptor;
 }
 
-LvImageDescriptor LvImageDescriptor::owned(std::uint16_t width,
-                                           std::uint16_t height,
-                                           lv_color_format_t color_format,
-                                           std::vector<std::uint8_t> data,
-                                           std::uint32_t stride,
-                                           std::uint16_t flags) {
+LvImageDescriptor LvImageDescriptor::owned(
+    std::uint16_t width, std::uint16_t height, lv_color_format_t color_format,
+    std::vector<std::uint8_t> data, std::uint32_t stride, std::uint16_t flags) {
     LvImageDescriptor descriptor;
     descriptor.owned_data_ = std::move(data);
-    descriptor.raw_ = make_descriptor(width,
-                                      height,
-                                      color_format,
-                                      descriptor.owned_data_,
-                                      stride,
-                                      flags);
+    descriptor.raw_ = make_descriptor(width, height, color_format,
+                                      descriptor.owned_data_, stride, flags);
     return descriptor;
 }
 
@@ -315,8 +292,8 @@ LvImageDescriptor::LvImageDescriptor(LvImageDescriptor&& other) noexcept
     other.raw_ = lv_image_dsc_t{};
 }
 
-LvImageDescriptor& LvImageDescriptor::operator=(
-    LvImageDescriptor&& other) noexcept {
+LvImageDescriptor&
+LvImageDescriptor::operator=(LvImageDescriptor&& other) noexcept {
     if (this != &other) {
         raw_ = other.raw_;
         owned_data_ = std::move(other.owned_data_);
@@ -365,17 +342,11 @@ LvImage& LvImage::operator=(LvImage&& other) noexcept {
     return *this;
 }
 
-LvImage::~LvImage() {
-    reset();
-}
+LvImage::~LvImage() { reset(); }
 
-ObjectView LvImage::borrow() const noexcept {
-    return ObjectView{raw_};
-}
+ObjectView LvImage::borrow() const noexcept { return ObjectView{raw_}; }
 
-bool LvImage::valid() const noexcept {
-    return is_live(raw_);
-}
+bool LvImage::valid() const noexcept { return is_live(raw_); }
 
 lv_obj_t* LvImage::release() noexcept {
     lv_obj_t* released = raw_;
@@ -602,4 +573,4 @@ void LvDrawMaskRectDescriptor::set_keep_outside(bool keep_outside) noexcept {
     raw_.keep_outside = keep_outside ? 1U : 0U;
 }
 
-}  // namespace lvglpp
+} // namespace lvglpp

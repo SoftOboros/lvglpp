@@ -30,8 +30,9 @@
 //   #include "lvglpp/core/renderer.hpp"   // PARITY: rlvgl/core/src/renderer.rs
 //   #include "lvglpp/core/style.hpp"      // PARITY: rlvgl/core/src/style.rs
 //   #include "lvglpp/core/theme.hpp"      // PARITY: rlvgl/core/src/theme.rs
-//   #include "lvglpp/core/animation.hpp"  // PARITY: rlvgl/core/src/animation.rs
-//   #include "lvglpp/core/font.hpp"       // PARITY: rlvgl/core/src/{bitmap,packed}_font.rs
-//   #include "lvglpp/core/draw.hpp"       // PARITY: rlvgl/core/src/draw.rs
+//   #include "lvglpp/core/animation.hpp"  // PARITY:
+//   rlvgl/core/src/animation.rs #include "lvglpp/core/font.hpp"       //
+//   PARITY: rlvgl/core/src/{bitmap,packed}_font.rs #include
+//   "lvglpp/core/draw.hpp"       // PARITY: rlvgl/core/src/draw.rs
 
-#endif  // LVGLPP_CORE_CORE_HPP
+#endif // LVGLPP_CORE_CORE_HPP

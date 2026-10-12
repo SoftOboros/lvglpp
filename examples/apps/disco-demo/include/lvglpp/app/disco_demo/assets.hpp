@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <span>
 
-#include "lvglpp/core/widget.hpp"  // core::Color
+#include "lvglpp/core/widget.hpp" // core::Color
 
 namespace lvglpp::app::disco_demo {
 
@@ -23,22 +23,22 @@ namespace lvglpp::app::disco_demo {
 // FROZEN layout constants (DEMO-00 §6; mirror assets.rs + lib.rs:225).
 // Standards Action — values must equal rlvgl.
 // ---------------------------------------------------------------------------
-inline constexpr std::int32_t DISPLAY_WIDTH  = 800;
+inline constexpr std::int32_t DISPLAY_WIDTH = 800;
 inline constexpr std::int32_t DISPLAY_HEIGHT = 480;
-inline constexpr std::int32_t PANEL_WIDTH    = 620;
-inline constexpr std::int32_t PANEL_HEIGHT   = 312;
-inline constexpr std::int32_t PANEL_X        = 84;
-inline constexpr std::int32_t PANEL_Y        = 84;
+inline constexpr std::int32_t PANEL_WIDTH = 620;
+inline constexpr std::int32_t PANEL_HEIGHT = 312;
+inline constexpr std::int32_t PANEL_X = 84;
+inline constexpr std::int32_t PANEL_Y = 84;
 
-inline constexpr std::int32_t STRIP_ICON_SIZE  = 60;
+inline constexpr std::int32_t STRIP_ICON_SIZE = 60;
 inline constexpr std::int32_t STRIP_MARGIN_TOP = 17;
-inline constexpr std::int32_t STRIP_GAP        = 10;
-inline constexpr std::int32_t STRIP_X_OFFSET   = 70;
+inline constexpr std::int32_t STRIP_GAP = 10;
+inline constexpr std::int32_t STRIP_X_OFFSET = 70;
 
-inline constexpr std::int32_t WING_X          = 10;
-inline constexpr std::int32_t WING_ICON_SIZE  = 60;
+inline constexpr std::int32_t WING_X = 10;
+inline constexpr std::int32_t WING_ICON_SIZE = 60;
 inline constexpr std::int32_t WING_MARGIN_TOP = 17;
-inline constexpr std::int32_t WING_GAP        = 10;
+inline constexpr std::int32_t WING_GAP = 10;
 
 // Focus highlight border color (cyan accent) + width. Mirrors
 // assets.rs:48-51.
@@ -47,8 +47,8 @@ inline constexpr std::uint8_t FOCUS_BORDER_WIDTH = 2;
 
 // ---------------------------------------------------------------------------
 // Icon-asset accessors. Each returns a non-owning view into a static byte
-// array generated at CMake-configure time from the lvglpp-owned `.rle` file named
-// in assets.rs. Ownership: the returned span `borrows` immortal static
+// array generated at CMake-configure time from the lvglpp-owned `.rle` file
+// named in assets.rs. Ownership: the returned span `borrows` immortal static
 // storage (lifetime is the program's). Consumers decode with core::rle.
 // ---------------------------------------------------------------------------
 
@@ -66,6 +66,6 @@ inline constexpr std::uint8_t FOCUS_BORDER_WIDTH = 2;
 [[nodiscard]] std::span<const std::uint8_t> icon_cpu48() noexcept;
 [[nodiscard]] std::span<const std::uint8_t> icon_play48() noexcept;
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_ASSETS_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_ASSETS_HPP

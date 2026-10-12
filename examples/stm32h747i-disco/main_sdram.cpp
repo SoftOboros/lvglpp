@@ -31,7 +31,7 @@ volatile std::uint32_t* sdram_word(std::uintptr_t offset) noexcept {
         lvglpp::disco::sdram::BASE + offset);
 }
 
-inline void dsb() noexcept { asm volatile ("dsb" ::: "memory"); }
+inline void dsb() noexcept { asm volatile("dsb" ::: "memory"); }
 
 inline volatile std::uint32_t* d3(std::uintptr_t off) noexcept {
     return reinterpret_cast<volatile std::uint32_t*>(0x3800'0300u + off);
@@ -60,7 +60,7 @@ inline volatile std::uint32_t* d3(std::uintptr_t off) noexcept {
 //     read back — catches refresh/timing faults over the whole array.
 void memtest() {
     constexpr std::uint32_t MARK = 0xA5A5'0000u;
-    std::uint32_t status   = 0x600D'0000u;
+    std::uint32_t status = 0x600D'0000u;
     std::uint32_t fail_off = 0xFFFF'FFFFu;
     std::uint32_t expected = 0, observed = 0;
 
@@ -72,13 +72,15 @@ void memtest() {
     const std::uint32_t canary1 = *sdram_word(0x004);
 
     // (1) Address-line walk.
-    *sdram_word(0) = MARK;  // marker at offset 0
+    *sdram_word(0) = MARK; // marker at offset 0
     for (unsigned b = 2; b <= 24; ++b)
         *sdram_word(static_cast<std::uintptr_t>(1u) << b) = MARK | b;
     dsb();
     if (status == 0x600D'0000u) {
         if (*sdram_word(0) != MARK) {
-            status = 0xBAD0'0001u; fail_off = 0; expected = MARK;
+            status = 0xBAD0'0001u;
+            fail_off = 0;
+            expected = MARK;
             observed = *sdram_word(0);
         }
         for (unsigned b = 2; b <= 24 && status == 0x600D'0000u; ++b) {
@@ -86,8 +88,10 @@ void memtest() {
             const std::uint32_t e = MARK | b;
             const std::uint32_t g = *sdram_word(off);
             if (g != e) {
-                status = 0xBAD0'0001u; fail_off = static_cast<std::uint32_t>(off);
-                expected = e; observed = g;
+                status = 0xBAD0'0001u;
+                fail_off = static_cast<std::uint32_t>(off);
+                expected = e;
+                observed = g;
             }
         }
     }
@@ -97,12 +101,25 @@ void memtest() {
         constexpr std::uintptr_t DOFF = 0x30000;
         for (unsigned i = 0; i < 32 && status == 0x600D'0000u; ++i) {
             const std::uint32_t pat = 1u << i;
-            *sdram_word(DOFF) = pat;       dsb();
+            *sdram_word(DOFF) = pat;
+            dsb();
             std::uint32_t g = *sdram_word(DOFF);
-            if (g != pat) { status = 0xBAD0'0002u; fail_off = DOFF; expected = pat; observed = g; break; }
-            *sdram_word(DOFF) = ~pat;      dsb();
+            if (g != pat) {
+                status = 0xBAD0'0002u;
+                fail_off = DOFF;
+                expected = pat;
+                observed = g;
+                break;
+            }
+            *sdram_word(DOFF) = ~pat;
+            dsb();
             g = *sdram_word(DOFF);
-            if (g != ~pat) { status = 0xBAD0'0002u; fail_off = DOFF; expected = ~pat; observed = g; }
+            if (g != ~pat) {
+                status = 0xBAD0'0002u;
+                fail_off = DOFF;
+                expected = ~pat;
+                observed = g;
+            }
         }
     }
 
@@ -111,10 +128,16 @@ void memtest() {
         for (std::uintptr_t off = 0; off < (32u << 20); off += 0x10000)
             *sdram_word(off) = static_cast<std::uint32_t>(off) ^ MARK;
         dsb();
-        for (std::uintptr_t off = 0; off < (32u << 20) && status == 0x600D'0000u; off += 0x10000) {
+        for (std::uintptr_t off = 0;
+             off < (32u << 20) && status == 0x600D'0000u; off += 0x10000) {
             const std::uint32_t e = static_cast<std::uint32_t>(off) ^ MARK;
             const std::uint32_t g = *sdram_word(off);
-            if (g != e) { status = 0xBAD0'0003u; fail_off = static_cast<std::uint32_t>(off); expected = e; observed = g; }
+            if (g != e) {
+                status = 0xBAD0'0003u;
+                fail_off = static_cast<std::uint32_t>(off);
+                expected = e;
+                observed = g;
+            }
         }
     }
 
@@ -136,5 +159,6 @@ int main() {
 
     memtest();
 
-    for (;;) asm volatile ("wfe");
+    for (;;)
+        asm volatile("wfe");
 }

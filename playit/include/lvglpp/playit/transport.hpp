@@ -16,23 +16,22 @@ namespace lvglpp::playit {
 
 class Transport {
 public:
-    Transport()                                = default;
-    Transport(const Transport&)                = default;
-    Transport(Transport&&) noexcept            = default;
-    Transport& operator=(const Transport&)     = default;
+    Transport() = default;
+    Transport(const Transport&) = default;
+    Transport(Transport&&) noexcept = default;
+    Transport& operator=(const Transport&) = default;
     Transport& operator=(Transport&&) noexcept = default;
-    virtual ~Transport()                       = default;
+    virtual ~Transport() = default;
 
     // Non-blocking single-byte read. Returns std::nullopt when no
     // data is available. Implementations MUST NOT block.
-    [[nodiscard]] virtual std::optional<std::uint8_t>
-    read_byte() noexcept = 0;
+    [[nodiscard]] virtual std::optional<std::uint8_t> read_byte() noexcept = 0;
 
     // Best-effort write of the full span. Implementations MAY block
     // briefly to flush but MUST NOT block indefinitely.
     virtual void write_bytes(std::span<const std::uint8_t> bytes) noexcept = 0;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_TRANSPORT_HPP
+#endif // LVGLPP_PLAYIT_TRANSPORT_HPP

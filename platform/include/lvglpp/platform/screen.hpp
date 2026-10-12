@@ -22,10 +22,10 @@ namespace lvglpp::platform {
 // the physical framebuffer. FROZEN (Standards Action — cross-language):
 // variant set mirrors rlvgl/platform/src/screen.rs:40.
 enum class Rotation : std::uint8_t {
-    Deg0,    // No rotation: logical coordinates match physical.
-    Deg90,   // Logical drawing rotated 90° clockwise into the framebuffer.
-    Deg180,  // Logical drawing rotated 180° (upside-down).
-    Deg270,  // Logical drawing rotated 270° clockwise.
+    Deg0,   // No rotation: logical coordinates match physical.
+    Deg90,  // Logical drawing rotated 90° clockwise into the framebuffer.
+    Deg180, // Logical drawing rotated 180° (upside-down).
+    Deg270, // Logical drawing rotated 270° clockwise.
 };
 
 // Returns true when this rotation swaps the framebuffer axes (portrait
@@ -43,10 +43,10 @@ enum class Rotation : std::uint8_t {
 // exists for 1:1 parity and the board target later. `quantize` is
 // deferred — see DELTA above.
 enum class ColorFormat : std::uint8_t {
-    Argb8888,  // True-colour 32-bit ARGB. No quantization.
-    Rgb888,    // True-colour 24-bit RGB. Discards alpha.
-    Rgb565,    // 16-bit RGB565. 5/6/5 bits.
-    Mono,      // 1-bit monochrome (e.g. e-paper).
+    Argb8888, // True-colour 32-bit ARGB. No quantization.
+    Rgb888,   // True-colour 24-bit RGB. Discards alpha.
+    Rgb565,   // 16-bit RGB565. 5/6/5 bits.
+    Mono,     // 1-bit monochrome (e.g. e-paper).
 };
 
 // Default display refresh rate used by `Screen::make` when the caller
@@ -60,8 +60,8 @@ inline constexpr std::uint32_t DEFAULT_FRAME_HZ = 60;
 // Ownership: trivially-copyable value type (DEMO-00 §5). No pointers, no
 // LVGL handle, no allocation. Passed by value into `DiscoController::make`.
 struct Screen {
-    std::uint32_t width = 0;   // Logical width in pixels.
-    std::uint32_t height = 0;  // Logical height in pixels.
+    std::uint32_t width = 0;  // Logical width in pixels.
+    std::uint32_t height = 0; // Logical height in pixels.
     Rotation rotation = Rotation::Deg0;
     // host-advisory: simulator quantization preview; HW drivers ignore.
     ColorFormat color_format = ColorFormat::Argb8888;
@@ -88,7 +88,8 @@ struct Screen {
 
     // Return a copy of this screen with a different colour format.
     // Mirrors rlvgl `Screen::with_color_format`.
-    [[nodiscard]] constexpr Screen with_color_format(ColorFormat f) const noexcept {
+    [[nodiscard]] constexpr Screen
+    with_color_format(ColorFormat f) const noexcept {
         Screen s = *this;
         s.color_format = f;
         return s;
@@ -97,15 +98,17 @@ struct Screen {
     // Return a copy of this screen with a different target refresh rate.
     // `frame_hz == 0` is clamped to 1 to keep divide-by-zero guards
     // downstream trivial. Mirrors rlvgl `Screen::with_frame_hz`.
-    [[nodiscard]] constexpr Screen with_frame_hz(std::uint32_t hz) const noexcept {
+    [[nodiscard]] constexpr Screen
+    with_frame_hz(std::uint32_t hz) const noexcept {
         Screen s = *this;
         s.frame_hz = (hz == 0) ? 1U : hz;
         return s;
     }
 
-    [[nodiscard]] constexpr bool operator==(const Screen&) const noexcept = default;
+    [[nodiscard]] constexpr bool
+    operator==(const Screen&) const noexcept = default;
 };
 
-}  // namespace lvglpp::platform
+} // namespace lvglpp::platform
 
-#endif  // LVGLPP_PLATFORM_SCREEN_HPP
+#endif // LVGLPP_PLATFORM_SCREEN_HPP

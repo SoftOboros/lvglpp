@@ -44,13 +44,13 @@ namespace {
     const std::uint8_t r5 = static_cast<std::uint8_t>((c >> 11) & 0x1F);
     const std::uint8_t g6 = static_cast<std::uint8_t>((c >> 5) & 0x3F);
     const std::uint8_t b5 = static_cast<std::uint8_t>(c & 0x1F);
-    const std::uint8_t r  = static_cast<std::uint8_t>((r5 << 3) | (r5 >> 2));
-    const std::uint8_t g  = static_cast<std::uint8_t>((g6 << 2) | (g6 >> 4));
-    const std::uint8_t b  = static_cast<std::uint8_t>((b5 << 3) | (b5 >> 2));
+    const std::uint8_t r = static_cast<std::uint8_t>((r5 << 3) | (r5 >> 2));
+    const std::uint8_t g = static_cast<std::uint8_t>((g6 << 2) | (g6 >> 4));
+    const std::uint8_t b = static_cast<std::uint8_t>((b5 << 3) | (b5 >> 2));
     return core::Color{r, g, b, 0xFF};
 }
 
-}  // namespace
+} // namespace
 
 lvglpp::expected<ParsedBlob, Error>
 parse_blob(std::span<const std::uint8_t> data) noexcept {
@@ -66,34 +66,35 @@ parse_blob(std::span<const std::uint8_t> data) noexcept {
         return lvglpp::unexpected<Error>{Error::BadMagic};
     }
 
-    const std::uint16_t width     = read_u16_le(data, 4);
-    const std::uint16_t height    = read_u16_le(data, 6);
+    const std::uint16_t width = read_u16_le(data, 4);
+    const std::uint16_t height = read_u16_le(data, 6);
     const std::size_t palette_len = read_u16_le(data, 8);
-    const std::size_t pal_bytes   = palette_len * 2;
-    const std::size_t pal_end     = BLOB_HEADER_SIZE + pal_bytes;
+    const std::size_t pal_bytes = palette_len * 2;
+    const std::size_t pal_end = BLOB_HEADER_SIZE + pal_bytes;
 
     if (data.size() < pal_end + 4) {
         return lvglpp::unexpected<Error>{Error::Truncated};
     }
-    const std::size_t stream_len   = read_u32_le(data, pal_end);
+    const std::size_t stream_len = read_u32_le(data, pal_end);
     const std::size_t stream_start = pal_end + 4;
     if (data.size() < stream_start + stream_len) {
         return lvglpp::unexpected<Error>{Error::Truncated};
     }
 
     ParsedBlob blob;
-    blob.width      = width;
-    blob.height     = height;
+    blob.width = width;
+    blob.height = height;
     blob.palette_le = data.subspan(BLOB_HEADER_SIZE, pal_bytes);
-    blob.stream     = data.subspan(stream_start, stream_len);
+    blob.stream = data.subspan(stream_start, stream_len);
     return blob;
 }
 
-lvglpp::expected<void, Error>
-decode_into(const ParsedBlob& blob, std::span<core::Color> out) noexcept {
+lvglpp::expected<void, Error> decode_into(const ParsedBlob& blob,
+                                          std::span<core::Color> out) noexcept {
     using namespace consts;
 
-    const std::size_t total = static_cast<std::size_t>(blob.width) * blob.height;
+    const std::size_t total =
+        static_cast<std::size_t>(blob.width) * blob.height;
     // DELTA vs rlvgl (`out.len() < total*4`): the chapter freezes an exact
     // length contract — out.size() MUST equal width*height.
     if (out.size() != total) {
@@ -113,47 +114,66 @@ decode_into(const ParsedBlob& blob, std::span<core::Color> out) noexcept {
     }
 
     const std::span<const std::uint8_t> stream = blob.stream;
-    std::size_t  pos        = 0;  // pixel position
+    std::size_t pos = 0; // pixel position
     std::uint8_t recent_idx = 0;
-    std::size_t  i          = 0;
+    std::size_t i = 0;
 
     while (i < stream.size() && pos < total) {
         const std::uint8_t b = stream[i];
         ++i;
         switch (b) {
-            case ENCODE_KEY_SINGLE_INLINE_PIXEL: {
-                if (i + 1 >= stream.size()) {
-                    return lvglpp::unexpected<Error>{Error::Truncated};
-                }
-                const std::uint16_t c = read_u16_be(stream, i);
-                i += 2;
-                out[pos] = rgb565_to_color(c);
-                ++pos;
-                break;
+        case ENCODE_KEY_SINGLE_INLINE_PIXEL: {
+            if (i + 1 >= stream.size()) {
+                return lvglpp::unexpected<Error>{Error::Truncated};
             }
-            case ENCODE_KEY_DOUBLE_INLINE_PIXEL: {
-                if (i + 1 >= stream.size()) {
-                    return lvglpp::unexpected<Error>{Error::Truncated};
-                }
-                const std::uint16_t c = read_u16_be(stream, i);
-                i += 2;
-                const core::Color px = rgb565_to_color(c);
-                out[pos]             = px;
-                ++pos;
-                if (pos < total) {
-                    out[pos] = px;
-                    ++pos;
-                }
-                break;
+            const std::uint16_t c = read_u16_be(stream, i);
+            i += 2;
+            out[pos] = rgb565_to_color(c);
+            ++pos;
+            break;
+        }
+        case ENCODE_KEY_DOUBLE_INLINE_PIXEL: {
+            if (i + 1 >= stream.size()) {
+                return lvglpp::unexpected<Error>{Error::Truncated};
             }
-            case ENCODE_KEY_LONG_REPEAT: {
-                if (i >= stream.size()) {
-                    return lvglpp::unexpected<Error>{Error::Truncated};
-                }
-                const std::size_t add = stream[i];
-                ++i;
+            const std::uint16_t c = read_u16_be(stream, i);
+            i += 2;
+            const core::Color px = rgb565_to_color(c);
+            out[pos] = px;
+            ++pos;
+            if (pos < total) {
+                out[pos] = px;
+                ++pos;
+            }
+            break;
+        }
+        case ENCODE_KEY_LONG_REPEAT: {
+            if (i >= stream.size()) {
+                return lvglpp::unexpected<Error>{Error::Truncated};
+            }
+            const std::size_t add = stream[i];
+            ++i;
+            const std::size_t count =
+                static_cast<std::size_t>(SHORT_REPEAT_MAX) + 1U + add;
+            if (static_cast<std::size_t>(recent_idx) >= palette_count) {
+                return lvglpp::unexpected<Error>{Error::Truncated};
+            }
+            const core::Color px = pal[recent_idx];
+            for (std::size_t k = 0; k < count && pos < total; ++k) {
+                out[pos] = px;
+                ++pos;
+            }
+            break;
+        }
+        default: {
+            if (static_cast<std::size_t>(b) < palette_count) {
+                recent_idx = b;
+                out[pos] = pal[b];
+                ++pos;
+            } else {
+                // short repeat: (b - palette_len + 1) copies of recent.
                 const std::size_t count =
-                    static_cast<std::size_t>(SHORT_REPEAT_MAX) + 1U + add;
+                    static_cast<std::size_t>(b) - palette_count + 1U;
                 if (static_cast<std::size_t>(recent_idx) >= palette_count) {
                     return lvglpp::unexpected<Error>{Error::Truncated};
                 }
@@ -162,28 +182,9 @@ decode_into(const ParsedBlob& blob, std::span<core::Color> out) noexcept {
                     out[pos] = px;
                     ++pos;
                 }
-                break;
             }
-            default: {
-                if (static_cast<std::size_t>(b) < palette_count) {
-                    recent_idx = b;
-                    out[pos]   = pal[b];
-                    ++pos;
-                } else {
-                    // short repeat: (b - palette_len + 1) copies of recent.
-                    const std::size_t count =
-                        static_cast<std::size_t>(b) - palette_count + 1U;
-                    if (static_cast<std::size_t>(recent_idx) >= palette_count) {
-                        return lvglpp::unexpected<Error>{Error::Truncated};
-                    }
-                    const core::Color px = pal[recent_idx];
-                    for (std::size_t k = 0; k < count && pos < total; ++k) {
-                        out[pos] = px;
-                        ++pos;
-                    }
-                }
-                break;
-            }
+            break;
+        }
         }
     }
 
@@ -193,4 +194,4 @@ decode_into(const ParsedBlob& blob, std::span<core::Color> out) noexcept {
     return {};
 }
 
-}  // namespace lvglpp::core::rle
+} // namespace lvglpp::core::rle

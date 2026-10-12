@@ -47,55 +47,59 @@ void LvglInputBridge::detach_keypad() noexcept {
 }
 
 bool LvglInputBridge::inject(const EventSpec& spec) noexcept {
-    return std::visit([this](const auto& payload) noexcept -> bool {
-        using T = std::decay_t<decltype(payload)>;
+    return std::visit(
+        [this](const auto& payload) noexcept -> bool {
+            using T = std::decay_t<decltype(payload)>;
 
-        if constexpr (std::is_same_v<T, event_spec::Tick>) {
-            return false;
-        } else if constexpr (std::is_same_v<T, event_spec::PressRelease>) {
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
-            const bool pressed = read_pointer_once();
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
-            return read_pointer_once() || pressed;
-        } else if constexpr (std::is_same_v<T, event_spec::PressDown>) {
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
-            return read_pointer_once();
-        } else if constexpr (std::is_same_v<T, event_spec::PointerDown>) {
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
-            return read_pointer_once();
-        } else if constexpr (std::is_same_v<T, event_spec::PointerUp>) {
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
-            return read_pointer_once();
-        } else if constexpr (std::is_same_v<T, event_spec::PointerMove>) {
-            set_pointer(payload.x, payload.y, pointer_state_);
-            return read_pointer_once();
-        } else if constexpr (std::is_same_v<T, event_spec::DoubleTap>) {
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
-            const bool first_down = read_pointer_once();
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
-            const bool first_up = read_pointer_once();
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
-            const bool second_down = read_pointer_once();
-            set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
-            return read_pointer_once() || first_down || first_up || second_down;
-        } else if constexpr (std::is_same_v<T, event_spec::KeyDown>) {
-            set_key(to_lv_key(payload.key), LV_INDEV_STATE_PRESSED);
-            return read_keypad_once();
-        } else if constexpr (std::is_same_v<T, event_spec::KeyUp>) {
-            set_key(to_lv_key(payload.key), LV_INDEV_STATE_RELEASED);
-            return read_keypad_once();
-        } else if constexpr (std::is_same_v<T, event_spec::Touch>) {
-            if (payload.count == 0) {
+            if constexpr (std::is_same_v<T, event_spec::Tick>) {
                 return false;
+            } else if constexpr (std::is_same_v<T, event_spec::PressRelease>) {
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
+                const bool pressed = read_pointer_once();
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
+                return read_pointer_once() || pressed;
+            } else if constexpr (std::is_same_v<T, event_spec::PressDown>) {
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
+                return read_pointer_once();
+            } else if constexpr (std::is_same_v<T, event_spec::PointerDown>) {
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
+                return read_pointer_once();
+            } else if constexpr (std::is_same_v<T, event_spec::PointerUp>) {
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
+                return read_pointer_once();
+            } else if constexpr (std::is_same_v<T, event_spec::PointerMove>) {
+                set_pointer(payload.x, payload.y, pointer_state_);
+                return read_pointer_once();
+            } else if constexpr (std::is_same_v<T, event_spec::DoubleTap>) {
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
+                const bool first_down = read_pointer_once();
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
+                const bool first_up = read_pointer_once();
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_PRESSED);
+                const bool second_down = read_pointer_once();
+                set_pointer(payload.x, payload.y, LV_INDEV_STATE_RELEASED);
+                return read_pointer_once() || first_down || first_up ||
+                       second_down;
+            } else if constexpr (std::is_same_v<T, event_spec::KeyDown>) {
+                set_key(to_lv_key(payload.key), LV_INDEV_STATE_PRESSED);
+                return read_keypad_once();
+            } else if constexpr (std::is_same_v<T, event_spec::KeyUp>) {
+                set_key(to_lv_key(payload.key), LV_INDEV_STATE_RELEASED);
+                return read_keypad_once();
+            } else if constexpr (std::is_same_v<T, event_spec::Touch>) {
+                if (payload.count == 0) {
+                    return false;
+                }
+                const TouchPointSpec& point = payload.points[0];
+                set_pointer(point.x, point.y, to_lv_state(point.state));
+                return read_pointer_once();
+            } else {
+                static_assert(
+                    sizeof(T) == 0,
+                    "LvglInputBridge::inject(): unhandled EventSpec variant");
             }
-            const TouchPointSpec& point = payload.points[0];
-            set_pointer(point.x, point.y, to_lv_state(point.state));
-            return read_pointer_once();
-        } else {
-            static_assert(sizeof(T) == 0,
-                "LvglInputBridge::inject(): unhandled EventSpec variant");
-        }
-    }, spec);
+        },
+        spec);
 }
 
 void LvglInputBridge::read_pointer(lv_indev_t* indev, lv_indev_data_t* data) {
@@ -136,42 +140,52 @@ bool LvglInputBridge::read_keypad_once() noexcept {
     return true;
 }
 
-void LvglInputBridge::set_pointer(std::int32_t x,
-                                  std::int32_t y,
+void LvglInputBridge::set_pointer(std::int32_t x, std::int32_t y,
                                   lv_indev_state_t state) noexcept {
     pointer_point_.x = x;
     pointer_point_.y = y;
     pointer_state_ = state;
 }
 
-void LvglInputBridge::set_key(std::uint32_t key, lv_indev_state_t state) noexcept {
+void LvglInputBridge::set_key(std::uint32_t key,
+                              lv_indev_state_t state) noexcept {
     key_ = key;
     key_state_ = state;
 }
 
 std::uint32_t LvglInputBridge::to_lv_key(const KeySpec& key) noexcept {
     switch (key.kind) {
-        case KeySpec::Kind::Escape:     return LV_KEY_ESC;
-        case KeySpec::Kind::Enter:      return LV_KEY_ENTER;
-        case KeySpec::Kind::Space:      return static_cast<std::uint32_t>(' ');
-        case KeySpec::Kind::ArrowUp:    return LV_KEY_UP;
-        case KeySpec::Kind::ArrowDown:  return LV_KEY_DOWN;
-        case KeySpec::Kind::ArrowLeft:  return LV_KEY_LEFT;
-        case KeySpec::Kind::ArrowRight: return LV_KEY_RIGHT;
-        case KeySpec::Kind::Function:
-        case KeySpec::Kind::Character:
-        case KeySpec::Kind::Other:      return key.value;
+    case KeySpec::Kind::Escape:
+        return LV_KEY_ESC;
+    case KeySpec::Kind::Enter:
+        return LV_KEY_ENTER;
+    case KeySpec::Kind::Space:
+        return static_cast<std::uint32_t>(' ');
+    case KeySpec::Kind::ArrowUp:
+        return LV_KEY_UP;
+    case KeySpec::Kind::ArrowDown:
+        return LV_KEY_DOWN;
+    case KeySpec::Kind::ArrowLeft:
+        return LV_KEY_LEFT;
+    case KeySpec::Kind::ArrowRight:
+        return LV_KEY_RIGHT;
+    case KeySpec::Kind::Function:
+    case KeySpec::Kind::Character:
+    case KeySpec::Kind::Other:
+        return key.value;
     }
     return key.value;
 }
 
 lv_indev_state_t LvglInputBridge::to_lv_state(TouchStateSpec state) noexcept {
     switch (state) {
-        case TouchStateSpec::Down:
-        case TouchStateSpec::Contact: return LV_INDEV_STATE_PRESSED;
-        case TouchStateSpec::Up:      return LV_INDEV_STATE_RELEASED;
+    case TouchStateSpec::Down:
+    case TouchStateSpec::Contact:
+        return LV_INDEV_STATE_PRESSED;
+    case TouchStateSpec::Up:
+        return LV_INDEV_STATE_RELEASED;
     }
     return LV_INDEV_STATE_RELEASED;
 }
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit

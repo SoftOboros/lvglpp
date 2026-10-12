@@ -28,34 +28,37 @@ struct Tracer {
 
 // Stub widget that records its label on draw / handle_event.
 struct StubWidget : Widget {
-    std::string  label;
-    Tracer*      tracer;
-    bool         consume_events = false;
+    std::string label;
+    Tracer* tracer;
+    bool consume_events = false;
 
     StubWidget(std::string l, Tracer* t) : label{std::move(l)}, tracer{t} {}
 
     [[nodiscard]] Rect bounds() const override { return Rect{}; }
 
     void draw(Renderer& /*r*/) const override {
-        if (tracer) tracer->draws.push_back(label);
+        if (tracer)
+            tracer->draws.push_back(label);
     }
 
     [[nodiscard]] bool handle_event(const Event& /*e*/) override {
-        if (tracer) tracer->events.push_back(label);
+        if (tracer)
+            tracer->events.push_back(label);
         return consume_events;
     }
 };
 
 struct NullRenderer : Renderer {
     void fill_rect(Rect, Color) override {}
-    void draw_text(std::int32_t, std::int32_t, std::string_view, Color) override {}
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   Color) override {}
 };
 
 void test_dispatch_event_dfs_order() {
     Tracer t;
     auto root_w = std::make_unique<StubWidget>("root", &t);
-    auto a_w    = std::make_unique<StubWidget>("a", &t);
-    auto b_w    = std::make_unique<StubWidget>("b", &t);
+    auto a_w = std::make_unique<StubWidget>("a", &t);
+    auto b_w = std::make_unique<StubWidget>("b", &t);
     auto deep_w = std::make_unique<StubWidget>("deep", &t);
 
     WidgetNode root{std::move(root_w)};
@@ -78,9 +81,9 @@ void test_dispatch_event_dfs_order() {
 void test_dispatch_event_first_consume_short_circuits() {
     Tracer t;
     auto root_w = std::make_unique<StubWidget>("root", &t);
-    auto a_w    = std::make_unique<StubWidget>("a", &t);
-    auto b_w    = std::make_unique<StubWidget>("b", &t);
-    a_w->consume_events = true;  // a consumes; b should never be called.
+    auto a_w = std::make_unique<StubWidget>("a", &t);
+    auto b_w = std::make_unique<StubWidget>("b", &t);
+    a_w->consume_events = true; // a consumes; b should never be called.
 
     WidgetNode root{std::move(root_w)};
     root.add_child(WidgetNode{std::move(a_w)});
@@ -89,7 +92,7 @@ void test_dispatch_event_first_consume_short_circuits() {
     Event tick{event::Tick{}};
     bool consumed = root.dispatch_event(tick);
     assert(consumed);
-    assert(t.events.size() == 2);  // root, a — b never reached.
+    assert(t.events.size() == 2); // root, a — b never reached.
     assert(t.events[0] == "root");
     assert(t.events[1] == "a");
 }
@@ -97,8 +100,8 @@ void test_dispatch_event_first_consume_short_circuits() {
 void test_draw_dfs_order() {
     Tracer t;
     auto root_w = std::make_unique<StubWidget>("root", &t);
-    auto a_w    = std::make_unique<StubWidget>("a", &t);
-    auto b_w    = std::make_unique<StubWidget>("b", &t);
+    auto a_w = std::make_unique<StubWidget>("a", &t);
+    auto b_w = std::make_unique<StubWidget>("b", &t);
 
     WidgetNode root{std::move(root_w)};
     root.add_child(WidgetNode{std::move(a_w)});
@@ -108,7 +111,7 @@ void test_draw_dfs_order() {
     root.draw(r);
 
     assert(t.draws.size() == 3);
-    assert(t.draws[0] == "root");  // parent before children.
+    assert(t.draws[0] == "root"); // parent before children.
     assert(t.draws[1] == "a");
     assert(t.draws[2] == "b");
 }
@@ -123,8 +126,8 @@ void test_find_by_tag_root() {
 
 void test_find_by_tag_nested() {
     auto root_w = std::make_unique<StubWidget>("root", nullptr);
-    auto a_w    = std::make_unique<StubWidget>("a", nullptr);
-    auto b_w    = std::make_unique<StubWidget>("b", nullptr);
+    auto a_w = std::make_unique<StubWidget>("a", nullptr);
+    auto b_w = std::make_unique<StubWidget>("b", nullptr);
     auto deep_w = std::make_unique<StubWidget>("deep", nullptr);
 
     WidgetNode root{std::move(root_w)};
@@ -139,7 +142,7 @@ void test_find_by_tag_nested() {
 }
 
 void test_find_by_tag_untagged_tree() {
-    auto root_w  = std::make_unique<StubWidget>("root", nullptr);
+    auto root_w = std::make_unique<StubWidget>("root", nullptr);
     auto child_w = std::make_unique<StubWidget>("child", nullptr);
     WidgetNode root{std::move(root_w)};
     root.add_child(WidgetNode{std::move(child_w)});
@@ -148,7 +151,7 @@ void test_find_by_tag_untagged_tree() {
 
 void test_find_by_tag_mut_returns_mutable() {
     auto root_w = std::make_unique<StubWidget>("root", nullptr);
-    auto kid_w  = std::make_unique<StubWidget>("kid", nullptr);
+    auto kid_w = std::make_unique<StubWidget>("kid", nullptr);
     WidgetNode root{std::move(root_w), "root"};
     root.add_child(WidgetNode{std::move(kid_w), "kid"});
 
@@ -160,7 +163,7 @@ void test_find_by_tag_mut_returns_mutable() {
     assert(find_by_tag(root, "renamed") != nullptr);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_dispatch_event_dfs_order();

@@ -22,7 +22,7 @@ public:
     explicit TimerView(lv_timer_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_timer_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool        empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
     // Args:
     //   callback: external function pointer; LVGL stores and calls it.
@@ -40,7 +40,7 @@ public:
     //              timer callbacks that read it.
     void set_user_data(void* user_data) const noexcept;
 
-    [[nodiscard]] bool  is_paused() const noexcept;
+    [[nodiscard]] bool is_paused() const noexcept;
     [[nodiscard]] void* user_data() const noexcept;
 
 private:
@@ -65,7 +65,7 @@ public:
                                       void* user_data = nullptr) noexcept;
     [[nodiscard]] static LvTimer make_basic() noexcept;
 
-    LvTimer(const LvTimer&)            = delete;
+    LvTimer(const LvTimer&) = delete;
     LvTimer& operator=(const LvTimer&) = delete;
 
     LvTimer(LvTimer&& other) noexcept;
@@ -73,9 +73,9 @@ public:
 
     ~LvTimer();
 
-    [[nodiscard]] TimerView   borrow() const noexcept;
+    [[nodiscard]] TimerView borrow() const noexcept;
     [[nodiscard]] lv_timer_t* borrow_raw() const noexcept;
-    [[nodiscard]] bool        empty() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
 
     // Returns: owns raw LVGL timer handle; caller is responsible for
     // deleting or otherwise transferring lifecycle authority.
@@ -101,7 +101,7 @@ public:
     void set_auto_delete(bool auto_delete) noexcept;
     void set_user_data(void* user_data) noexcept;
 
-    [[nodiscard]] bool  is_paused() const noexcept;
+    [[nodiscard]] bool is_paused() const noexcept;
     [[nodiscard]] void* user_data() const noexcept;
 
 private:
@@ -116,7 +116,8 @@ private:
 
 [[nodiscard]] std::uint32_t run_timers() noexcept;
 [[nodiscard]] std::uint32_t time_until_next_timer() noexcept;
-[[nodiscard]] TimerView next_timer(TimerView previous = TimerView{nullptr}) noexcept;
+[[nodiscard]] TimerView next_timer(TimerView previous = TimerView{
+                                       nullptr}) noexcept;
 
 class AnimationView;
 
@@ -127,23 +128,24 @@ enum class AnimationCallbackFamily : std::uint8_t {
 
 class AnimationKey {
 public:
-    [[nodiscard]] static AnimationKey exec(void* var,
-                                           lv_anim_exec_xcb_t callback) noexcept;
-    [[nodiscard]] static AnimationKey custom(void* var,
-                                             lv_anim_custom_exec_cb_t callback) noexcept;
+    [[nodiscard]] static AnimationKey
+    exec(void* var, lv_anim_exec_xcb_t callback) noexcept;
+    [[nodiscard]] static AnimationKey
+    custom(void* var, lv_anim_custom_exec_cb_t callback) noexcept;
     [[nodiscard]] static AnimationKey all_for_var(void* var) noexcept;
 
-    [[nodiscard]] void*                   var() const noexcept { return var_; }
-    [[nodiscard]] AnimationCallbackFamily family() const noexcept { return family_; }
-    [[nodiscard]] lv_anim_exec_xcb_t      exec_callback() const noexcept;
+    [[nodiscard]] void* var() const noexcept { return var_; }
+    [[nodiscard]] AnimationCallbackFamily family() const noexcept {
+        return family_;
+    }
+    [[nodiscard]] lv_anim_exec_xcb_t exec_callback() const noexcept;
     [[nodiscard]] lv_anim_custom_exec_cb_t custom_callback() const noexcept;
 
     [[nodiscard]] AnimationView find() const noexcept;
-    [[nodiscard]] bool          cancel() const noexcept;
+    [[nodiscard]] bool cancel() const noexcept;
 
 private:
-    AnimationKey(void* var,
-                 AnimationCallbackFamily family,
+    AnimationKey(void* var, AnimationCallbackFamily family,
                  lv_anim_exec_xcb_t exec_callback,
                  lv_anim_custom_exec_cb_t custom_callback) noexcept;
 
@@ -163,19 +165,19 @@ public:
     explicit AnimationView(lv_anim_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_anim_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool       empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
     void pause() const noexcept;
     void pause_for(std::uint32_t ms) const noexcept;
     void resume() const noexcept;
 
-    [[nodiscard]] bool          is_paused() const noexcept;
+    [[nodiscard]] bool is_paused() const noexcept;
     [[nodiscard]] std::uint32_t delay() const noexcept;
     [[nodiscard]] std::uint32_t playtime() const noexcept;
     [[nodiscard]] std::uint32_t duration() const noexcept;
     [[nodiscard]] std::uint32_t repeat_count() const noexcept;
-    [[nodiscard]] void*         user_data() const noexcept;
-    [[nodiscard]] AnimationKey  key() const noexcept;
+    [[nodiscard]] void* user_data() const noexcept;
+    [[nodiscard]] AnimationKey key() const noexcept;
 
 private:
     // observes: owned by LVGL's animation list; never freed by this view.
@@ -186,7 +188,7 @@ class AnimationTemplate {
 public:
     AnimationTemplate() noexcept;
 
-    [[nodiscard]] lv_anim_t*       borrow_raw() noexcept { return &raw_; }
+    [[nodiscard]] lv_anim_t* borrow_raw() noexcept { return &raw_; }
     [[nodiscard]] const lv_anim_t* borrow_raw() const noexcept { return &raw_; }
 
     // Args:
@@ -198,18 +200,20 @@ public:
     // Args:
     //   callback: external function pointer; LVGL stores and calls it.
     AnimationTemplate& set_exec_callback(lv_anim_exec_xcb_t callback) noexcept;
-    AnimationTemplate& set_custom_exec_callback(
-        lv_anim_custom_exec_cb_t callback) noexcept;
-    AnimationTemplate& set_values(std::int32_t start, std::int32_t end) noexcept;
+    AnimationTemplate&
+    set_custom_exec_callback(lv_anim_custom_exec_cb_t callback) noexcept;
+    AnimationTemplate& set_values(std::int32_t start,
+                                  std::int32_t end) noexcept;
     AnimationTemplate& set_duration(std::uint32_t duration_ms) noexcept;
     AnimationTemplate& set_delay(std::uint32_t delay_ms) noexcept;
     AnimationTemplate& set_path_callback(lv_anim_path_cb_t callback) noexcept;
     AnimationTemplate& set_start_callback(lv_anim_start_cb_t callback) noexcept;
-    AnimationTemplate& set_completed_callback(
-        lv_anim_completed_cb_t callback) noexcept;
-    AnimationTemplate& set_deleted_callback(lv_anim_deleted_cb_t callback) noexcept;
-    AnimationTemplate& set_get_value_callback(
-        lv_anim_get_value_cb_t callback) noexcept;
+    AnimationTemplate&
+    set_completed_callback(lv_anim_completed_cb_t callback) noexcept;
+    AnimationTemplate&
+    set_deleted_callback(lv_anim_deleted_cb_t callback) noexcept;
+    AnimationTemplate&
+    set_get_value_callback(lv_anim_get_value_cb_t callback) noexcept;
     AnimationTemplate& set_reverse_duration(std::uint32_t duration_ms) noexcept;
     AnimationTemplate& set_reverse_delay(std::uint32_t delay_ms) noexcept;
     AnimationTemplate& set_repeat_count(std::uint32_t count) noexcept;
@@ -219,8 +223,7 @@ public:
     // Args:
     //   user_data: external/observes; caller guarantees callback lifetime.
     AnimationTemplate& set_user_data(void* user_data) noexcept;
-    AnimationTemplate& set_bezier3_param(std::int16_t x1,
-                                         std::int16_t y1,
+    AnimationTemplate& set_bezier3_param(std::int16_t x1, std::int16_t y1,
                                          std::int16_t x2,
                                          std::int16_t y2) noexcept;
 
@@ -237,6 +240,6 @@ private:
 [[nodiscard]] std::uint16_t running_animation_count() noexcept;
 void delete_all_animations() noexcept;
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_TIMER_HPP
+#endif // LVGLPP_CORE_TIMER_HPP

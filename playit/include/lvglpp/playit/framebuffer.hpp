@@ -23,23 +23,22 @@ namespace lvglpp::playit {
 // for its lifetime and never mutates through it.
 class FramebufferReader {
 public:
-    FramebufferReader()                                     = default;
-    FramebufferReader(const FramebufferReader&)             = default;
-    FramebufferReader(FramebufferReader&&) noexcept         = default;
-    FramebufferReader& operator=(const FramebufferReader&)  = default;
+    FramebufferReader() = default;
+    FramebufferReader(const FramebufferReader&) = default;
+    FramebufferReader(FramebufferReader&&) noexcept = default;
+    FramebufferReader& operator=(const FramebufferReader&) = default;
     FramebufferReader& operator=(FramebufferReader&&) noexcept = default;
-    virtual ~FramebufferReader()                            = default;
+    virtual ~FramebufferReader() = default;
 
     // Single pixel at landscape (x, y), ARGB8888. The implementor
     // owns any coordinate transform (portrait panels included).
-    [[nodiscard]] virtual std::uint32_t
-    read_pixel(std::int32_t x, std::int32_t y) const = 0;
+    [[nodiscard]] virtual std::uint32_t read_pixel(std::int32_t x,
+                                                   std::int32_t y) const = 0;
 
     // Horizontal run starting at (x, y) into `out`. Returns the
     // number of pixels written (less than `width` when the run
     // leaves the framebuffer).
-    virtual std::size_t read_row(std::int32_t x,
-                                 std::int32_t y,
+    virtual std::size_t read_row(std::int32_t x, std::int32_t y,
                                  std::uint16_t width,
                                  std::span<std::uint32_t> out) const = 0;
 
@@ -47,6 +46,6 @@ public:
     [[nodiscard]] virtual std::uint32_t present_count() const = 0;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_FRAMEBUFFER_HPP
+#endif // LVGLPP_PLAYIT_FRAMEBUFFER_HPP

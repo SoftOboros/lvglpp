@@ -22,11 +22,9 @@ bool acquire_stdio_slot() noexcept {
     return g_stdio_alive.compare_exchange_strong(expected, true);
 }
 
-void release_stdio_slot() noexcept {
-    g_stdio_alive.store(false);
-}
+void release_stdio_slot() noexcept { g_stdio_alive.store(false); }
 
-}  // namespace
+} // namespace
 
 StdioTransport::StdioTransport() noexcept {
     if (!acquire_stdio_slot()) {
@@ -49,11 +47,10 @@ StdioTransport::StdioTransport() noexcept {
 
 StdioTransport::StdioTransport(StdioTransport&& other) noexcept
     : saved_flags_{other.saved_flags_},
-      owns_flags_{other.owns_flags_},
-      eof_{other.eof_} {
+      owns_flags_{other.owns_flags_}, eof_{other.eof_} {
     other.saved_flags_ = -1;
-    other.owns_flags_  = false;
-    other.eof_         = false;
+    other.owns_flags_ = false;
+    other.eof_ = false;
 }
 
 StdioTransport::~StdioTransport() noexcept {
@@ -89,9 +86,8 @@ std::optional<std::uint8_t> StdioTransport::read_byte() noexcept {
 void StdioTransport::write_bytes(std::span<const std::uint8_t> bytes) noexcept {
     std::size_t total = 0;
     while (total < bytes.size()) {
-        const ssize_t n = ::write(STDOUT_FILENO,
-                                  bytes.data() + total,
-                                  bytes.size() - total);
+        const ssize_t n =
+            ::write(STDOUT_FILENO, bytes.data() + total, bytes.size() - total);
         if (n > 0) {
             total += static_cast<std::size_t>(n);
             continue;
@@ -105,4 +101,4 @@ void StdioTransport::write_bytes(std::span<const std::uint8_t> bytes) noexcept {
     }
 }
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit

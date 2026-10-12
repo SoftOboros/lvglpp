@@ -47,9 +47,9 @@ public:
 private:
     // borrows: caller-owned WidgetNode tree.
     ::lvglpp::core::WidgetNode* root_;
-    StatusData                  status_{};
+    StatusData status_{};
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_DISPATCHER_HPP
+#endif // LVGLPP_PLAYIT_DISPATCHER_HPP

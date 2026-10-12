@@ -83,7 +83,7 @@ void test_push_event_cap_and_visible() {
 // Disabled window drops events.
 void test_disabled_drops_events() {
     lu::EventWindow w = lu::EventWindowBuilder(lc::fonts::FONT_6X10).build();
-    w.push_event("dropped");  // enabled defaults false
+    w.push_event("dropped"); // enabled defaults false
     assert(w.entry_count() == 0);
     assert(!w.is_visible());
 }
@@ -98,16 +98,16 @@ void test_tick_expiry_hide_and_clear_region() {
     assert(w.is_visible());
     assert(w.entry_count() == 1);
 
-    const lc::Rect panel = w.bounds();  // full rect while visible
+    const lc::Rect panel = w.bounds(); // full rect while visible
     assert(panel.width > 0 && panel.height > 0);
 
     // age 0 -> 1 -> 2 -> 3 (>= expire_ticks): removed on the 3rd tick.
     auto e = tick();
-    assert(!w.handle_event(e));  // age 1
+    assert(!w.handle_event(e)); // age 1
     assert(w.entry_count() == 1);
-    assert(!w.handle_event(e));  // age 2
+    assert(!w.handle_event(e)); // age 2
     assert(w.entry_count() == 1);
-    assert(!w.handle_event(e));  // age 3 -> expired
+    assert(!w.handle_event(e)); // age 3 -> expired
     assert(w.entry_count() == 0);
     assert(!w.is_visible());
 
@@ -124,9 +124,8 @@ void test_tick_expiry_hide_and_clear_region() {
 
 // bounds() is zero when hidden.
 void test_bounds_zero_when_hidden() {
-    lu::EventWindow w = lu::EventWindowBuilder(lc::fonts::FONT_6X10)
-                            .center(800, 480)
-                            .build();
+    lu::EventWindow w =
+        lu::EventWindowBuilder(lc::fonts::FONT_6X10).center(800, 480).build();
     assert(!w.is_visible());
     assert(w.bounds() == lc::Rect{});
 }
@@ -146,7 +145,7 @@ void test_non_consuming_pointer_key() {
     assert(w.is_visible());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_builder_centering_width_colors();

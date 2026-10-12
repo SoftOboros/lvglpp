@@ -2,7 +2,8 @@
 //
 // PARITY: rlvgl/docs/concepts/LPAR-09-ASSET-FILESYSTEM.md
 //         (v0.2.5 @ f999f75).
-// LVGL:   lvgl/include/lvgl/fs/lv_fs.h, lvgl/include/lvgl/image/lv_image_decoder.h,
+// LVGL:   lvgl/include/lvgl/fs/lv_fs.h,
+// lvgl/include/lvgl/image/lv_image_decoder.h,
 //         and lvgl/src/misc/cache/instance/lv_image_cache.h.
 // DELTA:  lvglpp delegates filesystem dispatch, image decoder registration,
 //         and image cache policy to LVGL instead of porting rlvgl's Rust
@@ -55,7 +56,7 @@ public:
     explicit FsDriverView(lv_fs_drv_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_fs_drv_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool         empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
 private:
     // observes: driver storage owned outside this view; never removed here.
@@ -67,7 +68,7 @@ public:
     LvFsDriver();
     explicit LvFsDriver(char letter);
 
-    LvFsDriver(const LvFsDriver&)            = delete;
+    LvFsDriver(const LvFsDriver&) = delete;
     LvFsDriver& operator=(const LvFsDriver&) = delete;
 
     LvFsDriver(LvFsDriver&& other) noexcept;
@@ -77,7 +78,9 @@ public:
 
     [[nodiscard]] FsDriverView borrow() const noexcept;
     [[nodiscard]] lv_fs_drv_t* borrow_raw() noexcept { return raw_.get(); }
-    [[nodiscard]] const lv_fs_drv_t* borrow_raw() const noexcept { return raw_.get(); }
+    [[nodiscard]] const lv_fs_drv_t* borrow_raw() const noexcept {
+        return raw_.get();
+    }
     [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
     [[nodiscard]] bool registered() const noexcept { return registered_; }
     [[nodiscard]] char letter() const noexcept;
@@ -90,21 +93,28 @@ public:
 
     void set_ready_callback(bool (*callback)(lv_fs_drv_t*)) noexcept;
     void set_remove_callback(void (*callback)(lv_fs_drv_t*)) noexcept;
-    void set_open_callback(
-        void* (*callback)(lv_fs_drv_t*, const char*, lv_fs_mode_t)) noexcept;
-    void set_close_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*)) noexcept;
-    void set_read_callback(
-        lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, void*, std::uint32_t, std::uint32_t*)) noexcept;
-    void set_write_callback(
-        lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, const void*, std::uint32_t, std::uint32_t*)) noexcept;
-    void set_seek_callback(
-        lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, std::uint32_t, lv_fs_whence_t)) noexcept;
-    void set_tell_callback(
-        lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, std::uint32_t*)) noexcept;
-    void set_dir_open_callback(void* (*callback)(lv_fs_drv_t*, const char*)) noexcept;
-    void set_dir_read_callback(
-        lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, char*, std::uint32_t)) noexcept;
-    void set_dir_close_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*)) noexcept;
+    void set_open_callback(void* (*callback)(lv_fs_drv_t*, const char*,
+                                             lv_fs_mode_t)) noexcept;
+    void set_close_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*,
+                                                    void*)) noexcept;
+    void set_read_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*, void*,
+                                                   std::uint32_t,
+                                                   std::uint32_t*)) noexcept;
+    void set_write_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*,
+                                                    const void*, std::uint32_t,
+                                                    std::uint32_t*)) noexcept;
+    void set_seek_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*,
+                                                   std::uint32_t,
+                                                   lv_fs_whence_t)) noexcept;
+    void set_tell_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*,
+                                                   std::uint32_t*)) noexcept;
+    void set_dir_open_callback(void* (*callback)(lv_fs_drv_t*,
+                                                 const char*)) noexcept;
+    void set_dir_read_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*, void*,
+                                                       char*,
+                                                       std::uint32_t)) noexcept;
+    void set_dir_close_callback(lv_fs_res_t (*callback)(lv_fs_drv_t*,
+                                                        void*)) noexcept;
 
     void register_driver() noexcept;
     // Safe unregister is blocked by LVGL v9 lv_fs_remove_drive continuing
@@ -127,7 +137,7 @@ class LvFile {
 public:
     LvFile() noexcept = default;
 
-    LvFile(const LvFile&)            = delete;
+    LvFile(const LvFile&) = delete;
     LvFile& operator=(const LvFile&) = delete;
 
     LvFile(LvFile&& other) noexcept;
@@ -136,19 +146,20 @@ public:
     ~LvFile();
 
     [[nodiscard]] lv_fs_file_t* borrow_raw() noexcept { return &raw_; }
-    [[nodiscard]] const lv_fs_file_t* borrow_raw() const noexcept { return &raw_; }
+    [[nodiscard]] const lv_fs_file_t* borrow_raw() const noexcept {
+        return &raw_;
+    }
     [[nodiscard]] bool open() const noexcept { return open_; }
 
     // Args:
     //   path: external null-terminated LVGL path; borrowed for call only.
     [[nodiscard]] FsResult open_path(const char* path, FileMode mode) noexcept;
     [[nodiscard]] FsResult close() noexcept;
-    [[nodiscard]] FsResult read(void* buffer,
-                                std::uint32_t bytes_to_read,
+    [[nodiscard]] FsResult read(void* buffer, std::uint32_t bytes_to_read,
                                 std::uint32_t* bytes_read = nullptr) noexcept;
-    [[nodiscard]] FsResult write(const void* buffer,
-                                 std::uint32_t bytes_to_write,
-                                 std::uint32_t* bytes_written = nullptr) noexcept;
+    [[nodiscard]] FsResult
+    write(const void* buffer, std::uint32_t bytes_to_write,
+          std::uint32_t* bytes_written = nullptr) noexcept;
     [[nodiscard]] FsResult seek(std::uint32_t pos, SeekWhence whence) noexcept;
     [[nodiscard]] FsResult tell(std::uint32_t& pos) noexcept;
     [[nodiscard]] FsResult size(std::uint32_t& size) noexcept;
@@ -163,7 +174,7 @@ class LvDirectory {
 public:
     LvDirectory() noexcept = default;
 
-    LvDirectory(const LvDirectory&)            = delete;
+    LvDirectory(const LvDirectory&) = delete;
     LvDirectory& operator=(const LvDirectory&) = delete;
 
     LvDirectory(LvDirectory&& other) noexcept;
@@ -191,8 +202,7 @@ public:
     // Args:
     //   buffer: external; LVGL path observes these bytes when opened.
     //   ext: external optional extension string; borrowed for call only.
-    LvPathFromBuffer(char letter,
-                     std::span<const std::uint8_t> buffer,
+    LvPathFromBuffer(char letter, std::span<const std::uint8_t> buffer,
                      const char* ext = nullptr) noexcept;
 
     [[nodiscard]] const lv_fs_path_ex_t* borrow_raw() const noexcept {
@@ -211,14 +221,12 @@ private:
 [[nodiscard]] const char* path_extension(const char* path) noexcept;
 [[nodiscard]] const char* path_last_component(const char* path) noexcept;
 char* path_up(char* path) noexcept;
-int path_join(char* buffer,
-              std::size_t buffer_size,
-              const char* base,
+int path_join(char* buffer, std::size_t buffer_size, const char* base,
               const char* end) noexcept;
 char* filesystem_letters(char* buffer) noexcept;
-[[nodiscard]] FsResult path_size(const char* path, std::uint32_t& size) noexcept;
-[[nodiscard]] FsResult load_to_buffer(void* buffer,
-                                      std::uint32_t buffer_size,
+[[nodiscard]] FsResult path_size(const char* path,
+                                 std::uint32_t& size) noexcept;
+[[nodiscard]] FsResult load_to_buffer(void* buffer, std::uint32_t buffer_size,
                                       const char* path) noexcept;
 
 class LvImageDecoder {
@@ -227,7 +235,7 @@ public:
 
     [[nodiscard]] static LvImageDecoder make() noexcept;
 
-    LvImageDecoder(const LvImageDecoder&)            = delete;
+    LvImageDecoder(const LvImageDecoder&) = delete;
     LvImageDecoder& operator=(const LvImageDecoder&) = delete;
 
     LvImageDecoder(LvImageDecoder&& other) noexcept;
@@ -235,12 +243,15 @@ public:
 
     ~LvImageDecoder();
 
-    [[nodiscard]] lv_image_decoder_t* borrow_raw() const noexcept { return raw_; }
+    [[nodiscard]] lv_image_decoder_t* borrow_raw() const noexcept {
+        return raw_;
+    }
     [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
     void set_info_callback(lv_image_decoder_info_f_t callback) noexcept;
     void set_open_callback(lv_image_decoder_open_f_t callback) noexcept;
-    void set_get_area_callback(lv_image_decoder_get_area_cb_t callback) noexcept;
+    void
+    set_get_area_callback(lv_image_decoder_get_area_cb_t callback) noexcept;
     void set_close_callback(lv_image_decoder_close_f_t callback) noexcept;
 
     // Returns: owns raw LVGL image decoder; caller must delete it.
@@ -272,6 +283,6 @@ struct StaticAssetRecord {
     const lv_image_dsc_t* descriptor = nullptr;
 };
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_ASSET_LVGL_HPP
+#endif // LVGLPP_CORE_ASSET_LVGL_HPP

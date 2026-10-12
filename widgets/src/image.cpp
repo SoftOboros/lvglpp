@@ -20,4 +20,4 @@ void Image::draw(::lvglpp::core::Renderer& renderer) const {
                          static_cast<std::uint32_t>(height_));
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

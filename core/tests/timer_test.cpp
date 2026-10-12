@@ -122,19 +122,22 @@ void custom_exec_value(lv_anim_t* animation, std::int32_t value) {
 }
 
 void anim_started(lv_anim_t* animation) {
-    auto* trace = static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
+    auto* trace =
+        static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
     assert(trace != nullptr);
     ++trace->starts;
 }
 
 void anim_completed(lv_anim_t* animation) {
-    auto* trace = static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
+    auto* trace =
+        static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
     assert(trace != nullptr);
     ++trace->completed;
 }
 
 void anim_deleted(lv_anim_t* animation) {
-    auto* trace = static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
+    auto* trace =
+        static_cast<AnimationTrace*>(lv_anim_get_user_data(animation));
     assert(trace != nullptr);
     ++trace->deleted;
 }
@@ -232,7 +235,7 @@ void test_object_property_animation_uses_lvgl_object_target() {
     assert(lv_obj_get_x(child.borrow_raw()) == 30);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

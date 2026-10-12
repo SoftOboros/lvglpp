@@ -30,7 +30,8 @@
 namespace {
 
 [[noreturn]] void trap() noexcept {
-    for (;;) asm volatile ("bkpt 1");
+    for (;;)
+        asm volatile("bkpt 1");
 }
 
 } // namespace
@@ -57,8 +58,8 @@ namespace std {
 
 // _GLIBCXX_ASSERTIONS failure hook (Debug builds): the libstdc++
 // definition fprintf's to stderr — another stdio/heap pull.
-[[noreturn]] void __glibcxx_assert_fail(const char*, int,
-                                        const char*, const char*) {
+[[noreturn]] void __glibcxx_assert_fail(const char*, int, const char*,
+                                        const char*) {
     trap();
 }
 
@@ -74,4 +75,6 @@ extern "C" [[noreturn]] void abort() { trap(); }
 // the translation unit's __dso_handle. Bare metal never runs static
 // destructors (the image never exits), so a self-referential
 // definition satisfies the link.
-extern "C" { void* __dso_handle = &__dso_handle; }
+extern "C" {
+void* __dso_handle = &__dso_handle;
+}

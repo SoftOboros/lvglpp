@@ -23,15 +23,15 @@ struct DisplayFixture {
     DisplayFixture() : display{lvglpp::LvDisplay::make(64, 64)} {
         assert(!display.empty());
         display.set_default();
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
         display.set_flush_callback(noop_flush);
     }
 
     [[nodiscard]] lvglpp::ObjectView active_screen() const noexcept {
-        return lvglpp::ObjectView{lv_display_get_screen_active(display.borrow_raw())};
+        return lvglpp::ObjectView{
+            lv_display_get_screen_active(display.borrow_raw())};
     }
 };
 
@@ -68,10 +68,12 @@ void test_playit_pointer_and_key_specs_feed_lvgl_input() {
     lv_obj_set_size(clickable.borrow_raw(), 20, 20);
     lv_obj_update_layout(clickable.borrow_raw());
 
-    auto clicked_sub = lvglpp::add_event_callback(
-        clickable.borrow(), lvglpp::EventCode::clicked(), record_clicked, &trace);
+    auto clicked_sub = lvglpp::add_event_callback(clickable.borrow(),
+                                                  lvglpp::EventCode::clicked(),
+                                                  record_clicked, &trace);
 
-    auto pointer = lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
+    auto pointer =
+        lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
     pointer.set_display(fixture.display.borrow());
 
     auto focus = lvglpp::LvObject::make_child(fixture.active_screen());
@@ -94,20 +96,20 @@ void test_playit_pointer_and_key_specs_feed_lvgl_input() {
     assert(trace.clicked >= 1);
 
     assert(bridge.inject(lvglpp::playit::EventSpec{
-        lvglpp::playit::event_spec::KeyDown{
-            lvglpp::playit::KeySpec{lvglpp::playit::KeySpec::Kind::Enter, 0}}}));
+        lvglpp::playit::event_spec::KeyDown{lvglpp::playit::KeySpec{
+            lvglpp::playit::KeySpec::Kind::Enter, 0}}}));
     assert(bridge.keypad_reads() >= 1);
     assert(trace.keyed >= 1);
     assert(trace.key == LV_KEY_ENTER);
 
-    assert(!bridge.inject(lvglpp::playit::EventSpec{
-        lvglpp::playit::event_spec::Tick{}}));
+    assert(!bridge.inject(
+        lvglpp::playit::EventSpec{lvglpp::playit::event_spec::Tick{}}));
 
     bridge.detach_keypad();
     bridge.detach_pointer();
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

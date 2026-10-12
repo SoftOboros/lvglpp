@@ -23,11 +23,8 @@ void Label::draw(::lvglpp::core::Renderer& renderer) const {
     // 2. Text baseline anchored at the bottom-left of `bounds`,
     //    color modulated by the widget-level alpha. Mirrors
     //    rlvgl/widgets/src/label.rs:48.
-    renderer.draw_text(
-        bounds_.x,
-        bounds_.y + bounds_.height,
-        text_,
-        text_color.with_alpha(style.alpha));
+    renderer.draw_text(bounds_.x, bounds_.y + bounds_.height, text_,
+                       text_color.with_alpha(style.alpha));
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

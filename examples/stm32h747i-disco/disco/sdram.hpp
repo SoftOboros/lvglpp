@@ -14,8 +14,8 @@
 
 namespace lvglpp::disco::sdram {
 
-inline constexpr std::uintptr_t BASE   = 0xD000'0000u;
-inline constexpr std::uint32_t  SIZE   = 32u * 1024u * 1024u;
+inline constexpr std::uintptr_t BASE = 0xD000'0000u;
+inline constexpr std::uint32_t SIZE = 32u * 1024u * 1024u;
 
 // Run the bring-up sequence. Pre-condition: clocks::init() and
 // pinmux::mux_fmc_pins() have already run. On any timeout, traps

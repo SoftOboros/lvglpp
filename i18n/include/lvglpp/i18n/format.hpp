@@ -25,34 +25,35 @@ namespace lvglpp::i18n {
 //     construction (std::to_chars, no heap).
 class Param {
 public:
-  // Args:
-  //   name:  borrows; placeholder name without braces.
-  //   value: borrows for the duration of the format() call.
-  constexpr Param(std::string_view name, std::string_view value) noexcept
-      : name_(name), view_(value) {}
-  constexpr Param(std::string_view name, const char *value) noexcept
-      : name_(name), view_(value) {}
-  Param(std::string_view name, bool value) noexcept
-      : name_(name), view_(value ? "true" : "false") {}
-  template <typename T>
+    // Args:
+    //   name:  borrows; placeholder name without braces.
+    //   value: borrows for the duration of the format() call.
+    constexpr Param(std::string_view name, std::string_view value) noexcept
+        : name_(name), view_(value) {}
+    constexpr Param(std::string_view name, const char* value) noexcept
+        : name_(name), view_(value) {}
+    Param(std::string_view name, bool value) noexcept
+        : name_(name), view_(value ? "true" : "false") {}
+    template <typename T>
     requires(std::integral<T> && !std::same_as<T, bool>)
-  Param(std::string_view name, T value) noexcept : name_(name) {
-    auto [end, ec] = std::to_chars(buf_, buf_ + sizeof(buf_), value);
-    len_ = (ec == std::errc{}) ? static_cast<std::uint8_t>(end - buf_) : 0;
-  }
+        Param(std::string_view name, T value)
+    noexcept : name_(name) {
+        auto [end, ec] = std::to_chars(buf_, buf_ + sizeof(buf_), value);
+        len_ = (ec == std::errc{}) ? static_cast<std::uint8_t>(end - buf_) : 0;
+    }
 
-  [[nodiscard]] constexpr std::string_view name() const noexcept {
-    return name_;
-  }
-  [[nodiscard]] std::string_view value() const noexcept {
-    return len_ != 0 ? std::string_view{buf_, len_} : view_;
-  }
+    [[nodiscard]] constexpr std::string_view name() const noexcept {
+        return name_;
+    }
+    [[nodiscard]] std::string_view value() const noexcept {
+        return len_ != 0 ? std::string_view{buf_, len_} : view_;
+    }
 
 private:
-  std::string_view name_; // borrows: placeholder name.
-  std::string_view view_; // borrows: string argument storage.
-  char buf_[24] = {};     // owns: numeric rendering.
-  std::uint8_t len_ = 0;  // 0 → view_ is authoritative.
+    std::string_view name_; // borrows: placeholder name.
+    std::string_view view_; // borrows: string argument storage.
+    char buf_[24] = {};     // owns: numeric rendering.
+    std::uint8_t len_ = 0;  // 0 → view_ is authoritative.
 };
 
 // Replace `{name}` placeholders in `tmpl` with matching parameter
@@ -70,7 +71,7 @@ private:
 
 [[nodiscard]] inline std::string format(std::string_view tmpl,
                                         std::initializer_list<Param> params) {
-  return format(tmpl, std::span<const Param>{params.begin(), params.size()});
+    return format(tmpl, std::span<const Param>{params.begin(), params.size()});
 }
 
 } // namespace lvglpp::i18n

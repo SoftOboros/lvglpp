@@ -22,8 +22,7 @@ namespace lw = lvglpp::widgets;
 
 namespace {
 
-template <class Alt, class Variant>
-const Alt* as(const Variant& v) noexcept {
+template <class Alt, class Variant> const Alt* as(const Variant& v) noexcept {
     return std::get_if<Alt>(&v);
 }
 
@@ -33,26 +32,26 @@ const Alt* as(const Variant& v) noexcept {
 //   └── ok_button     [tag=ok]
 //        └── (leaf — no children)
 struct Fixture {
-    int                button_clicks = 0;
-    lc::WidgetNode     root;
-    lw::Button*        button_ptr  = nullptr;
-    lw::Label*         label_ptr   = nullptr;
+    int button_clicks = 0;
+    lc::WidgetNode root;
+    lw::Button* button_ptr = nullptr;
+    lw::Label* label_ptr = nullptr;
 };
 
 Fixture make_fixture() {
     Fixture fx{};
 
-    auto root_label = std::make_unique<lw::Label>(
-        std::string{""}, lc::Rect{0, 0, 200, 200});
+    auto root_label =
+        std::make_unique<lw::Label>(std::string{""}, lc::Rect{0, 0, 200, 200});
     fx.root = lc::WidgetNode{std::move(root_label), "root"};
 
-    auto status_label = std::make_unique<lw::Label>(
-        std::string{"status"}, lc::Rect{0, 0, 200, 50});
+    auto status_label = std::make_unique<lw::Label>(std::string{"status"},
+                                                    lc::Rect{0, 0, 200, 50});
     fx.label_ptr = status_label.get();
     fx.root.add_child(lc::WidgetNode{std::move(status_label), "status"});
 
-    auto button = std::make_unique<lw::Button>(
-        std::string{"OK"}, lc::Rect{40, 80, 120, 40});
+    auto button = std::make_unique<lw::Button>(std::string{"OK"},
+                                               lc::Rect{40, 80, 120, 40});
     button->set_on_click([&fx](lw::Button&) { fx.button_clicks += 1; });
     fx.button_ptr = button.get();
     fx.root.add_child(lc::WidgetNode{std::move(button), "ok"});
@@ -165,7 +164,7 @@ void test_query_child_count_root_has_two() {
     auto cmd = lp::parse_command("QC:root");
     const auto* cc = as<lp::response::ChildCount>(dispatcher.dispatch(*cmd));
     assert(cc);
-    assert(cc->value == 2);  // status + ok
+    assert(cc->value == 2); // status + ok
 }
 
 void test_query_child_count_leaf_is_zero() {
@@ -188,7 +187,7 @@ void test_status_returns_snapshot() {
     lp::Response resp = dispatcher.dispatch(*cmd);
     const auto* s = as<lp::response::Status>(resp);
     assert(s);
-    assert(s->snapshot.tick_count    == 1234);
+    assert(s->snapshot.tick_count == 1234);
     assert(s->snapshot.present_count == 567);
 }
 
@@ -214,7 +213,7 @@ void test_record_commands_not_implemented() {
     }
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_tagged_press_release_drives_button();

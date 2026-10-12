@@ -50,7 +50,7 @@ void test_with_frame_hz() {
     const lp::Screen base = lp::Screen::landscape(800, 480);
     const lp::Screen fast = base.with_frame_hz(120);
     assert(fast.frame_hz == 120);
-    assert(base.frame_hz == 60);  // original untouched.
+    assert(base.frame_hz == 60); // original untouched.
     // frame_hz == 0 clamps to 1.
     assert(base.with_frame_hz(0).frame_hz == 1);
 }
@@ -72,7 +72,7 @@ static_assert(std::is_trivially_copyable_v<lp::Screen>);
 static_assert(lp::Screen::make(800, 480, lp::Rotation::Deg0) ==
               lp::Screen::landscape(800, 480));
 
-}  // namespace
+} // namespace
 
 int main() {
     test_defaults();

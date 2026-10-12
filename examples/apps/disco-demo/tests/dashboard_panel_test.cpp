@@ -23,15 +23,17 @@ namespace {
 struct CountRenderer : lc::Renderer {
     int fills = 0;
     void fill_rect(lc::Rect, lc::Color) override { ++fills; }
-    void draw_text(std::int32_t, std::int32_t, std::string_view, lc::Color) override {}
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   lc::Color) override {}
 };
 
-const lc::Rect kBounds{ad::PANEL_X, ad::PANEL_Y, ad::PANEL_WIDTH, ad::PANEL_HEIGHT};
+const lc::Rect kBounds{ad::PANEL_X, ad::PANEL_Y, ad::PANEL_WIDTH,
+                       ad::PANEL_HEIGHT};
 
 void test_show_hide_and_bounds() {
     ad::DashboardPanel panel{kBounds, "Title", "Caption"};
     assert(!panel.is_visible());
-    assert(panel.bounds() == (lc::Rect{0, 0, 0, 0}));  // hidden -> collapse
+    assert(panel.bounds() == (lc::Rect{0, 0, 0, 0})); // hidden -> collapse
 
     panel.show();
     assert(panel.is_visible());
@@ -46,8 +48,8 @@ void test_close_hit_consume() {
     ad::DashboardPanel panel{kBounds, "Title", "Caption"};
 
     // Hidden: event ignored.
-    const lc::Event close{lc::event::PressRelease{
-        kBounds.x + kBounds.width - 10, kBounds.y + 4}};
+    const lc::Event close{
+        lc::event::PressRelease{kBounds.x + kBounds.width - 10, kBounds.y + 4}};
     assert(!panel.handle_event(close));
 
     panel.show();
@@ -78,11 +80,13 @@ void test_draw_visibility_gated() {
 void test_wrap_long_sentence() {
     const auto lines = ad::detail::wrap_text(
         "the quick brown fox jumps over the lazy dog", 12);
-    for (const auto& l : lines) assert(l.size() <= 12);
+    for (const auto& l : lines)
+        assert(l.size() <= 12);
     // Joining the wrapped lines with spaces reconstructs the word stream.
     std::string joined;
     for (std::size_t i = 0; i < lines.size(); ++i) {
-        if (i != 0) joined.push_back(' ');
+        if (i != 0)
+            joined.push_back(' ');
         joined += lines[i];
     }
     assert(joined == "the quick brown fox jumps over the lazy dog");
@@ -106,7 +110,7 @@ void test_wrap_zero_cols() {
     assert(lines.size() == 1 && lines[0].empty());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_show_hide_and_bounds();

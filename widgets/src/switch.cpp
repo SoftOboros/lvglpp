@@ -22,12 +22,11 @@ void Switch::draw(::lvglpp::core::Renderer& renderer) const {
 
     // 2. Knob — half the track width, anchored left or right by state.
     const std::int32_t knob_width = bounds_.width / 2;
-    const lc::Rect knob_rect = on_
-        ? lc::Rect{bounds_.x + bounds_.width - knob_width,
-                   bounds_.y, knob_width, bounds_.height}
-        : lc::Rect{bounds_.x, bounds_.y, knob_width, bounds_.height};
-    lc::fill_rounded_rect(renderer, knob_rect,
-                          knob_color.with_alpha(a), r);
+    const lc::Rect knob_rect =
+        on_ ? lc::Rect{bounds_.x + bounds_.width - knob_width, bounds_.y,
+                       knob_width, bounds_.height}
+            : lc::Rect{bounds_.x, bounds_.y, knob_width, bounds_.height};
+    lc::fill_rounded_rect(renderer, knob_rect, knob_color.with_alpha(a), r);
 }
 
 bool Switch::handle_event(const ::lvglpp::core::Event& event) {
@@ -42,4 +41,4 @@ bool Switch::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

@@ -42,8 +42,8 @@ public:
 
     // Containers are passive and never consume input (parity:
     // container.rs `handle_event` -> false).
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& /*event*/) override {
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& /*event*/) override {
         return false;
     }
 
@@ -51,6 +51,6 @@ private:
     ::lvglpp::core::Rect bounds_;
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_CONTAINER_HPP
+#endif // LVGLPP_WIDGETS_CONTAINER_HPP

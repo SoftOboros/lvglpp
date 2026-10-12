@@ -24,20 +24,15 @@ struct DisplayFixture {
     DisplayFixture() : display{lvglpp::LvDisplay::make(80, 80)} {
         assert(!display.empty());
         display.set_default();
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
     }
 };
 
-lvglpp::core::Color red() {
-    return lvglpp::core::Color{200, 10, 20, 255};
-}
+lvglpp::core::Color red() { return lvglpp::core::Color{200, 10, 20, 255}; }
 
-lvglpp::core::Color blue() {
-    return lvglpp::core::Color{10, 20, 200, 255};
-}
+lvglpp::core::Color blue() { return lvglpp::core::Color{10, 20, 200, 255}; }
 
 void test_selector_mapping() {
     static_assert(lvglpp::to_lv(lvglpp::StylePart::Main) == LV_PART_MAIN);
@@ -49,9 +44,9 @@ void test_selector_mapping() {
                                 lvglpp::StyleState::Pressed) ==
                   static_cast<lv_state_t>(LV_STATE_FOCUSED | LV_STATE_PRESSED));
 
-    const lvglpp::StyleSelector selector{
-        lvglpp::StylePart::Knob,
-        lvglpp::StyleState::Pressed | lvglpp::StyleState::Checked};
+    const lvglpp::StyleSelector selector{lvglpp::StylePart::Knob,
+                                         lvglpp::StyleState::Pressed |
+                                             lvglpp::StyleState::Checked};
     assert(lvglpp::to_lv(selector) ==
            (static_cast<lv_style_selector_t>(LV_PART_KNOB) |
             static_cast<lv_style_selector_t>(LV_STATE_PRESSED) |
@@ -110,47 +105,40 @@ void test_object_style_stack_and_resolved_properties() {
     base.set_radius(2);
     lvglpp::add_style(object.borrow(), base.borrow(), lvglpp::StyleSelector{});
 
-    assert(lvglpp::resolved_bg_color(object.borrow(), lvglpp::StylePart::Main) ==
-           red());
+    assert(lvglpp::resolved_bg_color(object.borrow(),
+                                     lvglpp::StylePart::Main) == red());
     assert(lvglpp::resolved_bg_opa(object.borrow(), lvglpp::StylePart::Main) ==
            255);
     assert(lvglpp::resolved_radius(object.borrow(), lvglpp::StylePart::Main) ==
            2);
-    assert(lvglpp::has_style_prop(object.borrow(),
-                                  lvglpp::StyleSelector{},
+    assert(lvglpp::has_style_prop(object.borrow(), lvglpp::StyleSelector{},
                                   LV_STYLE_BG_COLOR));
 
     lvglpp::LvStyle pressed;
     pressed.set_bg_color(blue());
-    lvglpp::add_style(
-        object.borrow(),
-        pressed.borrow(),
-        lvglpp::StyleSelector{lvglpp::StylePart::Main,
-                              lvglpp::StyleState::Pressed});
+    lvglpp::add_style(object.borrow(), pressed.borrow(),
+                      lvglpp::StyleSelector{lvglpp::StylePart::Main,
+                                            lvglpp::StyleState::Pressed});
     object.add_state(lvglpp::ObjectState::Pressed);
-    assert(lvglpp::resolved_bg_color(object.borrow(), lvglpp::StylePart::Main) ==
-           blue());
+    assert(lvglpp::resolved_bg_color(object.borrow(),
+                                     lvglpp::StylePart::Main) == blue());
 
     lvglpp::set_style_disabled(
-        object.borrow(),
-        pressed.borrow(),
+        object.borrow(), pressed.borrow(),
         lvglpp::StyleSelector{lvglpp::StylePart::Main,
                               lvglpp::StyleState::Pressed},
         true);
     assert(lvglpp::style_disabled(
-        object.borrow(),
-        pressed.borrow(),
+        object.borrow(), pressed.borrow(),
         lvglpp::StyleSelector{lvglpp::StylePart::Main,
                               lvglpp::StyleState::Pressed}));
-    assert(lvglpp::resolved_bg_color(object.borrow(), lvglpp::StylePart::Main) ==
-           red());
+    assert(lvglpp::resolved_bg_color(object.borrow(),
+                                     lvglpp::StylePart::Main) == red());
 
     lvglpp::remove_style(
-        object.borrow(),
-        base.borrow(),
+        object.borrow(), base.borrow(),
         lvglpp::StyleSelector{lvglpp::StylePart::Any, lvglpp::StyleState::Any});
-    assert(!lvglpp::has_style_prop(object.borrow(),
-                                   lvglpp::StyleSelector{},
+    assert(!lvglpp::has_style_prop(object.borrow(), lvglpp::StyleSelector{},
                                    LV_STYLE_BG_COLOR));
 }
 
@@ -162,29 +150,24 @@ void test_local_style_props_refresh_and_transition_descriptor() {
 
     lv_style_value_t value{};
     value.color = lvglpp::to_lv(red());
-    lvglpp::set_local_style_prop(object.borrow(),
-                                 LV_STYLE_BG_COLOR,
-                                 value,
+    lvglpp::set_local_style_prop(object.borrow(), LV_STYLE_BG_COLOR, value,
                                  lvglpp::StyleSelector{});
     lv_style_value_t found{};
-    assert(lvglpp::local_style_prop(object.borrow(),
-                                    LV_STYLE_BG_COLOR,
-                                    found,
+    assert(lvglpp::local_style_prop(object.borrow(), LV_STYLE_BG_COLOR, found,
                                     lvglpp::StyleSelector{}) ==
            LV_STYLE_RES_FOUND);
     assert(lvglpp::color_from_lv(found.color) == red());
-    assert(lvglpp::resolved_style_prop(
-               object.borrow(), lvglpp::StylePart::Main, LV_STYLE_BG_COLOR)
+    assert(lvglpp::resolved_style_prop(object.borrow(), lvglpp::StylePart::Main,
+                                       LV_STYLE_BG_COLOR)
                .color.red == red().r);
 
-    assert(lvglpp::remove_local_style_prop(
-        object.borrow(), LV_STYLE_BG_COLOR, lvglpp::StyleSelector{}));
+    assert(lvglpp::remove_local_style_prop(object.borrow(), LV_STYLE_BG_COLOR,
+                                           lvglpp::StyleSelector{}));
 
     const lv_style_prop_t props[] = {LV_STYLE_BG_COLOR, LV_STYLE_BG_OPA};
     int transition_user_data = 7;
-    lvglpp::StyleTransition transition{
-        std::span<const lv_style_prop_t>{props}, nullptr, 40, 5,
-        &transition_user_data};
+    lvglpp::StyleTransition transition{std::span<const lv_style_prop_t>{props},
+                                       nullptr, 40, 5, &transition_user_data};
     lvglpp::LvStyle style;
     style.set_transition(transition);
     assert(style.get_prop(LV_STYLE_TRANSITION, found) == LV_STYLE_RES_FOUND);
@@ -221,10 +204,11 @@ void test_theme_owner_view_and_apply() {
     theme_apply_count = 0;
     lvglpp::apply_theme(object.borrow());
     assert(theme_apply_count == 1);
-    assert(lvglpp::resolved_bg_color(object.borrow(), lvglpp::StylePart::Main) ==
-           blue());
+    assert(lvglpp::resolved_bg_color(object.borrow(),
+                                     lvglpp::StylePart::Main) == blue());
 
-    lvglpp::set_display_theme(display.display.borrow(), lvglpp::ThemeView{nullptr});
+    lvglpp::set_display_theme(display.display.borrow(),
+                              lvglpp::ThemeView{nullptr});
 }
 
 void test_compatibility_style_still_compiles() {
@@ -234,7 +218,7 @@ void test_compatibility_style_still_compiles() {
     assert(style.bg_color == (lvglpp::core::Color{255, 255, 255, 255}));
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

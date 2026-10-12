@@ -44,15 +44,19 @@ public:
         return label_.text();
     }
 
-    [[nodiscard]] ::lvglpp::core::Style&
-    style() noexcept { return label_.style; }
-    [[nodiscard]] const ::lvglpp::core::Style&
-    style() const noexcept { return label_.style; }
+    [[nodiscard]] ::lvglpp::core::Style& style() noexcept {
+        return label_.style;
+    }
+    [[nodiscard]] const ::lvglpp::core::Style& style() const noexcept {
+        return label_.style;
+    }
 
-    [[nodiscard]] ::lvglpp::core::Color&
-    text_color() noexcept { return label_.text_color; }
-    [[nodiscard]] const ::lvglpp::core::Color&
-    text_color() const noexcept { return label_.text_color; }
+    [[nodiscard]] ::lvglpp::core::Color& text_color() noexcept {
+        return label_.text_color;
+    }
+    [[nodiscard]] const ::lvglpp::core::Color& text_color() const noexcept {
+        return label_.text_color;
+    }
 
     // Register the click callback. Args:
     //   handler: owns std::function — consumed via move.
@@ -70,22 +74,21 @@ public:
         label_.draw(renderer);
     }
 
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
 private:
-    [[nodiscard]] bool inside_bounds(std::int32_t x, std::int32_t y) const noexcept {
-        return x >= bounds_.x &&
-               x <  bounds_.x + bounds_.width &&
-               y >= bounds_.y &&
-               y <  bounds_.y + bounds_.height;
+    [[nodiscard]] bool inside_bounds(std::int32_t x,
+                                     std::int32_t y) const noexcept {
+        return x >= bounds_.x && x < bounds_.x + bounds_.width &&
+               y >= bounds_.y && y < bounds_.y + bounds_.height;
     }
 
     ::lvglpp::core::Rect bounds_;
-    Label                label_;
-    ClickHandler         on_click_{};
+    Label label_;
+    ClickHandler on_click_{};
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_BUTTON_HPP
+#endif // LVGLPP_WIDGETS_BUTTON_HPP

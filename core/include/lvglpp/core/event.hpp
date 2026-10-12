@@ -47,10 +47,10 @@ enum class TouchState : std::uint8_t {
 // alignment may add padding after `id`; the layout is logical, not
 // byte-stable (concepts doc §4 rules out memcpy transmission).
 struct TouchPoint {
-    std::uint8_t id    = 0;
-    std::int32_t x     = 0;
-    std::int32_t y     = 0;
-    TouchState   state = TouchState::Up;
+    std::uint8_t id = 0;
+    std::int32_t x = 0;
+    std::int32_t y = 0;
+    TouchState state = TouchState::Up;
 
     constexpr bool operator==(const TouchPoint&) const noexcept = default;
 };
@@ -63,13 +63,27 @@ struct TouchPoint {
 // Mirrors rlvgl/core/src/event.rs:118 (§5.3).
 namespace key {
 
-struct Escape     { constexpr bool operator==(const Escape&) const noexcept = default; };
-struct Enter      { constexpr bool operator==(const Enter&) const noexcept = default; };
-struct Space      { constexpr bool operator==(const Space&) const noexcept = default; };
-struct ArrowUp    { constexpr bool operator==(const ArrowUp&) const noexcept = default; };
-struct ArrowDown  { constexpr bool operator==(const ArrowDown&) const noexcept = default; };
-struct ArrowLeft  { constexpr bool operator==(const ArrowLeft&) const noexcept = default; };
-struct ArrowRight { constexpr bool operator==(const ArrowRight&) const noexcept = default; };
+struct Escape {
+    constexpr bool operator==(const Escape&) const noexcept = default;
+};
+struct Enter {
+    constexpr bool operator==(const Enter&) const noexcept = default;
+};
+struct Space {
+    constexpr bool operator==(const Space&) const noexcept = default;
+};
+struct ArrowUp {
+    constexpr bool operator==(const ArrowUp&) const noexcept = default;
+};
+struct ArrowDown {
+    constexpr bool operator==(const ArrowDown&) const noexcept = default;
+};
+struct ArrowLeft {
+    constexpr bool operator==(const ArrowLeft&) const noexcept = default;
+};
+struct ArrowRight {
+    constexpr bool operator==(const ArrowRight&) const noexcept = default;
+};
 
 // Function key index. rlvgl's source documents 1..=12 in prose; the
 // type holds the full uint8_t range to mirror the Rust source's
@@ -96,24 +110,15 @@ struct Other {
     constexpr bool operator==(const Other&) const noexcept = default;
 };
 
-}  // namespace key
+} // namespace key
 
 // Sum type over key variants. Default-constructs to Escape (the
 // first variant), parity with std::variant default semantics; in
 // practice every Key value is constructed explicitly from the input
 // path.
-using Key = std::variant<
-    key::Escape,
-    key::Enter,
-    key::Space,
-    key::ArrowUp,
-    key::ArrowDown,
-    key::ArrowLeft,
-    key::ArrowRight,
-    key::Function,
-    key::Character,
-    key::Other
->;
+using Key = std::variant<key::Escape, key::Enter, key::Space, key::ArrowUp,
+                         key::ArrowDown, key::ArrowLeft, key::ArrowRight,
+                         key::Function, key::Character, key::Other>;
 
 // Event variant payloads. One aggregate per variant so std::visit
 // dispatches by type. Field shapes mirror rlvgl/core/src/event.rs:43
@@ -176,29 +181,21 @@ struct KeyUp {
 // Multi-touch frame. Only `points[0..count]` are meaningful; the
 // trailing slots are zero-initialised TouchPoints (state = Up).
 struct Touch {
-    std::uint8_t                            count  = 0;
+    std::uint8_t count = 0;
     std::array<TouchPoint, MAX_TOUCH_POINTS> points{};
     constexpr bool operator==(const Touch&) const noexcept = default;
 };
 
-}  // namespace event
+} // namespace event
 
 // Event sum type. Variant ordering matches rlvgl/core/src/event.rs:43
 // for parity with any future serialization that depends on tag
 // indices.
-using Event = std::variant<
-    event::Tick,
-    event::PointerDown,
-    event::PointerUp,
-    event::PointerMove,
-    event::PressDown,
-    event::PressRelease,
-    event::DoubleTap,
-    event::KeyDown,
-    event::KeyUp,
-    event::Touch
->;
+using Event =
+    std::variant<event::Tick, event::PointerDown, event::PointerUp,
+                 event::PointerMove, event::PressDown, event::PressRelease,
+                 event::DoubleTap, event::KeyDown, event::KeyUp, event::Touch>;
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_EVENT_HPP
+#endif // LVGLPP_CORE_EVENT_HPP

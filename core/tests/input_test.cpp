@@ -23,15 +23,15 @@ struct DisplayFixture {
     DisplayFixture() : display{lvglpp::LvDisplay::make(64, 64)} {
         assert(!display.empty());
         display.set_default();
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
         display.set_flush_callback(noop_flush);
     }
 
     [[nodiscard]] lvglpp::ObjectView active_screen() const noexcept {
-        return lvglpp::ObjectView{lv_display_get_screen_active(display.borrow_raw())};
+        return lvglpp::ObjectView{
+            lv_display_get_screen_active(display.borrow_raw())};
     }
 };
 
@@ -81,12 +81,14 @@ void test_event_subscription_removes_descriptor() {
 
     {
         auto subscription = lvglpp::add_event_callback(
-            object.borrow(), lvglpp::EventCode::clicked(), record_event, &trace);
+            object.borrow(), lvglpp::EventCode::clicked(), record_event,
+            &trace);
         assert(!subscription.empty());
         assert(subscription.borrow_descriptor() != nullptr);
 
-        assert(lvglpp::send_event(object.borrow(), lvglpp::EventCode::clicked()) ==
-               LV_RESULT_OK);
+        assert(
+            lvglpp::send_event(object.borrow(), lvglpp::EventCode::clicked()) ==
+            LV_RESULT_OK);
         assert(trace.calls == 1);
         assert(trace.code[0] == lvglpp::EventCode::Kind::Clicked);
         assert(trace.target[0] == object.borrow_raw());
@@ -205,11 +207,13 @@ void test_input_devices_read_synthetic_state() {
     lv_obj_update_layout(object.borrow_raw());
 
     EventTrace pointer_trace;
-    auto pressed_sub = lvglpp::add_event_callback(
-        object.borrow(), lvglpp::EventCode::pressed(), record_event, &pointer_trace);
+    auto pressed_sub = lvglpp::add_event_callback(object.borrow(),
+                                                  lvglpp::EventCode::pressed(),
+                                                  record_event, &pointer_trace);
 
     PointerState pointer_state{LV_INDEV_STATE_PRESSED, lv_point_t{8, 9}, 0};
-    auto pointer = lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
+    auto pointer =
+        lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
     assert(pointer.type() == lvglpp::InputDeviceType::Pointer);
     pointer.set_display(fixture.display.borrow());
     pointer.set_user_data(&pointer_state);
@@ -243,10 +247,12 @@ void test_input_devices_read_synthetic_state() {
     assert(key_trace.key[0] == LV_KEY_ENTER);
 
     EventTrace rotary_trace;
-    auto rotary_sub = lvglpp::add_event_callback(
-        focus.borrow(), lvglpp::EventCode::rotary(), record_event, &rotary_trace);
+    auto rotary_sub =
+        lvglpp::add_event_callback(focus.borrow(), lvglpp::EventCode::rotary(),
+                                   record_event, &rotary_trace);
     EncoderState encoder_state{LV_INDEV_STATE_RELEASED, 3, 0};
-    auto encoder = lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Encoder);
+    auto encoder =
+        lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Encoder);
     encoder.set_group(group.borrow());
     encoder.set_user_data(&encoder_state);
     encoder.set_read_callback(read_encoder);
@@ -255,7 +261,7 @@ void test_input_devices_read_synthetic_state() {
     assert(encoder.type() == lvglpp::InputDeviceType::Encoder);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

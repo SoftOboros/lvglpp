@@ -62,7 +62,8 @@ constexpr const char* DEFAULT_HEADLESS_PATH = "disco-headless.txt";
 // Quit only on 'q'/'Q' (Escape is a live FSM key — it closes a wing).
 bool is_quit_key(const lc::Event& event) noexcept {
     const auto* kd = std::get_if<lc::event::KeyDown>(&event);
-    if (kd == nullptr) return false;
+    if (kd == nullptr)
+        return false;
     if (const auto* ch = std::get_if<lc::key::Character>(&kd->key)) {
         return ch->codepoint == static_cast<std::uint32_t>('q') ||
                ch->codepoint == static_cast<std::uint32_t>('Q');
@@ -70,45 +71,42 @@ bool is_quit_key(const lc::Event& event) noexcept {
     return false;
 }
 
-template <class... Ts>
-struct overloaded : Ts... {
-    using Ts::operator()...;
-};
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
+template <class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 // Thin host adapter for drained controller commands (DEMO-06 §6). Effects
 // are out of scope (DEMO-00 §11) — they only log here.
 void execute_host(ad::DiscoController& ctl, const ad::DiscoCommand& command) {
-    std::visit(
-        overloaded{
-            [](const ad::cmd::SetBacklight& c) {
-                std::fprintf(stderr, "[host] backlight -> %u%%\n",
-                             static_cast<unsigned>(c.level));
-            },
-            [&ctl](const ad::cmd::LoadStorageSummary&) {
-                std::fprintf(stderr, "[host] load storage summary\n");
-                ctl.publish_status("Storage: flash 2 of 4 MB, SD 1.2 GB free (mock)");
-            },
-            [](const ad::cmd::StartEffect& c) {
-                std::fprintf(stderr, "[host] start effect %d\n",
-                             static_cast<int>(c.effect));
-            },
-            [](const ad::cmd::StopEffect& c) {
-                std::fprintf(stderr, "[host] stop effect %d\n",
-                             static_cast<int>(c.effect));
-            },
-            [](const ad::cmd::ShowStatus& c) {
-                std::fprintf(stderr, "[host] status: %s\n", c.text.c_str());
-            },
-            [](const ad::cmd::NoOp&) {},
-        },
-        command);
+    std::visit(overloaded{
+                   [](const ad::cmd::SetBacklight& c) {
+                       std::fprintf(stderr, "[host] backlight -> %u%%\n",
+                                    static_cast<unsigned>(c.level));
+                   },
+                   [&ctl](const ad::cmd::LoadStorageSummary&) {
+                       std::fprintf(stderr, "[host] load storage summary\n");
+                       ctl.publish_status(
+                           "Storage: flash 2 of 4 MB, SD 1.2 GB free (mock)");
+                   },
+                   [](const ad::cmd::StartEffect& c) {
+                       std::fprintf(stderr, "[host] start effect %d\n",
+                                    static_cast<int>(c.effect));
+                   },
+                   [](const ad::cmd::StopEffect& c) {
+                       std::fprintf(stderr, "[host] stop effect %d\n",
+                                    static_cast<int>(c.effect));
+                   },
+                   [](const ad::cmd::ShowStatus& c) {
+                       std::fprintf(stderr, "[host] status: %s\n",
+                                    c.text.c_str());
+                   },
+                   [](const ad::cmd::NoOp&) {},
+               },
+               command);
 }
 
 // ── DEMO-07 §5.1 CLI surface (mirrors rlvgl-disco-sim parse_args) ───
 struct CliOptions {
-    std::uint32_t width  = 800;
+    std::uint32_t width = 800;
     std::uint32_t height = 480;
     std::optional<std::string> headless_path;
     std::optional<std::string> png_path;
@@ -122,7 +120,8 @@ std::optional<CliOptions> parse_args(int argc, char** argv,
     for (int i = 1; i < argc; ++i) {
         const std::string_view arg = argv[i];
         auto next = [&]() -> std::optional<std::string_view> {
-            if (i + 1 >= argc) return std::nullopt;
+            if (i + 1 >= argc)
+                return std::nullopt;
             return std::string_view{argv[++i]};
         };
         auto parse_port = [&](std::string_view v) -> bool {
@@ -145,7 +144,7 @@ std::optional<CliOptions> parse_args(int argc, char** argv,
                 error = "invalid --screen value: " + s;
                 return std::nullopt;
             }
-            options.width  = w;
+            options.width = w;
             options.height = h;
         } else if (arg == "--headless") {
             auto v = next();
@@ -161,9 +160,11 @@ std::optional<CliOptions> parse_args(int argc, char** argv,
                 error = "--playit-port requires a port value";
                 return std::nullopt;
             }
-            if (!parse_port(*v)) return std::nullopt;
+            if (!parse_port(*v))
+                return std::nullopt;
         } else if (arg.rfind("--playit-port=", 0) == 0) {
-            if (!parse_port(arg.substr(14))) return std::nullopt;
+            if (!parse_port(arg.substr(14)))
+                return std::nullopt;
         } else if (arg == "--color" || arg.rfind("--color=", 0) == 0) {
             // DEMO-07 §5.1 DELTA — declared unimplemented.
             error = "--color not implemented in lvglpp_example_disco_sim "
@@ -195,14 +196,13 @@ struct SimStack {
     lpit::Dispatcher dispatcher;
     lpit::EventRecorder recorder;
     lpit::Executor executor;
-    std::uint32_t tick_counter    = 0;
+    std::uint32_t tick_counter = 0;
     std::uint32_t present_counter = 0;
 
     SimStack(lp::Screen screen, lpit::Transport& transport)
         : controller{ad::DiscoController::make(
               screen, ad::DiscoCapabilities::simulator())},
-          dispatcher{controller.root()},
-          executor{transport, dispatcher} {
+          dispatcher{controller.root()}, executor{transport, dispatcher} {
         executor.set_recorder(&recorder);
     }
 
@@ -240,13 +240,13 @@ public:
 
     [[nodiscard]] std::uint32_t read_pixel(std::int32_t x,
                                            std::int32_t y) const override {
-        if (x < 0 || y < 0) return 0;
+        if (x < 0 || y < 0)
+            return 0;
         return fb_->pixel(static_cast<std::uint32_t>(x),
                           static_cast<std::uint32_t>(y));
     }
 
-    std::size_t read_row(std::int32_t x, std::int32_t y,
-                         std::uint16_t width,
+    std::size_t read_row(std::int32_t x, std::int32_t y, std::uint16_t width,
                          std::span<std::uint32_t> out) const override {
         std::size_t n = 0;
         for (std::uint16_t i = 0; i < width && n < out.size(); ++i) {
@@ -267,17 +267,16 @@ public:
     }
 
 private:
-    const lvglpp::sim::MemoryRenderer* fb_;  // observes
-    const std::uint32_t* present_;           // observes
+    const lvglpp::sim::MemoryRenderer* fb_; // observes
+    const std::uint32_t* present_;          // observes
 };
 
-[[noreturn]] void run_automation_headless(SimStack& stack,
-                                          std::uint32_t width,
+[[noreturn]] void run_automation_headless(SimStack& stack, std::uint32_t width,
                                           std::uint32_t height) {
     lvglpp::sim::MemoryRenderer renderer{width, height};
     MemoryFramebufferReader reader{renderer, stack.present_counter};
     stack.executor.set_framebuffer_reader(&reader);
-    constexpr auto FRAME_TIME = std::chrono::microseconds{16'667};  // 60 Hz
+    constexpr auto FRAME_TIME = std::chrono::microseconds{16'667}; // 60 Hz
     for (;;) {
         const auto started = std::chrono::steady_clock::now();
         stack.step();
@@ -289,7 +288,7 @@ private:
     }
 }
 
-}  // namespace
+} // namespace
 
 int main(int argc, char** argv) {
     std::string error;
@@ -317,9 +316,9 @@ int main(int argc, char** argv) {
                     static_cast<unsigned>(tcp->local_port()));
         std::fflush(stdout);
     }
-    lpit::Transport& transport =
-        tcp.has_value() ? static_cast<lpit::Transport&>(*tcp)
-                        : static_cast<lpit::Transport&>(stdio);
+    lpit::Transport& transport = tcp.has_value()
+                                     ? static_cast<lpit::Transport&>(*tcp)
+                                     : static_cast<lpit::Transport&>(stdio);
 
     const auto screen = lp::Screen::landscape(options.width, options.height);
     SimStack stack{screen, transport};
@@ -358,7 +357,8 @@ int main(int argc, char** argv) {
     // DoubleTap. 60 Hz matches SDL VSYNC.
     lpit::GesturePipeline pipeline{60};
     auto dispatch_pipeline_output = [&](const lpit::PipelineOutput& out) {
-        if (out.primary) (void)stack.controller.dispatch_event(*out.primary);
+        if (out.primary)
+            (void)stack.controller.dispatch_event(*out.primary);
         if (out.secondary)
             (void)stack.controller.dispatch_event(*out.secondary);
     };

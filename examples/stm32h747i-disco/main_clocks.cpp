@@ -16,6 +16,6 @@ int main() {
     lvglpp::disco::pinmux::mux_fmc_pins(); // breadcrumb 0xA11C_0007
 
     for (;;) {
-        asm volatile ("wfe");
+        asm volatile("wfe");
     }
 }

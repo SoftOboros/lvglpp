@@ -38,10 +38,10 @@ namespace lvglpp::i18n {
 //              is `user_data`. Re-resolve via lv_tr()/tr() inside.
 //   user_data: external/observes; caller guarantees it outlives obj
 //              or removes the callback first.
-inline void observe_language_change(lv_obj_t *obj, lv_event_cb_t cb,
-                                    void *user_data) {
-  lv_obj_add_event_cb(obj, cb, LV_EVENT_TRANSLATION_LANGUAGE_CHANGED,
-                      user_data);
+inline void observe_language_change(lv_obj_t* obj, lv_event_cb_t cb,
+                                    void* user_data) {
+    lv_obj_add_event_cb(obj, cb, LV_EVENT_TRANSLATION_LANGUAGE_CHANGED,
+                        user_data);
 }
 
 } // namespace lvglpp::i18n

@@ -15,4 +15,4 @@ void Container::draw(::lvglpp::core::Renderer& renderer) const {
     ::lvglpp::core::draw_widget_bg(renderer, bounds_, style);
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

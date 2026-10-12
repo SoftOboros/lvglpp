@@ -37,6 +37,6 @@ namespace lvglpp::playit {
 [[nodiscard]] std::size_t format_hex_u32(std::uint32_t value,
                                          std::span<char> buf) noexcept;
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_FORMAT_HPP
+#endif // LVGLPP_PLAYIT_FORMAT_HPP

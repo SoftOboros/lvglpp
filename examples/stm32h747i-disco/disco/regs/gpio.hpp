@@ -18,22 +18,22 @@
 namespace lvglpp::disco::regs {
 
 struct alignas(4) GpioPort {
-    volatile std::uint32_t moder;     // 0x00 §14.4.1
-    volatile std::uint32_t otyper;    // 0x04 §14.4.2
-    volatile std::uint32_t ospeedr;   // 0x08 §14.4.3
-    volatile std::uint32_t pupdr;     // 0x0C §14.4.4
-    volatile std::uint32_t idr;       // 0x10 §14.4.5
-    volatile std::uint32_t odr;       // 0x14 §14.4.6
-    volatile std::uint32_t bsrr;      // 0x18 §14.4.7
-    volatile std::uint32_t lckr;      // 0x1C §14.4.8
-    volatile std::uint32_t afrl;      // 0x20 §14.4.9  (pins 0..7)
-    volatile std::uint32_t afrh;      // 0x24 §14.4.10 (pins 8..15)
+    volatile std::uint32_t moder;   // 0x00 §14.4.1
+    volatile std::uint32_t otyper;  // 0x04 §14.4.2
+    volatile std::uint32_t ospeedr; // 0x08 §14.4.3
+    volatile std::uint32_t pupdr;   // 0x0C §14.4.4
+    volatile std::uint32_t idr;     // 0x10 §14.4.5
+    volatile std::uint32_t odr;     // 0x14 §14.4.6
+    volatile std::uint32_t bsrr;    // 0x18 §14.4.7
+    volatile std::uint32_t lckr;    // 0x1C §14.4.8
+    volatile std::uint32_t afrl;    // 0x20 §14.4.9  (pins 0..7)
+    volatile std::uint32_t afrh;    // 0x24 §14.4.10 (pins 8..15)
 };
 
-static_assert(offsetof(GpioPort, moder)   == 0x00, "RM0399 §14.4.1");
+static_assert(offsetof(GpioPort, moder) == 0x00, "RM0399 §14.4.1");
 static_assert(offsetof(GpioPort, ospeedr) == 0x08, "RM0399 §14.4.3");
-static_assert(offsetof(GpioPort, afrl)    == 0x20, "RM0399 §14.4.9");
-static_assert(offsetof(GpioPort, afrh)    == 0x24, "RM0399 §14.4.10");
+static_assert(offsetof(GpioPort, afrl) == 0x20, "RM0399 §14.4.9");
+static_assert(offsetof(GpioPort, afrh) == 0x24, "RM0399 §14.4.10");
 
 // `mmio: owned by RM0399 §14.4; never freed.`
 //   Each port lives at AHB4_BASE + 0x400 × index, where index is
@@ -52,10 +52,10 @@ inline constexpr MmioAddr<GpioPort> GPIOJ{GPIO_BASE + 0x400u * 9};
 inline constexpr MmioAddr<GpioPort> GPIOK{GPIO_BASE + 0x400u * 10};
 
 namespace moder {
-    inline constexpr std::uint32_t INPUT     = 0b00u;
-    inline constexpr std::uint32_t OUTPUT    = 0b01u;
-    inline constexpr std::uint32_t ALTERNATE = 0b10u;
-    inline constexpr std::uint32_t ANALOG    = 0b11u;
+inline constexpr std::uint32_t INPUT = 0b00u;
+inline constexpr std::uint32_t OUTPUT = 0b01u;
+inline constexpr std::uint32_t ALTERNATE = 0b10u;
+inline constexpr std::uint32_t ANALOG = 0b11u;
 }
 
 } // namespace lvglpp::disco::regs

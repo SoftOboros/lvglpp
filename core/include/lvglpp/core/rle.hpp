@@ -10,4 +10,4 @@
 
 #include "lvglpp/core/plugins/rle.hpp"
 
-#endif  // LVGLPP_CORE_RLE_FORWARD_HPP
+#endif // LVGLPP_CORE_RLE_FORWARD_HPP

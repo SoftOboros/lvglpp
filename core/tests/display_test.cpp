@@ -26,7 +26,8 @@ void on_invalidate(lv_event_t* event) {
     }
 }
 
-void on_flush(lv_display_t* display, const lv_area_t* area, std::uint8_t* px_map) {
+void on_flush(lv_display_t* display, const lv_area_t* area,
+              std::uint8_t* px_map) {
     auto* recorder = static_cast<Recorder*>(lv_display_get_user_data(display));
     if (recorder != nullptr && area != nullptr) {
         recorder->flushed.push_back(lvglpp::LvArea::from_lv(*area));
@@ -45,17 +46,17 @@ struct DisplayFixture {
         display.set_default();
         // observes: recorder outlives display and callbacks in this fixture.
         lv_display_set_user_data(display.borrow_raw(), &recorder);
-        lv_display_add_event_cb(
-            display.borrow_raw(), on_invalidate, LV_EVENT_INVALIDATE_AREA, &recorder);
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        lv_display_add_event_cb(display.borrow_raw(), on_invalidate,
+                                LV_EVENT_INVALIDATE_AREA, &recorder);
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
         display.set_flush_callback(on_flush);
     }
 
     [[nodiscard]] lvglpp::ObjectView active_screen() const noexcept {
-        return lvglpp::ObjectView{lv_display_get_screen_active(display.borrow_raw())};
+        return lvglpp::ObjectView{
+            lv_display_get_screen_active(display.borrow_raw())};
     }
 };
 
@@ -88,7 +89,7 @@ void test_display_move_and_release() {
 
 void test_default_display_selection() {
     auto first = lvglpp::LvDisplay::make(20, 20);
-    auto next  = lvglpp::LvDisplay::make(30, 30);
+    auto next = lvglpp::LvDisplay::make(30, 30);
 
     first.set_default();
     assert(lv_display_get_default() == first.borrow_raw());
@@ -111,8 +112,10 @@ void test_object_invalidation_records_area() {
     assert(!fixture.recorder.invalidated.empty());
     assert(fixture.recorder.invalidated.back() == area);
 
-    assert(lvglpp::invalidate(lvglpp::ObjectView{nullptr}) == LV_RESULT_INVALID);
-    assert(lvglpp::invalidate_area(lvglpp::ObjectView{nullptr}, area) == LV_RESULT_INVALID);
+    assert(lvglpp::invalidate(lvglpp::ObjectView{nullptr}) ==
+           LV_RESULT_INVALID);
+    assert(lvglpp::invalidate_area(lvglpp::ObjectView{nullptr}, area) ==
+           LV_RESULT_INVALID);
 }
 
 void test_refresh_flush_callback_records_area() {
@@ -132,7 +135,7 @@ void test_refresh_flush_callback_records_area() {
     assert(fixture.recorder.saw_px_map);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

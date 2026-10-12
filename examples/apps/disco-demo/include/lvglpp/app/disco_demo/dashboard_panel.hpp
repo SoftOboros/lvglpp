@@ -55,16 +55,16 @@ private:
     // Maximum character columns that fit inside the panel's inner width.
     [[nodiscard]] std::size_t text_cols() const noexcept;
 
-    core::Rect               bounds_{};
-    std::string              title_;
-    std::string              caption_;  // pre-wrapped, '\n'-joined
+    core::Rect bounds_{};
+    std::string title_;
+    std::string caption_; // pre-wrapped, '\n'-joined
     std::vector<std::string> lines_;
-    core::Color              accent_{0x58, 0xB3, 0xF5, 0xFF};
+    core::Color accent_{0x58, 0xB3, 0xF5, 0xFF};
     // observes: borrows the immortal static FONT_6X10; never freed here.
-    const core::BitmapFont*  font_   = nullptr;
-    bool                     visible_ = false;
+    const core::BitmapFont* font_ = nullptr;
+    bool visible_ = false;
 };
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_DASHBOARD_PANEL_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_DASHBOARD_PANEL_HPP

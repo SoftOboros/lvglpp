@@ -49,32 +49,57 @@ public:
         return EventCode{Kind::All, LV_EVENT_ALL};
     }
 
-    [[nodiscard]] static constexpr EventCode from_lv(lv_event_code_t raw) noexcept {
+    [[nodiscard]] static constexpr EventCode
+    from_lv(lv_event_code_t raw) noexcept {
         switch (raw) {
-            case LV_EVENT_ALL:                 return EventCode{Kind::All, raw};
-            case LV_EVENT_PRESSED:             return EventCode{Kind::Pressed, raw};
-            case LV_EVENT_PRESSING:            return EventCode{Kind::Pressing, raw};
-            case LV_EVENT_RELEASED:            return EventCode{Kind::Released, raw};
-            case LV_EVENT_CLICKED:             return EventCode{Kind::Clicked, raw};
-            case LV_EVENT_DOUBLE_CLICKED:      return EventCode{Kind::DoubleClicked, raw};
-            case LV_EVENT_LONG_PRESSED:        return EventCode{Kind::LongPressed, raw};
-            case LV_EVENT_LONG_PRESSED_REPEAT: return EventCode{Kind::LongPressedRepeat, raw};
-            case LV_EVENT_FOCUSED:             return EventCode{Kind::Focused, raw};
-            case LV_EVENT_DEFOCUSED:           return EventCode{Kind::Defocused, raw};
-            case LV_EVENT_KEY:                 return EventCode{Kind::Key, raw};
-            case LV_EVENT_ROTARY:              return EventCode{Kind::Rotary, raw};
-            case LV_EVENT_GESTURE:             return EventCode{Kind::Gesture, raw};
-            case LV_EVENT_SCROLL_BEGIN:        return EventCode{Kind::ScrollBegin, raw};
-            case LV_EVENT_SCROLL:              return EventCode{Kind::Scroll, raw};
-            case LV_EVENT_SCROLL_END:          return EventCode{Kind::ScrollEnd, raw};
-            case LV_EVENT_SCROLL_THROW_BEGIN:  return EventCode{Kind::ScrollThrowBegin, raw};
-            case LV_EVENT_CHILD_CHANGED:       return EventCode{Kind::ChildChanged, raw};
-            case LV_EVENT_DELETE:              return EventCode{Kind::Delete, raw};
-            case LV_EVENT_VALUE_CHANGED:       return EventCode{Kind::ValueChanged, raw};
-            case LV_EVENT_READY:               return EventCode{Kind::Ready, raw};
-            case LV_EVENT_CANCEL:              return EventCode{Kind::Cancel, raw};
-            case LV_EVENT_INVALIDATE_AREA:     return EventCode{Kind::InvalidateArea, raw};
-            default:                           return EventCode{Kind::Other, raw};
+        case LV_EVENT_ALL:
+            return EventCode{Kind::All, raw};
+        case LV_EVENT_PRESSED:
+            return EventCode{Kind::Pressed, raw};
+        case LV_EVENT_PRESSING:
+            return EventCode{Kind::Pressing, raw};
+        case LV_EVENT_RELEASED:
+            return EventCode{Kind::Released, raw};
+        case LV_EVENT_CLICKED:
+            return EventCode{Kind::Clicked, raw};
+        case LV_EVENT_DOUBLE_CLICKED:
+            return EventCode{Kind::DoubleClicked, raw};
+        case LV_EVENT_LONG_PRESSED:
+            return EventCode{Kind::LongPressed, raw};
+        case LV_EVENT_LONG_PRESSED_REPEAT:
+            return EventCode{Kind::LongPressedRepeat, raw};
+        case LV_EVENT_FOCUSED:
+            return EventCode{Kind::Focused, raw};
+        case LV_EVENT_DEFOCUSED:
+            return EventCode{Kind::Defocused, raw};
+        case LV_EVENT_KEY:
+            return EventCode{Kind::Key, raw};
+        case LV_EVENT_ROTARY:
+            return EventCode{Kind::Rotary, raw};
+        case LV_EVENT_GESTURE:
+            return EventCode{Kind::Gesture, raw};
+        case LV_EVENT_SCROLL_BEGIN:
+            return EventCode{Kind::ScrollBegin, raw};
+        case LV_EVENT_SCROLL:
+            return EventCode{Kind::Scroll, raw};
+        case LV_EVENT_SCROLL_END:
+            return EventCode{Kind::ScrollEnd, raw};
+        case LV_EVENT_SCROLL_THROW_BEGIN:
+            return EventCode{Kind::ScrollThrowBegin, raw};
+        case LV_EVENT_CHILD_CHANGED:
+            return EventCode{Kind::ChildChanged, raw};
+        case LV_EVENT_DELETE:
+            return EventCode{Kind::Delete, raw};
+        case LV_EVENT_VALUE_CHANGED:
+            return EventCode{Kind::ValueChanged, raw};
+        case LV_EVENT_READY:
+            return EventCode{Kind::Ready, raw};
+        case LV_EVENT_CANCEL:
+            return EventCode{Kind::Cancel, raw};
+        case LV_EVENT_INVALIDATE_AREA:
+            return EventCode{Kind::InvalidateArea, raw};
+        default:
+            return EventCode{Kind::Other, raw};
         }
     }
 
@@ -107,17 +132,22 @@ public:
     }
 
     [[nodiscard]] constexpr Kind kind() const noexcept { return kind_; }
-    [[nodiscard]] constexpr lv_event_code_t raw() const noexcept { return raw_; }
-    [[nodiscard]] constexpr bool known() const noexcept { return kind_ != Kind::Other; }
+    [[nodiscard]] constexpr lv_event_code_t raw() const noexcept {
+        return raw_;
+    }
+    [[nodiscard]] constexpr bool known() const noexcept {
+        return kind_ != Kind::Other;
+    }
 
-    [[nodiscard]] constexpr bool operator==(const EventCode&) const noexcept = default;
+    [[nodiscard]] constexpr bool
+    operator==(const EventCode&) const noexcept = default;
 
 private:
     constexpr EventCode(Kind kind, lv_event_code_t raw) noexcept
         : kind_{kind}, raw_{raw} {}
 
-    Kind            kind_ = Kind::Other;
-    lv_event_code_t raw_  = LV_EVENT_LAST;
+    Kind kind_ = Kind::Other;
+    lv_event_code_t raw_ = LV_EVENT_LAST;
 };
 
 [[nodiscard]] constexpr lv_event_code_t to_lv(EventCode code) noexcept {
@@ -135,16 +165,16 @@ public:
     explicit EventView(lv_event_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_event_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool        empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
     [[nodiscard]] EventCode code() const noexcept;
     [[nodiscard]] lv_event_code_t raw_code() const noexcept;
     [[nodiscard]] ObjectView target() const noexcept;
     [[nodiscard]] ObjectView current_target() const noexcept;
-    [[nodiscard]] void*      param() const noexcept;
-    [[nodiscard]] void*      user_data() const noexcept;
+    [[nodiscard]] void* param() const noexcept;
+    [[nodiscard]] void* user_data() const noexcept;
     [[nodiscard]] std::uint32_t key() const noexcept;
-    [[nodiscard]] std::int32_t  rotary_diff() const noexcept;
+    [[nodiscard]] std::int32_t rotary_diff() const noexcept;
 
     void stop_bubbling() const noexcept;
     void stop_trickling() const noexcept;
@@ -165,7 +195,7 @@ public:
     //               lv_obj_add_event_cb().
     EventSubscription(ObjectView object, lv_event_dsc_t* descriptor) noexcept;
 
-    EventSubscription(const EventSubscription&)            = delete;
+    EventSubscription(const EventSubscription&) = delete;
     EventSubscription& operator=(const EventSubscription&) = delete;
 
     EventSubscription(EventSubscription&& other) noexcept;
@@ -204,8 +234,7 @@ private:
                                                    lv_event_cb_t callback,
                                                    void* user_data) noexcept;
 
-[[nodiscard]] lv_result_t send_event(ObjectView object,
-                                     EventCode code,
+[[nodiscard]] lv_result_t send_event(ObjectView object, EventCode code,
                                      void* param = nullptr) noexcept;
 
 // Thin non-owning view of an lv_group_t*.
@@ -219,7 +248,7 @@ public:
     explicit GroupView(lv_group_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_group_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool        empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
 private:
     // external: owned by LVGL/LvGroup; this view never frees it.
@@ -232,7 +261,7 @@ public:
 
     [[nodiscard]] static LvGroup make() noexcept;
 
-    LvGroup(const LvGroup&)            = delete;
+    LvGroup(const LvGroup&) = delete;
     LvGroup& operator=(const LvGroup&) = delete;
 
     LvGroup(LvGroup&& other) noexcept;
@@ -240,9 +269,9 @@ public:
 
     ~LvGroup();
 
-    [[nodiscard]] GroupView   borrow() const noexcept;
+    [[nodiscard]] GroupView borrow() const noexcept;
     [[nodiscard]] lv_group_t* borrow_raw() const noexcept;
-    [[nodiscard]] bool        empty() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
 
     // Returns: owns raw LVGL group handle; caller is responsible for
     // its lifecycle.
@@ -260,7 +289,8 @@ public:
 
     [[nodiscard]] ObjectView focused() const noexcept;
     [[nodiscard]] std::uint32_t object_count() const noexcept;
-    [[nodiscard]] ObjectView object_by_index(std::uint32_t index) const noexcept;
+    [[nodiscard]] ObjectView
+    object_by_index(std::uint32_t index) const noexcept;
 
     void set_editing(bool enabled) noexcept;
     [[nodiscard]] bool editing() const noexcept;
@@ -291,38 +321,47 @@ enum class InputDeviceState : std::uint8_t {
 
 [[nodiscard]] constexpr lv_indev_type_t to_lv(InputDeviceType type) noexcept {
     switch (type) {
-        case InputDeviceType::None:    return LV_INDEV_TYPE_NONE;
-        case InputDeviceType::Pointer: return LV_INDEV_TYPE_POINTER;
-        case InputDeviceType::Keypad:  return LV_INDEV_TYPE_KEYPAD;
-        case InputDeviceType::Button:  return LV_INDEV_TYPE_BUTTON;
-        case InputDeviceType::Encoder: return LV_INDEV_TYPE_ENCODER;
+    case InputDeviceType::None:
+        return LV_INDEV_TYPE_NONE;
+    case InputDeviceType::Pointer:
+        return LV_INDEV_TYPE_POINTER;
+    case InputDeviceType::Keypad:
+        return LV_INDEV_TYPE_KEYPAD;
+    case InputDeviceType::Button:
+        return LV_INDEV_TYPE_BUTTON;
+    case InputDeviceType::Encoder:
+        return LV_INDEV_TYPE_ENCODER;
     }
     return LV_INDEV_TYPE_NONE;
 }
 
-[[nodiscard]] constexpr InputDeviceType input_device_type_from_lv(
-    lv_indev_type_t type) noexcept {
+[[nodiscard]] constexpr InputDeviceType
+input_device_type_from_lv(lv_indev_type_t type) noexcept {
     switch (type) {
-        case LV_INDEV_TYPE_POINTER: return InputDeviceType::Pointer;
-        case LV_INDEV_TYPE_KEYPAD:  return InputDeviceType::Keypad;
-        case LV_INDEV_TYPE_BUTTON:  return InputDeviceType::Button;
-        case LV_INDEV_TYPE_ENCODER: return InputDeviceType::Encoder;
-        case LV_INDEV_TYPE_NONE:
-        default:                    return InputDeviceType::None;
+    case LV_INDEV_TYPE_POINTER:
+        return InputDeviceType::Pointer;
+    case LV_INDEV_TYPE_KEYPAD:
+        return InputDeviceType::Keypad;
+    case LV_INDEV_TYPE_BUTTON:
+        return InputDeviceType::Button;
+    case LV_INDEV_TYPE_ENCODER:
+        return InputDeviceType::Encoder;
+    case LV_INDEV_TYPE_NONE:
+    default:
+        return InputDeviceType::None;
     }
 }
 
-[[nodiscard]] constexpr lv_indev_state_t to_lv(InputDeviceState state) noexcept {
-    return state == InputDeviceState::Pressed
-        ? LV_INDEV_STATE_PRESSED
-        : LV_INDEV_STATE_RELEASED;
+[[nodiscard]] constexpr lv_indev_state_t
+to_lv(InputDeviceState state) noexcept {
+    return state == InputDeviceState::Pressed ? LV_INDEV_STATE_PRESSED
+                                              : LV_INDEV_STATE_RELEASED;
 }
 
-[[nodiscard]] constexpr InputDeviceState input_device_state_from_lv(
-    lv_indev_state_t state) noexcept {
-    return state == LV_INDEV_STATE_PRESSED
-        ? InputDeviceState::Pressed
-        : InputDeviceState::Released;
+[[nodiscard]] constexpr InputDeviceState
+input_device_state_from_lv(lv_indev_state_t state) noexcept {
+    return state == LV_INDEV_STATE_PRESSED ? InputDeviceState::Pressed
+                                           : InputDeviceState::Released;
 }
 
 // Thin non-owning view of an lv_indev_t*.
@@ -336,7 +375,7 @@ public:
     explicit InputDeviceView(lv_indev_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_indev_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool        empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
 private:
     // external: owned by LVGL/LvInputDevice; this view never frees it.
@@ -349,7 +388,7 @@ public:
 
     [[nodiscard]] static LvInputDevice make(InputDeviceType type) noexcept;
 
-    LvInputDevice(const LvInputDevice&)            = delete;
+    LvInputDevice(const LvInputDevice&) = delete;
     LvInputDevice& operator=(const LvInputDevice&) = delete;
 
     LvInputDevice(LvInputDevice&& other) noexcept;
@@ -358,8 +397,8 @@ public:
     ~LvInputDevice();
 
     [[nodiscard]] InputDeviceView borrow() const noexcept;
-    [[nodiscard]] lv_indev_t*     borrow_raw() const noexcept;
-    [[nodiscard]] bool            empty() const noexcept;
+    [[nodiscard]] lv_indev_t* borrow_raw() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
 
     // Returns: owns raw LVGL input-device handle; caller is responsible
     // for its lifecycle.
@@ -401,6 +440,6 @@ private:
 
 [[nodiscard]] lv_indev_t* borrow_raw(InputDeviceView input) noexcept;
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_INPUT_HPP
+#endif // LVGLPP_CORE_INPUT_HPP

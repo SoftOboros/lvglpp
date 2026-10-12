@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AccessModifierOffset: -4
+PointerAlignment: Left
+ColumnLimit: 80
+SortIncludes: Never
+BreakStringLiterals: false
+FixNamespaceComments: false
+SortUsingDeclarations: false

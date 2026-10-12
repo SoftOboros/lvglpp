@@ -43,15 +43,11 @@ public:
     // Replace the displayed text.
     // Args:
     //   text: owns std::string; consumed.
-    void set_text(std::string text) noexcept {
-        text_ = std::move(text);
-    }
+    void set_text(std::string text) noexcept { text_ = std::move(text); }
 
     // Read-only view of the current text.
     // Returns: borrows; lifetime is the Label's.
-    [[nodiscard]] std::string_view text() const noexcept {
-        return text_;
-    }
+    [[nodiscard]] std::string_view text() const noexcept { return text_; }
 
     // Public so application code can mutate directly (parity with
     // rlvgl::Label::style which is `pub`).
@@ -67,16 +63,16 @@ public:
 
     void draw(::lvglpp::core::Renderer& renderer) const override;
 
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& /*event*/) override {
-        return false;  // Labels never consume input — chapter §5.2.
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& /*event*/) override {
+        return false; // Labels never consume input — chapter §5.2.
     }
 
 private:
     ::lvglpp::core::Rect bounds_;
-    std::string          text_;
+    std::string text_;
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_LABEL_HPP
+#endif // LVGLPP_WIDGETS_LABEL_HPP

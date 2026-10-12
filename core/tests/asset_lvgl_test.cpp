@@ -33,13 +33,9 @@ MemoryFs& memory_fs(lv_fs_drv_t* drv) {
     return *static_cast<MemoryFs*>(drv->user_data);
 }
 
-bool ready_cb(lv_fs_drv_t* /*drv*/) {
-    return true;
-}
+bool ready_cb(lv_fs_drv_t* /*drv*/) { return true; }
 
-void remove_cb(lv_fs_drv_t* drv) {
-    memory_fs(drv).removed = true;
-}
+void remove_cb(lv_fs_drv_t* drv) { memory_fs(drv).removed = true; }
 
 void* open_cb(lv_fs_drv_t* drv, const char* path, lv_fs_mode_t mode) {
     if ((mode & LV_FS_MODE_RD) == 0 || std::strcmp(path, "/hello.txt") != 0) {
@@ -55,11 +51,8 @@ lv_fs_res_t close_cb(lv_fs_drv_t* /*drv*/, void* /*file*/) {
     return LV_FS_RES_OK;
 }
 
-lv_fs_res_t read_cb(lv_fs_drv_t* /*drv*/,
-                    void* file,
-                    void* buffer,
-                    std::uint32_t bytes_to_read,
-                    std::uint32_t* bytes_read) {
+lv_fs_res_t read_cb(lv_fs_drv_t* /*drv*/, void* file, void* buffer,
+                    std::uint32_t bytes_to_read, std::uint32_t* bytes_read) {
     auto& handle = *static_cast<MemoryFile*>(file);
     const std::uint32_t available =
         static_cast<std::uint32_t>(handle.bytes.size()) - handle.pos;
@@ -72,9 +65,7 @@ lv_fs_res_t read_cb(lv_fs_drv_t* /*drv*/,
     return LV_FS_RES_OK;
 }
 
-lv_fs_res_t seek_cb(lv_fs_drv_t* /*drv*/,
-                    void* file,
-                    std::uint32_t pos,
+lv_fs_res_t seek_cb(lv_fs_drv_t* /*drv*/, void* file, std::uint32_t pos,
                     lv_fs_whence_t whence) {
     auto& handle = *static_cast<MemoryFile*>(file);
     std::uint32_t next = pos;
@@ -104,9 +95,7 @@ void* dir_open_cb(lv_fs_drv_t* drv, const char* path) {
     return &fs.dir_handle;
 }
 
-lv_fs_res_t dir_read_cb(lv_fs_drv_t* /*drv*/,
-                        void* dir,
-                        char* filename,
+lv_fs_res_t dir_read_cb(lv_fs_drv_t* /*drv*/, void* dir, char* filename,
                         std::uint32_t filename_len) {
     auto& handle = *static_cast<MemoryDir*>(dir);
     if (handle.index > 0) {
@@ -146,14 +135,17 @@ void test_driver_file_directory_and_paths() {
     {
         auto driver = make_memory_driver(fs);
         assert(driver.registered());
-        assert(lvglpp::filesystem_driver('Z').borrow_raw() == driver.borrow_raw());
+        assert(lvglpp::filesystem_driver('Z').borrow_raw() ==
+               driver.borrow_raw());
         assert(lvglpp::filesystem_ready('Z'));
 
         char letters[LV_FS_MAX_FN_LENGTH]{};
-        assert(std::strchr(lvglpp::filesystem_letters(letters), 'Z') != nullptr);
+        assert(std::strchr(lvglpp::filesystem_letters(letters), 'Z') !=
+               nullptr);
 
         lvglpp::LvFile file;
-        assert(file.open_path("Z:/hello.txt", lvglpp::FileMode::Read) == LV_FS_RES_OK);
+        assert(file.open_path("Z:/hello.txt", lvglpp::FileMode::Read) ==
+               LV_FS_RES_OK);
 
         std::uint32_t size = 0;
         assert(file.size(size) == LV_FS_RES_OK);
@@ -191,10 +183,12 @@ void test_driver_file_directory_and_paths() {
         assert(dir.close() == LV_FS_RES_OK);
 
         char joined[32]{};
-        assert(lvglpp::path_join(joined, sizeof(joined), "Z:/dir", "file.png") > 0);
+        assert(lvglpp::path_join(joined, sizeof(joined), "Z:/dir", "file.png") >
+               0);
         assert(std::strcmp(joined, "Z:/dir/file.png") == 0);
         assert(std::strcmp(lvglpp::path_extension(joined), "png") == 0);
-        assert(std::strcmp(lvglpp::path_last_component(joined), "file.png") == 0);
+        assert(std::strcmp(lvglpp::path_last_component(joined), "file.png") ==
+               0);
         assert(std::strcmp(lvglpp::path_up(joined), "Z:/dir") == 0);
     }
     assert(fs.removed);
@@ -246,7 +240,7 @@ void test_decoder_owner_and_cache_helpers() {
     lvglpp::image_cache_drop_all();
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

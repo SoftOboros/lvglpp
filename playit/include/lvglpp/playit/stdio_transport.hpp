@@ -12,7 +12,8 @@
 #define LVGLPP_PLAYIT_STDIO_TRANSPORT_HPP
 
 #if defined(LVGLPP_EMBEDDED_POSTURE)
-#  error "lvglpp::playit::StdioTransport is host-only; do not include under LVGLPP_EMBEDDED_POSTURE."
+#error                                                                         \
+    "lvglpp::playit::StdioTransport is host-only; do not include under LVGLPP_EMBEDDED_POSTURE."
 #endif
 
 #include <cstdint>
@@ -31,13 +32,13 @@ namespace lvglpp::playit {
 // stdin-flag restoration), move-assign deleted.
 class StdioTransport final : public Transport {
 public:
-    StdioTransport()  noexcept;
+    StdioTransport() noexcept;
     ~StdioTransport() noexcept override;
 
-    StdioTransport(const StdioTransport&)            = delete;
+    StdioTransport(const StdioTransport&) = delete;
     StdioTransport& operator=(const StdioTransport&) = delete;
     StdioTransport(StdioTransport&& other) noexcept;
-    StdioTransport& operator=(StdioTransport&&)      = delete;
+    StdioTransport& operator=(StdioTransport&&) = delete;
 
     [[nodiscard]] std::optional<std::uint8_t> read_byte() noexcept override;
     void write_bytes(std::span<const std::uint8_t> bytes) noexcept override;
@@ -49,11 +50,11 @@ public:
     [[nodiscard]] bool is_eof() const noexcept { return eof_; }
 
 private:
-    int  saved_flags_ = -1;
-    bool owns_flags_  = false;
-    bool eof_         = false;
+    int saved_flags_ = -1;
+    bool owns_flags_ = false;
+    bool eof_ = false;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_STDIO_TRANSPORT_HPP
+#endif // LVGLPP_PLAYIT_STDIO_TRANSPORT_HPP

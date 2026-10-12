@@ -20,27 +20,28 @@ namespace lvglpp::app::disco_demo {
 
 namespace {
 
-namespace lc  = ::lvglpp::core;
+namespace lc = ::lvglpp::core;
 namespace rle = ::lvglpp::core::rle;
 
 // FROZEN geometry/colors — mirror wing.rs:18-26.
-constexpr std::int32_t kIconSize    = 60;
-constexpr std::int32_t kGap         = 10;
-constexpr std::int32_t kMarginTop   = 17;
-constexpr std::int32_t kWingX       = 10;
-constexpr std::uint8_t kRadius      = 18;
+constexpr std::int32_t kIconSize = 60;
+constexpr std::int32_t kGap = 10;
+constexpr std::int32_t kMarginTop = 17;
+constexpr std::int32_t kWingX = 10;
+constexpr std::uint8_t kRadius = 18;
 constexpr std::uint8_t kBorderWidth = 2;
-constexpr lc::Color    kBgColor{30, 30, 30, 240};
-constexpr lc::Color    kBorderColor{80, 80, 80, 255};
+constexpr lc::Color kBgColor{30, 30, 30, 240};
+constexpr lc::Color kBorderColor{80, 80, 80, 255};
 
 // Mirror icon_strip.cpp decode_icon (wing.rs:125 decode_into).
 std::optional<std::pair<std::uint32_t, std::uint32_t>>
 decode_icon(std::span<const std::uint8_t> blob, std::vector<lc::Color>& buf) {
     auto parsed = rle::parse_blob(blob);
-    if (!parsed.has_value()) return std::nullopt;
+    if (!parsed.has_value())
+        return std::nullopt;
     const auto& view = parsed.value();
-    const std::size_t total =
-        static_cast<std::size_t>(view.width) * static_cast<std::size_t>(view.height);
+    const std::size_t total = static_cast<std::size_t>(view.width) *
+                              static_cast<std::size_t>(view.height);
     buf.assign(total, lc::Color{});
     if (!rle::decode_into(view, std::span<lc::Color>(buf)).has_value()) {
         return std::nullopt;
@@ -49,15 +50,15 @@ decode_icon(std::span<const std::uint8_t> blob, std::vector<lc::Color>& buf) {
                      static_cast<std::uint32_t>(view.height)};
 }
 
-}  // namespace
+} // namespace
 
 Wing::Wing(
     std::span<const std::pair<std::span<const std::uint8_t>, bool>> icons) {
     slot_count_ = std::min(icons.size(), MAX_SLOTS);
     const std::int32_t count = static_cast<std::int32_t>(slot_count_);
-    const std::int32_t total_height =
-        kMarginTop + count * kIconSize +
-        std::max(count - 1, 0) * kGap + kMarginTop;
+    const std::int32_t total_height = kMarginTop + count * kIconSize +
+                                      std::max(count - 1, 0) * kGap +
+                                      kMarginTop;
 
     for (std::size_t i = 0; i < slot_count_; ++i) {
         slots_[i] = WingSlot{icons[i].first, icons[i].second, {}};
@@ -83,7 +84,7 @@ bool Wing::toggle_visible() noexcept {
 void Wing::close() noexcept {
     if (visible_) {
         clear_countdown_ = CLEAR_FRAMES;
-        visible_         = false;
+        visible_ = false;
     }
 }
 
@@ -97,7 +98,8 @@ core::Rect Wing::icon_rect(std::size_t index) const noexcept {
 }
 
 void Wing::draw(core::Renderer& renderer) const {
-    if (!visible_) return;
+    if (!visible_)
+        return;
 
     const core::Rect bg_rect{kWingX - 2, 0, kIconSize + 4, bounds_.height};
     core::fill_rounded_rect(renderer, bg_rect, kBgColor, kRadius);
@@ -109,12 +111,13 @@ void Wing::draw(core::Renderer& renderer) const {
     std::vector<lc::Color> buf;
     for (std::size_t index = 0; index < slot_count_; ++index) {
         const auto& maybe = slots_[index];
-        if (!maybe.has_value()) continue;
+        if (!maybe.has_value())
+            continue;
         const WingSlot& slot = *maybe;
 
         if (auto dims = decode_icon(slot.rle, buf)) {
-            const auto [w, h]   = *dims;
-            const core::Rect r  = icon_rect(index);
+            const auto [w, h] = *dims;
+            const core::Rect r = icon_rect(index);
             const std::int32_t x =
                 r.x + (r.width - static_cast<std::int32_t>(w)) / 2;
             const std::int32_t y =
@@ -137,10 +140,12 @@ void Wing::draw(core::Renderer& renderer) const {
 }
 
 bool Wing::handle_event(const core::Event& event) {
-    if (!visible_) return false;
+    if (!visible_)
+        return false;
 
     const auto* pr = std::get_if<core::event::PressRelease>(&event);
-    if (pr == nullptr) return false;
+    if (pr == nullptr)
+        return false;
 
     const std::int32_t step = kIconSize + kGap;
     for (std::size_t index = 0; index < slot_count_; ++index) {
@@ -180,4 +185,4 @@ std::optional<core::Rect> Wing::clear_region() {
     return std::nullopt;
 }
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo

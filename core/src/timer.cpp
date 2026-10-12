@@ -16,7 +16,7 @@ void disable_lvgl_auto_delete(lv_timer_t* raw) noexcept {
     }
 }
 
-}  // namespace
+} // namespace
 
 void TimerView::set_callback(lv_timer_cb_t callback) const noexcept {
     if (raw_ != nullptr) {
@@ -84,8 +84,7 @@ LvTimer::LvTimer(lv_timer_t* raw) noexcept : raw_{raw} {
     disable_lvgl_auto_delete(raw_);
 }
 
-LvTimer LvTimer::make(lv_timer_cb_t callback,
-                      std::uint32_t period_ms,
+LvTimer LvTimer::make(lv_timer_cb_t callback, std::uint32_t period_ms,
                       void* user_data) noexcept {
     return LvTimer{lv_timer_create(callback, period_ms, user_data)};
 }
@@ -101,31 +100,23 @@ LvTimer::LvTimer(LvTimer&& other) noexcept : raw_{other.raw_} {
 LvTimer& LvTimer::operator=(LvTimer&& other) noexcept {
     if (this != &other) {
         reset();
-        raw_       = other.raw_;
+        raw_ = other.raw_;
         other.raw_ = nullptr;
     }
     return *this;
 }
 
-LvTimer::~LvTimer() {
-    reset();
-}
+LvTimer::~LvTimer() { reset(); }
 
-TimerView LvTimer::borrow() const noexcept {
-    return TimerView{raw_};
-}
+TimerView LvTimer::borrow() const noexcept { return TimerView{raw_}; }
 
-lv_timer_t* LvTimer::borrow_raw() const noexcept {
-    return raw_;
-}
+lv_timer_t* LvTimer::borrow_raw() const noexcept { return raw_; }
 
-bool LvTimer::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvTimer::empty() const noexcept { return raw_ == nullptr; }
 
 lv_timer_t* LvTimer::release() noexcept {
     lv_timer_t* released = raw_;
-    raw_                 = nullptr;
+    raw_ = nullptr;
     return released;
 }
 
@@ -151,21 +142,13 @@ void LvTimer::set_period(std::uint32_t period_ms) noexcept {
     borrow().set_period(period_ms);
 }
 
-void LvTimer::ready() noexcept {
-    borrow().ready();
-}
+void LvTimer::ready() noexcept { borrow().ready(); }
 
-void LvTimer::reset_period() noexcept {
-    borrow().reset();
-}
+void LvTimer::reset_period() noexcept { borrow().reset(); }
 
-void LvTimer::pause() noexcept {
-    borrow().pause();
-}
+void LvTimer::pause() noexcept { borrow().pause(); }
 
-void LvTimer::resume() noexcept {
-    borrow().resume();
-}
+void LvTimer::resume() noexcept { borrow().resume(); }
 
 void LvTimer::set_repeat_count(std::int32_t repeat_count) noexcept {
     borrow().set_repeat_count(repeat_count);
@@ -181,25 +164,15 @@ void LvTimer::set_user_data(void* user_data) noexcept {
     borrow().set_user_data(user_data);
 }
 
-bool LvTimer::is_paused() const noexcept {
-    return borrow().is_paused();
-}
+bool LvTimer::is_paused() const noexcept { return borrow().is_paused(); }
 
-void* LvTimer::user_data() const noexcept {
-    return borrow().user_data();
-}
+void* LvTimer::user_data() const noexcept { return borrow().user_data(); }
 
-TimerView view_timer(lv_timer_t* raw) noexcept {
-    return TimerView{raw};
-}
+TimerView view_timer(lv_timer_t* raw) noexcept { return TimerView{raw}; }
 
-TimerView borrow_timer(const LvTimer& timer) noexcept {
-    return timer.borrow();
-}
+TimerView borrow_timer(const LvTimer& timer) noexcept { return timer.borrow(); }
 
-std::uint32_t run_timers() noexcept {
-    return lv_timer_handler();
-}
+std::uint32_t run_timers() noexcept { return lv_timer_handler(); }
 
 std::uint32_t time_until_next_timer() noexcept {
     return lv_timer_get_time_until_next();
@@ -216,7 +189,8 @@ AnimationKey AnimationKey::exec(void* var,
 
 AnimationKey AnimationKey::custom(void* var,
                                   lv_anim_custom_exec_cb_t callback) noexcept {
-    return AnimationKey{var, AnimationCallbackFamily::Custom, nullptr, callback};
+    return AnimationKey{var, AnimationCallbackFamily::Custom, nullptr,
+                        callback};
 }
 
 AnimationKey AnimationKey::all_for_var(void* var) noexcept {
@@ -234,7 +208,8 @@ lv_anim_custom_exec_cb_t AnimationKey::custom_callback() const noexcept {
 AnimationView AnimationKey::find() const noexcept {
     if (family_ == AnimationCallbackFamily::Custom) {
         lv_anim_t* candidate = lv_anim_get(var_, nullptr);
-        if (candidate != nullptr && candidate->custom_exec_cb == custom_callback_) {
+        if (candidate != nullptr &&
+            candidate->custom_exec_cb == custom_callback_) {
             return AnimationView{candidate};
         }
         return AnimationView{nullptr};
@@ -253,14 +228,11 @@ bool AnimationKey::cancel() const noexcept {
     return lv_anim_delete(var_, exec_callback_);
 }
 
-AnimationKey::AnimationKey(void* var,
-                           AnimationCallbackFamily family,
+AnimationKey::AnimationKey(void* var, AnimationCallbackFamily family,
                            lv_anim_exec_xcb_t exec_fn,
                            lv_anim_custom_exec_cb_t custom_fn) noexcept
-    : var_{var},
-      family_{family},
-      exec_callback_{exec_fn},
-      custom_callback_{custom_fn} {}
+    : var_{var}, family_{family}, exec_callback_{exec_fn}, custom_callback_{
+                                                               custom_fn} {}
 
 void AnimationView::pause() const noexcept {
     if (raw_ != nullptr) {
@@ -314,9 +286,7 @@ AnimationKey AnimationView::key() const noexcept {
     return AnimationKey::exec(raw_->var, raw_->exec_cb);
 }
 
-AnimationTemplate::AnimationTemplate() noexcept {
-    lv_anim_init(&raw_);
-}
+AnimationTemplate::AnimationTemplate() noexcept { lv_anim_init(&raw_); }
 
 AnimationTemplate& AnimationTemplate::set_var(void* var) noexcept {
     lv_anim_set_var(&raw_, var);
@@ -328,8 +298,8 @@ AnimationTemplate& AnimationTemplate::set_target(ObjectView object) noexcept {
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_exec_callback(
-    lv_anim_exec_xcb_t callback) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_exec_callback(lv_anim_exec_xcb_t callback) noexcept {
     lv_anim_set_exec_cb(&raw_, callback);
     return *this;
 }
@@ -346,25 +316,26 @@ AnimationTemplate& AnimationTemplate::set_values(std::int32_t start,
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_duration(
-    std::uint32_t duration_ms) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_duration(std::uint32_t duration_ms) noexcept {
     lv_anim_set_duration(&raw_, duration_ms);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_delay(std::uint32_t delay_ms) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_delay(std::uint32_t delay_ms) noexcept {
     lv_anim_set_delay(&raw_, delay_ms);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_path_callback(
-    lv_anim_path_cb_t callback) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_path_callback(lv_anim_path_cb_t callback) noexcept {
     lv_anim_set_path_cb(&raw_, callback);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_start_callback(
-    lv_anim_start_cb_t callback) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_start_callback(lv_anim_start_cb_t callback) noexcept {
     lv_anim_set_start_cb(&raw_, callback);
     return *this;
 }
@@ -387,26 +358,26 @@ AnimationTemplate& AnimationTemplate::set_get_value_callback(
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_reverse_duration(
-    std::uint32_t duration_ms) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_reverse_duration(std::uint32_t duration_ms) noexcept {
     lv_anim_set_reverse_duration(&raw_, duration_ms);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_reverse_delay(
-    std::uint32_t delay_ms) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_reverse_delay(std::uint32_t delay_ms) noexcept {
     lv_anim_set_reverse_delay(&raw_, delay_ms);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_repeat_count(
-    std::uint32_t count) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_repeat_count(std::uint32_t count) noexcept {
     lv_anim_set_repeat_count(&raw_, count);
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_repeat_delay(
-    std::uint32_t delay_ms) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_repeat_delay(std::uint32_t delay_ms) noexcept {
     lv_anim_set_repeat_delay(&raw_, delay_ms);
     return *this;
 }
@@ -421,10 +392,10 @@ AnimationTemplate& AnimationTemplate::set_user_data(void* user_data) noexcept {
     return *this;
 }
 
-AnimationTemplate& AnimationTemplate::set_bezier3_param(std::int16_t x1,
-                                                        std::int16_t y1,
-                                                        std::int16_t x2,
-                                                        std::int16_t y2) noexcept {
+AnimationTemplate&
+AnimationTemplate::set_bezier3_param(std::int16_t x1, std::int16_t y1,
+                                     std::int16_t x2,
+                                     std::int16_t y2) noexcept {
     lv_anim_set_bezier3_param(&raw_, x1, y1, x2, y2);
     return *this;
 }
@@ -452,8 +423,6 @@ std::uint16_t running_animation_count() noexcept {
     return lv_anim_count_running();
 }
 
-void delete_all_animations() noexcept {
-    lv_anim_delete_all();
-}
+void delete_all_animations() noexcept { lv_anim_delete_all(); }
 
-}  // namespace lvglpp
+} // namespace lvglpp

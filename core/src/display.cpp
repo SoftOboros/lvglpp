@@ -1,8 +1,9 @@
 // display.cpp - LVGL-backed display owner and invalidation helpers.
 //
-// PARITY: rlvgl/docs/concepts/LPAR-03-INVALIDATION-DISPLAY.md (v0.2.5 @ f999f75).
-// LVGL:   lvgl/src/display/lv_display.c and lvgl/src/core/lv_obj_pos.c.
-// DELTA:  delegates dirty planning and flush cadence to LVGL.
+// PARITY: rlvgl/docs/concepts/LPAR-03-INVALIDATION-DISPLAY.md (v0.2.5 @
+// f999f75). LVGL:   lvgl/src/display/lv_display.c and
+// lvgl/src/core/lv_obj_pos.c. DELTA:  delegates dirty planning and flush
+// cadence to LVGL.
 
 #include "lvglpp/core/display.hpp"
 
@@ -21,31 +22,23 @@ LvDisplay::LvDisplay(LvDisplay&& other) noexcept : raw_{other.raw_} {
 LvDisplay& LvDisplay::operator=(LvDisplay&& other) noexcept {
     if (this != &other) {
         reset();
-        raw_       = other.raw_;
+        raw_ = other.raw_;
         other.raw_ = nullptr;
     }
     return *this;
 }
 
-LvDisplay::~LvDisplay() {
-    reset();
-}
+LvDisplay::~LvDisplay() { reset(); }
 
-DisplayView LvDisplay::borrow() const noexcept {
-    return DisplayView{raw_};
-}
+DisplayView LvDisplay::borrow() const noexcept { return DisplayView{raw_}; }
 
-lv_display_t* LvDisplay::borrow_raw() const noexcept {
-    return raw_;
-}
+lv_display_t* LvDisplay::borrow_raw() const noexcept { return raw_; }
 
-bool LvDisplay::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvDisplay::empty() const noexcept { return raw_ == nullptr; }
 
 lv_display_t* LvDisplay::release() noexcept {
     lv_display_t* released = raw_;
-    raw_                   = nullptr;
+    raw_ = nullptr;
     return released;
 }
 
@@ -62,8 +55,7 @@ void LvDisplay::set_default() noexcept {
     }
 }
 
-void LvDisplay::set_buffers(void* buffer1,
-                            void* buffer2,
+void LvDisplay::set_buffers(void* buffer1, void* buffer2,
                             std::uint32_t byte_size,
                             lv_display_render_mode_t render_mode) noexcept {
     if (raw_ != nullptr) {
@@ -96,4 +88,4 @@ lv_result_t invalidate_area(ObjectView object, LvArea area) noexcept {
     return lv_obj_invalidate_area(object.borrow_raw(), &lv_area);
 }
 
-}  // namespace lvglpp
+} // namespace lvglpp

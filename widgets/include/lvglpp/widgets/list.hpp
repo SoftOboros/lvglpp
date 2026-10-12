@@ -33,8 +33,7 @@ public:
     // WID-05 §5.2 FROZEN — list.rs:49/:74 hardcoded row height.
     static constexpr std::int32_t ROW_HEIGHT = 16;
 
-    explicit List(::lvglpp::core::Rect bounds) noexcept
-        : bounds_{bounds} {}
+    explicit List(::lvglpp::core::Rect bounds) noexcept : bounds_{bounds} {}
 
     // Public — parity with rlvgl `pub style` / `pub text_color`.
     ::lvglpp::core::Style style{};
@@ -43,9 +42,7 @@ public:
     // Args:
     //   text: owns std::string — consumed via move (list.rs:33
     //         add_item(impl Into<String>)).
-    void add_item(std::string text) {
-        items_.push_back(std::move(text));
-    }
+    void add_item(std::string text) { items_.push_back(std::move(text)); }
 
     // borrows: views into this List's storage; invalidated by
     // add_item (vector growth).
@@ -67,8 +64,8 @@ public:
 
     // PressRelease inside an item row selects it and consumes the
     // event; everything else is ignored (list.rs:88–103).
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
 private:
     // Mirrors list.rs:48 index_at: y → item index, or nullopt when
@@ -77,10 +74,10 @@ private:
     index_at(std::int32_t y) const noexcept;
 
     ::lvglpp::core::Rect bounds_{};
-    std::vector<std::string> items_{};            // owns
+    std::vector<std::string> items_{}; // owns
     std::optional<std::size_t> selected_{};
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_LIST_HPP
+#endif // LVGLPP_WIDGETS_LIST_HPP

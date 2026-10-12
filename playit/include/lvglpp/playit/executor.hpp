@@ -28,8 +28,8 @@
 namespace lvglpp::playit {
 
 // Concepts doc §5.2 / §5.4 defaults.
-inline constexpr std::size_t LINE_BUF_BYTES   = 256;
-inline constexpr std::size_t POLL_MAX_BYTES   = 4096;
+inline constexpr std::size_t LINE_BUF_BYTES = 256;
+inline constexpr std::size_t POLL_MAX_BYTES = 4096;
 inline constexpr std::size_t RESPONSE_BUF_BYTES = 128;
 
 class Executor {
@@ -65,7 +65,8 @@ public:
     //           detach (cancels any queued dump).
     void set_framebuffer_reader(FramebufferReader* reader) noexcept {
         fb_ = reader;
-        if (reader == nullptr) dump_.reset();
+        if (reader == nullptr)
+            dump_.reset();
     }
 
     // Drain currently-available bytes. For each newline-terminated
@@ -77,8 +78,8 @@ public:
 private:
     // In-progress framebuffer dump (mirrors rlvgl's DumpState).
     struct DumpState {
-        DumpSpec      spec{};
-        std::uint8_t  remaining = 0;
+        DumpSpec spec{};
+        std::uint8_t remaining = 0;
         std::uint32_t last_present_seen = 0;
     };
 
@@ -87,10 +88,10 @@ private:
     void emit_dump_if_ready() noexcept;
 
     // borrows: caller-owned.
-    Transport*         transport_;
-    Dispatcher*        dispatcher_;
-    EventRecorder*     recorder_ = nullptr;
-    FramebufferReader* fb_       = nullptr;
+    Transport* transport_;
+    Dispatcher* dispatcher_;
+    EventRecorder* recorder_ = nullptr;
+    FramebufferReader* fb_ = nullptr;
 
     // owns: queued dump request, present-gated (PLAYIT-07a).
     std::optional<DumpState> dump_{};
@@ -98,10 +99,10 @@ private:
     // owns: per-line accumulator. Bytes are appended until '\n'
     // arrives; CRLF tolerance strips a trailing '\r'.
     std::array<char, LINE_BUF_BYTES> line_buf_{};
-    std::size_t                      line_len_  = 0;
-    bool                             overflowed_ = false;
+    std::size_t line_len_ = 0;
+    bool overflowed_ = false;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_EXECUTOR_HPP
+#endif // LVGLPP_PLAYIT_EXECUTOR_HPP

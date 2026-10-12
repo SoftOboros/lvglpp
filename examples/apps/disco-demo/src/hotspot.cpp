@@ -11,12 +11,14 @@
 namespace lvglpp::app::disco_demo {
 
 bool ActionHotspot::handle_event(const core::Event& event) {
-    if (is_visible_ && !is_visible_()) return false;
+    if (is_visible_ && !is_visible_())
+        return false;
     if (std::holds_alternative<core::event::PressRelease>(event)) {
-        if (on_tap_) on_tap_();
+        if (on_tap_)
+            on_tap_();
         return true;
     }
     return false;
 }
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo

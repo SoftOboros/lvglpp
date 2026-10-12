@@ -32,15 +32,18 @@ public:
         std::int32_t x1 = rect.x + rect.width, y1 = rect.y + rect.height;
         const auto w = static_cast<std::int32_t>(w_);
         const auto h = static_cast<std::int32_t>(h_);
-        if (x0 < 0) x0 = 0;
-        if (y0 < 0) y0 = 0;
-        if (x1 > w) x1 = w;
-        if (y1 > h) y1 = h;
-        const std::uint32_t argb =
-            (static_cast<std::uint32_t>(color.a) << 24)
-          | (static_cast<std::uint32_t>(color.r) << 16)
-          | (static_cast<std::uint32_t>(color.g) << 8)
-          |  static_cast<std::uint32_t>(color.b);
+        if (x0 < 0)
+            x0 = 0;
+        if (y0 < 0)
+            y0 = 0;
+        if (x1 > w)
+            x1 = w;
+        if (y1 > h)
+            y1 = h;
+        const std::uint32_t argb = (static_cast<std::uint32_t>(color.a) << 24) |
+                                   (static_cast<std::uint32_t>(color.r) << 16) |
+                                   (static_cast<std::uint32_t>(color.g) << 8) |
+                                   static_cast<std::uint32_t>(color.b);
         for (std::int32_t y = y0; y < y1; ++y) {
             for (std::int32_t x = x0; x < x1; ++x) {
                 buf_[static_cast<std::size_t>(y) * w_ +
@@ -49,8 +52,8 @@ public:
         }
     }
 
-    void draw_text(std::int32_t x, std::int32_t y,
-                   std::string_view text, core::Color color) override {
+    void draw_text(std::int32_t x, std::int32_t y, std::string_view text,
+                   core::Color color) override {
         core::fonts::FONT_6X10.draw_str(*this, x, y, text, color);
     }
 
@@ -68,11 +71,16 @@ public:
                 const std::uint32_t b = px & 0xFFu;
                 const std::uint32_t val = (r + g + b) / 3u;
                 char ch = '@';
-                if (val == 0) ch = ' ';
-                else if (val <= 63) ch = '.';
-                else if (val <= 127) ch = ':';
-                else if (val <= 191) ch = '*';
-                else if (val <= 223) ch = '#';
+                if (val == 0)
+                    ch = ' ';
+                else if (val <= 63)
+                    ch = '.';
+                else if (val <= 127)
+                    ch = ':';
+                else if (val <= 191)
+                    ch = '*';
+                else if (val <= 223)
+                    ch = '#';
                 out.push_back(ch);
             }
             out.push_back('\n');
@@ -85,14 +93,15 @@ public:
     [[nodiscard]] std::uint32_t height() const noexcept { return h_; }
     [[nodiscard]] std::uint32_t pixel(std::uint32_t x,
                                       std::uint32_t y) const noexcept {
-        if (x >= w_ || y >= h_) return 0;
+        if (x >= w_ || y >= h_)
+            return 0;
         return buf_[static_cast<std::size_t>(y) * w_ + x];
     }
 
 private:
     std::uint32_t w_;
     std::uint32_t h_;
-    std::vector<std::uint32_t> buf_;  // owns: see constructor.
+    std::vector<std::uint32_t> buf_; // owns: see constructor.
 };
 
-}  // namespace lvglpp::sim
+} // namespace lvglpp::sim

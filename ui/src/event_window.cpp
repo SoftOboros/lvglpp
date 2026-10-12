@@ -8,15 +8,15 @@
 
 #include "lvglpp/ui/event_window.hpp"
 
-#include <utility>  // std::move
+#include <utility> // std::move
 
-#include "lvglpp/core/draw_helpers.hpp"  // fill_rounded_rect, detail::draw_border_straight
+#include "lvglpp/core/draw_helpers.hpp" // fill_rounded_rect, detail::draw_border_straight
 
 namespace lvglpp::ui {
 
 namespace {
 namespace lc = ::lvglpp::core;
-}  // namespace
+} // namespace
 
 // ---------------------------------------------------------------------------
 // EventWindow — app-relevant surface
@@ -99,8 +99,7 @@ void EventWindow::draw(lc::Renderer& renderer) const {
     // entries_ is capped at kMaxLines, so the whole list is drawn:
     // index 0 (oldest) at the top, last (newest) at the bottom.
     for (std::size_t i = 0; i < entries_.size(); ++i) {
-        const std::int32_t y =
-            inner_y + static_cast<std::int32_t>(i) * line_h;
+        const std::int32_t y = inner_y + static_cast<std::int32_t>(i) * line_h;
         font_->draw_str(renderer, inner_x, y, entries_[i].text, text_color_);
     }
 }
@@ -139,16 +138,15 @@ std::optional<lc::Rect> EventWindow::clear_region() {
 // ---------------------------------------------------------------------------
 
 // Mirrors event_window.rs:295.
-EventWindowBuilder::EventWindowBuilder(
-    const lc::BitmapFont& font) noexcept
+EventWindowBuilder::EventWindowBuilder(const lc::BitmapFont& font) noexcept
     : window_w_{380}, window_h_{0}, font_{&font} {
     const std::int32_t line_h = font.scaled_height() + 4;
     constexpr std::int32_t padding = 12;
     window_h_ = static_cast<std::int32_t>(kMaxLines) * line_h + padding * 2;
 }
 
-EventWindowBuilder& EventWindowBuilder::expire_ticks(
-    std::uint32_t ticks) noexcept {
+EventWindowBuilder&
+EventWindowBuilder::expire_ticks(std::uint32_t ticks) noexcept {
     expire_ticks_ = ticks;
     return *this;
 }
@@ -201,4 +199,4 @@ EventWindow EventWindowBuilder::build() const {
     return w;
 }
 
-}  // namespace lvglpp::ui
+} // namespace lvglpp::ui

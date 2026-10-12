@@ -27,7 +27,7 @@
 namespace lvglpp::app::disco_demo {
 
 // FROZEN (DEMO-00 §6) — mirror wing.rs:17,23.
-inline constexpr std::size_t  MAX_SLOTS    = 6;
+inline constexpr std::size_t MAX_SLOTS = 6;
 inline constexpr std::uint8_t CLEAR_FRAMES = 3;
 
 // A single wing slot with icon data and an optional callback.
@@ -93,13 +93,13 @@ private:
     [[nodiscard]] core::Rect icon_rect(std::size_t index) const noexcept;
 
     std::array<std::optional<WingSlot>, MAX_SLOTS> slots_{};
-    std::size_t   slot_count_      = 0;
-    bool          visible_         = false;
-    core::Rect    bounds_{};
-    std::uint8_t  clear_countdown_ = 0;
+    std::size_t slot_count_ = 0;
+    bool visible_ = false;
+    core::Rect bounds_{};
+    std::uint8_t clear_countdown_ = 0;
     std::optional<std::size_t> focused_slot_{};
 };
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_WING_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_WING_HPP

@@ -25,11 +25,10 @@ void test_rect_defaults_and_equality() {
 void test_color_to_argb8888() {
     // (255, 128, 64, 200) → A=200,R=255,G=128,B=64
     Color c{255, 128, 64, 200};
-    const std::uint32_t expected =
-        (static_cast<std::uint32_t>(200) << 24) |
-        (static_cast<std::uint32_t>(255) << 16) |
-        (static_cast<std::uint32_t>(128) << 8)  |
-        (static_cast<std::uint32_t>(64));
+    const std::uint32_t expected = (static_cast<std::uint32_t>(200) << 24) |
+                                   (static_cast<std::uint32_t>(255) << 16) |
+                                   (static_cast<std::uint32_t>(128) << 8) |
+                                   (static_cast<std::uint32_t>(64));
     assert(c.to_argb8888() == expected);
 }
 
@@ -44,9 +43,9 @@ void test_color_with_alpha() {
 // Concrete widget subclass to exercise the abstract base.
 struct StubWidget : Widget {
     Rect bounds_value{};
-    int  draw_calls   = 0;
-    int  event_calls  = 0;
-    bool consume      = false;
+    int draw_calls = 0;
+    int event_calls = 0;
+    bool consume = false;
 
     [[nodiscard]] Rect bounds() const override { return bounds_value; }
 
@@ -83,7 +82,7 @@ void test_widget_bounds_pure_virtual_via_subclass() {
     assert(b.width == 100 && b.height == 200);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_rect_defaults_and_equality();

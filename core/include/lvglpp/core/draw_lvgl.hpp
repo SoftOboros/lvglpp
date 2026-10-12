@@ -3,9 +3,11 @@
 // PARITY: rlvgl/docs/concepts/LPAR-08-TEXT-DRAW-IMAGE-MASK.md
 //         (v0.2.5 @ f999f75).
 // LVGL:   lvgl/src/font/lv_font.h, lvgl/include/lvgl/widgets/lv_label.h,
-//         lvgl/include/lvgl/widgets/lv_image.h, lvgl/include/lvgl/draw/lv_draw_label.h,
-//         lvgl/include/lvgl/draw/lv_draw_image.h, lvgl/include/lvgl/draw/lv_draw_rect.h,
-//         and lvgl/include/lvgl/draw/lv_draw_mask.h.
+//         lvgl/include/lvgl/widgets/lv_image.h,
+//         lvgl/include/lvgl/draw/lv_draw_label.h,
+//         lvgl/include/lvgl/draw/lv_draw_image.h,
+//         lvgl/include/lvgl/draw/lv_draw_rect.h, and
+//         lvgl/include/lvgl/draw/lv_draw_mask.h.
 // DELTA:  lvglpp delegates fonts, labels, image sources, draw descriptors,
 //         and masks to LVGL public APIs instead of porting rlvgl's software
 //         renderer and font traits.
@@ -42,7 +44,7 @@ public:
     [[nodiscard]] static LvFontView default_font() noexcept;
 
     [[nodiscard]] const lv_font_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool             empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
     [[nodiscard]] std::int32_t line_height() const noexcept;
     [[nodiscard]] std::uint16_t glyph_width(char32_t letter,
@@ -60,7 +62,7 @@ class GlyphBitmapView {
 public:
     GlyphBitmapView() noexcept = default;
 
-    GlyphBitmapView(const GlyphBitmapView&)            = delete;
+    GlyphBitmapView(const GlyphBitmapView&) = delete;
     GlyphBitmapView& operator=(const GlyphBitmapView&) = delete;
 
     GlyphBitmapView(GlyphBitmapView&& other) noexcept;
@@ -68,13 +70,11 @@ public:
 
     ~GlyphBitmapView();
 
-    [[nodiscard]] static GlyphBitmapView make(LvFontView font,
-                                              char32_t letter,
+    [[nodiscard]] static GlyphBitmapView make(LvFontView font, char32_t letter,
                                               char32_t next,
                                               lv_draw_buf_t* scratch) noexcept;
-    [[nodiscard]] static GlyphBitmapView make_static(LvFontView font,
-                                                     char32_t letter,
-                                                     char32_t next = 0) noexcept;
+    [[nodiscard]] static GlyphBitmapView
+    make_static(LvFontView font, char32_t letter, char32_t next = 0) noexcept;
 
     [[nodiscard]] const void* borrow_raw() const noexcept { return raw_; }
     [[nodiscard]] const lv_font_glyph_dsc_t& descriptor() const noexcept {
@@ -85,8 +85,7 @@ public:
     void reset() noexcept;
 
 private:
-    GlyphBitmapView(lv_font_glyph_dsc_t descriptor,
-                    const void* raw,
+    GlyphBitmapView(lv_font_glyph_dsc_t descriptor, const void* raw,
                     bool release_required) noexcept;
 
     // owns: descriptor value. It may contain an LVGL cache entry released
@@ -102,16 +101,18 @@ enum class LabelLongMode : std::uint8_t {
     Wrap = static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_WRAP),
     Dots = static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_DOTS),
     Scroll = static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_SCROLL),
-    ScrollCircular = static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_SCROLL_CIRCULAR),
+    ScrollCircular =
+        static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_SCROLL_CIRCULAR),
     Clip = static_cast<std::uint8_t>(LV_LABEL_LONG_MODE_CLIP),
 };
 
-[[nodiscard]] constexpr lv_label_long_mode_t to_lv(LabelLongMode mode) noexcept {
+[[nodiscard]] constexpr lv_label_long_mode_t
+to_lv(LabelLongMode mode) noexcept {
     return static_cast<lv_label_long_mode_t>(mode);
 }
 
-[[nodiscard]] constexpr LabelLongMode label_long_mode_from_lv(
-    lv_label_long_mode_t mode) noexcept {
+[[nodiscard]] constexpr LabelLongMode
+label_long_mode_from_lv(lv_label_long_mode_t mode) noexcept {
     return static_cast<LabelLongMode>(mode);
 }
 
@@ -121,7 +122,7 @@ public:
 
     [[nodiscard]] static LvLabel make(ObjectView parent) noexcept;
 
-    LvLabel(const LvLabel&)            = delete;
+    LvLabel(const LvLabel&) = delete;
     LvLabel& operator=(const LvLabel&) = delete;
 
     LvLabel(LvLabel&& other) noexcept;
@@ -130,9 +131,9 @@ public:
     ~LvLabel();
 
     [[nodiscard]] ObjectView borrow() const noexcept;
-    [[nodiscard]] lv_obj_t*  borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool       empty() const noexcept { return raw_ == nullptr; }
-    [[nodiscard]] bool       valid() const noexcept;
+    [[nodiscard]] lv_obj_t* borrow_raw() const noexcept { return raw_; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool valid() const noexcept;
 
     // Returns: owns raw LVGL label object; caller is responsible for deletion.
     [[nodiscard]] lv_obj_t* release() noexcept;
@@ -146,7 +147,8 @@ public:
     //   text: external; LVGL observes this null-terminated storage until the
     //         next text assignment or label deletion.
     void set_text_static(const char* text) noexcept;
-    // Returns: borrows LVGL label storage; invalid after text mutation/deletion.
+    // Returns: borrows LVGL label storage; invalid after text
+    // mutation/deletion.
     [[nodiscard]] const char* text() const noexcept;
 
     void set_long_mode(LabelLongMode mode) noexcept;
@@ -193,8 +195,8 @@ enum class ImageAlign : std::uint8_t {
     return static_cast<lv_image_align_t>(align);
 }
 
-[[nodiscard]] constexpr ImageAlign image_align_from_lv(
-    lv_image_align_t align) noexcept {
+[[nodiscard]] constexpr ImageAlign
+image_align_from_lv(lv_image_align_t align) noexcept {
     return static_cast<ImageAlign>(align);
 }
 
@@ -202,9 +204,12 @@ class ImageDescriptorView {
 public:
     // Args:
     //   raw: observes external LVGL image descriptor storage.
-    explicit ImageDescriptorView(const lv_image_dsc_t* raw) noexcept : raw_{raw} {}
+    explicit ImageDescriptorView(const lv_image_dsc_t* raw) noexcept
+        : raw_{raw} {}
 
-    [[nodiscard]] const lv_image_dsc_t* borrow_raw() const noexcept { return raw_; }
+    [[nodiscard]] const lv_image_dsc_t* borrow_raw() const noexcept {
+        return raw_;
+    }
     [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
 private:
@@ -216,32 +221,30 @@ class LvImageDescriptor {
 public:
     LvImageDescriptor() noexcept = default;
 
-    [[nodiscard]] static LvImageDescriptor borrowed(
-        std::uint16_t width,
-        std::uint16_t height,
-        lv_color_format_t color_format,
-        std::span<const std::uint8_t> data,
-        std::uint32_t stride = 0,
-        std::uint16_t flags = 0) noexcept;
+    [[nodiscard]] static LvImageDescriptor
+    borrowed(std::uint16_t width, std::uint16_t height,
+             lv_color_format_t color_format, std::span<const std::uint8_t> data,
+             std::uint32_t stride = 0, std::uint16_t flags = 0) noexcept;
 
-    [[nodiscard]] static LvImageDescriptor owned(
-        std::uint16_t width,
-        std::uint16_t height,
-        lv_color_format_t color_format,
-        std::vector<std::uint8_t> data,
-        std::uint32_t stride = 0,
-        std::uint16_t flags = 0);
+    [[nodiscard]] static LvImageDescriptor
+    owned(std::uint16_t width, std::uint16_t height,
+          lv_color_format_t color_format, std::vector<std::uint8_t> data,
+          std::uint32_t stride = 0, std::uint16_t flags = 0);
 
-    LvImageDescriptor(const LvImageDescriptor&)            = delete;
+    LvImageDescriptor(const LvImageDescriptor&) = delete;
     LvImageDescriptor& operator=(const LvImageDescriptor&) = delete;
 
     LvImageDescriptor(LvImageDescriptor&& other) noexcept;
     LvImageDescriptor& operator=(LvImageDescriptor&& other) noexcept;
 
     [[nodiscard]] ImageDescriptorView borrow() const noexcept;
-    [[nodiscard]] const lv_image_dsc_t* borrow_raw() const noexcept { return &raw_; }
+    [[nodiscard]] const lv_image_dsc_t* borrow_raw() const noexcept {
+        return &raw_;
+    }
     [[nodiscard]] lv_image_dsc_t* borrow_raw() noexcept { return &raw_; }
-    [[nodiscard]] bool owns_data() const noexcept { return !owned_data_.empty(); }
+    [[nodiscard]] bool owns_data() const noexcept {
+        return !owned_data_.empty();
+    }
 
 private:
     void point_to_owned_data() noexcept;
@@ -254,7 +257,8 @@ private:
 };
 
 [[nodiscard]] lv_image_src_t image_source_type(const void* source) noexcept;
-[[nodiscard]] lv_image_src_t image_source_type(ImageDescriptorView descriptor) noexcept;
+[[nodiscard]] lv_image_src_t
+image_source_type(ImageDescriptorView descriptor) noexcept;
 
 class LvImage {
 public:
@@ -262,7 +266,7 @@ public:
 
     [[nodiscard]] static LvImage make(ObjectView parent) noexcept;
 
-    LvImage(const LvImage&)            = delete;
+    LvImage(const LvImage&) = delete;
     LvImage& operator=(const LvImage&) = delete;
 
     LvImage(LvImage&& other) noexcept;
@@ -271,9 +275,9 @@ public:
     ~LvImage();
 
     [[nodiscard]] ObjectView borrow() const noexcept;
-    [[nodiscard]] lv_obj_t*  borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool       empty() const noexcept { return raw_ == nullptr; }
-    [[nodiscard]] bool       valid() const noexcept;
+    [[nodiscard]] lv_obj_t* borrow_raw() const noexcept { return raw_; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool valid() const noexcept;
 
     // Returns: owns raw LVGL image object; caller is responsible for deletion.
     [[nodiscard]] lv_obj_t* release() noexcept;
@@ -382,7 +386,9 @@ class LvDrawBoxShadowDescriptor {
 public:
     LvDrawBoxShadowDescriptor() noexcept;
 
-    [[nodiscard]] lv_draw_box_shadow_dsc_t* borrow_raw() noexcept { return &raw_; }
+    [[nodiscard]] lv_draw_box_shadow_dsc_t* borrow_raw() noexcept {
+        return &raw_;
+    }
     [[nodiscard]] const lv_draw_box_shadow_dsc_t* borrow_raw() const noexcept {
         return &raw_;
     }
@@ -402,7 +408,8 @@ public:
     }
 
 private:
-    // owns: descriptor value. bg image pointers, when set by caller, are external.
+    // owns: descriptor value. bg image pointers, when set by caller, are
+    // external.
     lv_draw_rect_dsc_t raw_{};
 };
 
@@ -410,7 +417,9 @@ class LvDrawMaskRectDescriptor {
 public:
     LvDrawMaskRectDescriptor() noexcept;
 
-    [[nodiscard]] lv_draw_mask_rect_dsc_t* borrow_raw() noexcept { return &raw_; }
+    [[nodiscard]] lv_draw_mask_rect_dsc_t* borrow_raw() noexcept {
+        return &raw_;
+    }
     [[nodiscard]] const lv_draw_mask_rect_dsc_t* borrow_raw() const noexcept {
         return &raw_;
     }
@@ -424,6 +433,6 @@ private:
     lv_draw_mask_rect_dsc_t raw_{};
 };
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_DRAW_LVGL_HPP
+#endif // LVGLPP_CORE_DRAW_LVGL_HPP

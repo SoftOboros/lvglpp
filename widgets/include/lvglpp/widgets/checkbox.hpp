@@ -48,22 +48,21 @@ public:
 
     void draw(::lvglpp::core::Renderer& renderer) const override;
 
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
 private:
-    [[nodiscard]] bool inside_bounds(std::int32_t x, std::int32_t y) const noexcept {
-        return x >= bounds_.x &&
-               x <  bounds_.x + bounds_.width &&
-               y >= bounds_.y &&
-               y <  bounds_.y + bounds_.height;
+    [[nodiscard]] bool inside_bounds(std::int32_t x,
+                                     std::int32_t y) const noexcept {
+        return x >= bounds_.x && x < bounds_.x + bounds_.width &&
+               y >= bounds_.y && y < bounds_.y + bounds_.height;
     }
 
     ::lvglpp::core::Rect bounds_;
-    std::string          text_;
-    bool                 checked_ = false;
+    std::string text_;
+    bool checked_ = false;
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_CHECKBOX_HPP
+#endif // LVGLPP_WIDGETS_CHECKBOX_HPP

@@ -76,21 +76,19 @@ EventSubscription::EventSubscription(EventSubscription&& other) noexcept
     other.descriptor_ = nullptr;
 }
 
-EventSubscription& EventSubscription::operator=(
-    EventSubscription&& other) noexcept {
+EventSubscription&
+EventSubscription::operator=(EventSubscription&& other) noexcept {
     if (this != &other) {
         reset();
-        raw_object_       = other.raw_object_;
-        descriptor_       = other.descriptor_;
+        raw_object_ = other.raw_object_;
+        descriptor_ = other.descriptor_;
         other.raw_object_ = nullptr;
         other.descriptor_ = nullptr;
     }
     return *this;
 }
 
-EventSubscription::~EventSubscription() {
-    reset();
-}
+EventSubscription::~EventSubscription() { reset(); }
 
 bool EventSubscription::empty() const noexcept {
     return raw_object_ == nullptr || descriptor_ == nullptr;
@@ -102,8 +100,8 @@ lv_event_dsc_t* EventSubscription::borrow_descriptor() const noexcept {
 
 lv_event_dsc_t* EventSubscription::release() noexcept {
     lv_event_dsc_t* released = descriptor_;
-    raw_object_              = nullptr;
-    descriptor_              = nullptr;
+    raw_object_ = nullptr;
+    descriptor_ = nullptr;
     return released;
 }
 
@@ -116,20 +114,20 @@ void EventSubscription::reset() noexcept {
     descriptor_ = nullptr;
 }
 
-EventSubscription add_event_callback(ObjectView object,
-                                     EventCode filter,
+EventSubscription add_event_callback(ObjectView object, EventCode filter,
                                      lv_event_cb_t callback,
                                      void* user_data) noexcept {
     if (object.empty() || callback == nullptr) {
         return EventSubscription{};
     }
 
-    lv_event_dsc_t* descriptor =
-        lv_obj_add_event_cb(object.borrow_raw(), callback, to_lv(filter), user_data);
+    lv_event_dsc_t* descriptor = lv_obj_add_event_cb(
+        object.borrow_raw(), callback, to_lv(filter), user_data);
     return EventSubscription{object, descriptor};
 }
 
-lv_result_t send_event(ObjectView object, EventCode code, void* param) noexcept {
+lv_result_t send_event(ObjectView object, EventCode code,
+                       void* param) noexcept {
     if (object.empty()) {
         return LV_RESULT_INVALID;
     }
@@ -138,9 +136,7 @@ lv_result_t send_event(ObjectView object, EventCode code, void* param) noexcept 
 
 LvGroup::LvGroup(lv_group_t* raw) noexcept : raw_{raw} {}
 
-LvGroup LvGroup::make() noexcept {
-    return LvGroup{lv_group_create()};
-}
+LvGroup LvGroup::make() noexcept { return LvGroup{lv_group_create()}; }
 
 LvGroup::LvGroup(LvGroup&& other) noexcept : raw_{other.raw_} {
     other.raw_ = nullptr;
@@ -149,31 +145,23 @@ LvGroup::LvGroup(LvGroup&& other) noexcept : raw_{other.raw_} {
 LvGroup& LvGroup::operator=(LvGroup&& other) noexcept {
     if (this != &other) {
         reset();
-        raw_       = other.raw_;
+        raw_ = other.raw_;
         other.raw_ = nullptr;
     }
     return *this;
 }
 
-LvGroup::~LvGroup() {
-    reset();
-}
+LvGroup::~LvGroup() { reset(); }
 
-GroupView LvGroup::borrow() const noexcept {
-    return GroupView{raw_};
-}
+GroupView LvGroup::borrow() const noexcept { return GroupView{raw_}; }
 
-lv_group_t* LvGroup::borrow_raw() const noexcept {
-    return raw_;
-}
+lv_group_t* LvGroup::borrow_raw() const noexcept { return raw_; }
 
-bool LvGroup::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvGroup::empty() const noexcept { return raw_ == nullptr; }
 
 lv_group_t* LvGroup::release() noexcept {
     lv_group_t* released = raw_;
-    raw_                 = nullptr;
+    raw_ = nullptr;
     return released;
 }
 
@@ -264,9 +252,7 @@ bool LvGroup::wrap() const noexcept {
     return raw_ != nullptr && lv_group_get_wrap(raw_);
 }
 
-lv_group_t* borrow_raw(GroupView group) noexcept {
-    return group.borrow_raw();
-}
+lv_group_t* borrow_raw(GroupView group) noexcept { return group.borrow_raw(); }
 
 LvInputDevice::LvInputDevice(lv_indev_t* raw) noexcept : raw_{raw} {}
 
@@ -284,31 +270,25 @@ LvInputDevice::LvInputDevice(LvInputDevice&& other) noexcept
 LvInputDevice& LvInputDevice::operator=(LvInputDevice&& other) noexcept {
     if (this != &other) {
         reset();
-        raw_       = other.raw_;
+        raw_ = other.raw_;
         other.raw_ = nullptr;
     }
     return *this;
 }
 
-LvInputDevice::~LvInputDevice() {
-    reset();
-}
+LvInputDevice::~LvInputDevice() { reset(); }
 
 InputDeviceView LvInputDevice::borrow() const noexcept {
     return InputDeviceView{raw_};
 }
 
-lv_indev_t* LvInputDevice::borrow_raw() const noexcept {
-    return raw_;
-}
+lv_indev_t* LvInputDevice::borrow_raw() const noexcept { return raw_; }
 
-bool LvInputDevice::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvInputDevice::empty() const noexcept { return raw_ == nullptr; }
 
 lv_indev_t* LvInputDevice::release() noexcept {
     lv_indev_t* released = raw_;
-    raw_                 = nullptr;
+    raw_ = nullptr;
     return released;
 }
 
@@ -337,8 +317,9 @@ InputDeviceType LvInputDevice::type() const noexcept {
 }
 
 InputDeviceState LvInputDevice::state() const noexcept {
-    return raw_ != nullptr ? input_device_state_from_lv(lv_indev_get_state(raw_))
-                           : InputDeviceState::Released;
+    return raw_ != nullptr
+               ? input_device_state_from_lv(lv_indev_get_state(raw_))
+               : InputDeviceState::Released;
 }
 
 void LvInputDevice::set_read_callback(lv_indev_read_cb_t callback) noexcept {
@@ -404,4 +385,4 @@ lv_indev_t* borrow_raw(InputDeviceView input) noexcept {
     return input.borrow_raw();
 }
 
-}  // namespace lvglpp
+} // namespace lvglpp

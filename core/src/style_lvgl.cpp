@@ -19,7 +19,7 @@ namespace {
     return display.empty() ? nullptr : display.borrow_raw();
 }
 
-}  // namespace
+} // namespace
 
 StylePart StyleSelector::part() const noexcept {
     return style_part_from_lv(lv_obj_style_get_selector_part(raw_));
@@ -49,25 +49,15 @@ LvStyle::LvStyle() : raw_{std::make_unique<lv_style_t>()} {
     lv_style_init(raw_.get());
 }
 
-LvStyle::~LvStyle() {
-    reset();
-}
+LvStyle::~LvStyle() { reset(); }
 
-StyleView LvStyle::borrow() const noexcept {
-    return StyleView{raw_.get()};
-}
+StyleView LvStyle::borrow() const noexcept { return StyleView{raw_.get()}; }
 
-lv_style_t* LvStyle::borrow_raw() noexcept {
-    return raw_.get();
-}
+lv_style_t* LvStyle::borrow_raw() noexcept { return raw_.get(); }
 
-const lv_style_t* LvStyle::borrow_raw() const noexcept {
-    return raw_.get();
-}
+const lv_style_t* LvStyle::borrow_raw() const noexcept { return raw_.get(); }
 
-bool LvStyle::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvStyle::empty() const noexcept { return raw_ == nullptr; }
 
 void LvStyle::reset() noexcept {
     if (raw_ != nullptr) {
@@ -184,13 +174,9 @@ void LvStyle::set_transition(const StyleTransition& transition) noexcept {
 StyleTransition::StyleTransition(std::span<const lv_style_prop_t> props,
                                  lv_anim_path_cb_t path_callback,
                                  std::uint32_t duration_ms,
-                                 std::uint32_t delay_ms,
-                                 void* user_data)
-    : props_{props.begin(), props.end()},
-      path_callback_{path_callback},
-      duration_ms_{duration_ms},
-      delay_ms_{delay_ms},
-      user_data_{user_data} {
+                                 std::uint32_t delay_ms, void* user_data)
+    : props_{props.begin(), props.end()}, path_callback_{path_callback},
+      duration_ms_{duration_ms}, delay_ms_{delay_ms}, user_data_{user_data} {
     if (props_.empty() || props_.back() != LV_STYLE_PROP_INV) {
         props_.push_back(LV_STYLE_PROP_INV);
     }
@@ -198,10 +184,8 @@ StyleTransition::StyleTransition(std::span<const lv_style_prop_t> props,
 }
 
 StyleTransition::StyleTransition(StyleTransition&& other) noexcept
-    : props_{std::move(other.props_)},
-      path_callback_{other.path_callback_},
-      duration_ms_{other.duration_ms_},
-      delay_ms_{other.delay_ms_},
+    : props_{std::move(other.props_)}, path_callback_{other.path_callback_},
+      duration_ms_{other.duration_ms_}, delay_ms_{other.delay_ms_},
       user_data_{other.user_data_} {
     refresh_descriptor();
     other.refresh_descriptor();
@@ -221,12 +205,9 @@ StyleTransition& StyleTransition::operator=(StyleTransition&& other) noexcept {
 }
 
 void StyleTransition::refresh_descriptor() noexcept {
-    lv_style_transition_dsc_init(&raw_,
-                                 props_.empty() ? nullptr : props_.data(),
-                                 path_callback_,
-                                 duration_ms_,
-                                 delay_ms_,
-                                 user_data_);
+    lv_style_transition_dsc_init(
+        &raw_, props_.empty() ? nullptr : props_.data(), path_callback_,
+        duration_ms_, delay_ms_, user_data_);
 }
 
 lv_style_value_t style_prop_default(lv_style_prop_t prop) noexcept {
@@ -241,7 +222,8 @@ bool style_prop_has_flag(lv_style_prop_t prop, std::uint8_t flag) noexcept {
     return (style_prop_flags(prop) & flag) != 0;
 }
 
-void add_style(ObjectView object, StyleView style, StyleSelector selector) noexcept {
+void add_style(ObjectView object, StyleView style,
+               StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
             lv_obj_add_style(raw, style.borrow_raw(), to_lv(selector));
@@ -249,21 +231,19 @@ void add_style(ObjectView object, StyleView style, StyleSelector selector) noexc
     }
 }
 
-bool replace_style(ObjectView object,
-                   StyleView old_style,
-                   StyleView new_style,
+bool replace_style(ObjectView object, StyleView old_style, StyleView new_style,
                    StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!old_style.empty() && !new_style.empty()) {
-            return lv_obj_replace_style(
-                raw, old_style.borrow_raw(), new_style.borrow_raw(), to_lv(selector));
+            return lv_obj_replace_style(raw, old_style.borrow_raw(),
+                                        new_style.borrow_raw(),
+                                        to_lv(selector));
         }
     }
     return false;
 }
 
-void remove_style(ObjectView object,
-                  StyleView style,
+void remove_style(ObjectView object, StyleView style,
                   StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
@@ -290,30 +270,28 @@ void remove_all_styles(ObjectView object) noexcept {
     }
 }
 
-void set_style_disabled(ObjectView object,
-                        StyleView style,
-                        StyleSelector selector,
-                        bool disabled) noexcept {
+void set_style_disabled(ObjectView object, StyleView style,
+                        StyleSelector selector, bool disabled) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
-            lv_obj_set_style_enabled(raw, style.borrow_raw(), to_lv(selector), !disabled);
+            lv_obj_set_style_enabled(raw, style.borrow_raw(), to_lv(selector),
+                                     !disabled);
         }
     }
 }
 
-bool style_disabled(ObjectView object,
-                    StyleView style,
+bool style_disabled(ObjectView object, StyleView style,
                     StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         if (!style.empty()) {
-            return !lv_obj_get_style_enabled(raw, style.borrow_raw(), to_lv(selector));
+            return !lv_obj_get_style_enabled(raw, style.borrow_raw(),
+                                             to_lv(selector));
         }
     }
     return false;
 }
 
-void set_local_style_prop(ObjectView object,
-                          lv_style_prop_t prop,
+void set_local_style_prop(ObjectView object, lv_style_prop_t prop,
                           lv_style_value_t value,
                           StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
@@ -321,8 +299,7 @@ void set_local_style_prop(ObjectView object,
     }
 }
 
-lv_style_res_t local_style_prop(ObjectView object,
-                                lv_style_prop_t prop,
+lv_style_res_t local_style_prop(ObjectView object, lv_style_prop_t prop,
                                 lv_style_value_t& value,
                                 StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
@@ -331,8 +308,7 @@ lv_style_res_t local_style_prop(ObjectView object,
     return LV_STYLE_RES_NOT_FOUND;
 }
 
-bool remove_local_style_prop(ObjectView object,
-                             lv_style_prop_t prop,
+bool remove_local_style_prop(ObjectView object, lv_style_prop_t prop,
                              StyleSelector selector) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         return lv_obj_remove_local_style_prop(raw, prop, to_lv(selector));
@@ -340,8 +316,7 @@ bool remove_local_style_prop(ObjectView object,
     return false;
 }
 
-lv_style_value_t resolved_style_prop(ObjectView object,
-                                     StylePart part,
+lv_style_value_t resolved_style_prop(ObjectView object, StylePart part,
                                      lv_style_prop_t prop) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         return lv_obj_get_style_prop(raw, to_lv(part), prop);
@@ -349,8 +324,7 @@ lv_style_value_t resolved_style_prop(ObjectView object,
     return style_prop_default(prop);
 }
 
-bool has_style_prop(ObjectView object,
-                    StyleSelector selector,
+bool has_style_prop(ObjectView object, StyleSelector selector,
                     lv_style_prop_t prop) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         return lv_obj_has_style_prop(raw, to_lv(selector), prop);
@@ -390,8 +364,7 @@ void report_style_change(StyleView style) noexcept {
     lv_obj_report_style_change(const_cast<lv_style_t*>(style.borrow_raw()));
 }
 
-void refresh_style(ObjectView object,
-                   StylePart part,
+void refresh_style(ObjectView object, StylePart part,
                    lv_style_prop_t prop) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_refresh_style(raw, to_lv(part), prop);
@@ -408,15 +381,14 @@ void ThemeView::set_parent(ThemeView parent) const noexcept {
     }
 }
 
-void ThemeView::set_apply_callback(lv_theme_apply_cb_t callback) const noexcept {
+void ThemeView::set_apply_callback(
+    lv_theme_apply_cb_t callback) const noexcept {
     if (raw_ != nullptr) {
         lv_theme_set_apply_cb(raw_, callback);
     }
 }
 
-LvTheme LvTheme::make() noexcept {
-    return LvTheme{lv_theme_create()};
-}
+LvTheme LvTheme::make() noexcept { return LvTheme{lv_theme_create()}; }
 
 LvTheme::LvTheme(lv_theme_t* raw) noexcept : raw_{raw} {}
 
@@ -433,21 +405,13 @@ LvTheme& LvTheme::operator=(LvTheme&& other) noexcept {
     return *this;
 }
 
-LvTheme::~LvTheme() {
-    reset();
-}
+LvTheme::~LvTheme() { reset(); }
 
-ThemeView LvTheme::borrow() const noexcept {
-    return ThemeView{raw_};
-}
+ThemeView LvTheme::borrow() const noexcept { return ThemeView{raw_}; }
 
-lv_theme_t* LvTheme::borrow_raw() const noexcept {
-    return raw_;
-}
+lv_theme_t* LvTheme::borrow_raw() const noexcept { return raw_; }
 
-bool LvTheme::empty() const noexcept {
-    return raw_ == nullptr;
-}
+bool LvTheme::empty() const noexcept { return raw_ == nullptr; }
 
 lv_theme_t* LvTheme::release() noexcept {
     lv_theme_t* released = raw_;
@@ -532,22 +496,16 @@ core::Color theme_color_secondary(ObjectView object) noexcept {
 }
 
 #if LV_USE_THEME_DEFAULT
-ThemeView default_theme_init(DisplayView display,
-                             core::Color primary,
-                             core::Color secondary,
-                             bool dark,
+ThemeView default_theme_init(DisplayView display, core::Color primary,
+                             core::Color secondary, bool dark,
                              const lv_font_t* font) noexcept {
-    return ThemeView{lv_theme_default_init(
-        raw_or_null(display), to_lv(primary), to_lv(secondary), dark, font)};
+    return ThemeView{lv_theme_default_init(raw_or_null(display), to_lv(primary),
+                                           to_lv(secondary), dark, font)};
 }
 
-ThemeView default_theme() noexcept {
-    return ThemeView{lv_theme_default_get()};
-}
+ThemeView default_theme() noexcept { return ThemeView{lv_theme_default_get()}; }
 
-void default_theme_deinit() noexcept {
-    lv_theme_default_deinit();
-}
+void default_theme_deinit() noexcept { lv_theme_default_deinit(); }
 #endif
 
 #if LV_USE_THEME_SIMPLE
@@ -555,29 +513,21 @@ ThemeView simple_theme_init(DisplayView display) noexcept {
     return ThemeView{lv_theme_simple_init(raw_or_null(display))};
 }
 
-ThemeView simple_theme() noexcept {
-    return ThemeView{lv_theme_simple_get()};
-}
+ThemeView simple_theme() noexcept { return ThemeView{lv_theme_simple_get()}; }
 
-void simple_theme_deinit() noexcept {
-    lv_theme_simple_deinit();
-}
+void simple_theme_deinit() noexcept { lv_theme_simple_deinit(); }
 #endif
 
 #if LV_USE_THEME_MONO
-ThemeView mono_theme_init(DisplayView display,
-                          bool dark_background,
+ThemeView mono_theme_init(DisplayView display, bool dark_background,
                           const lv_font_t* font) noexcept {
-    return ThemeView{lv_theme_mono_init(raw_or_null(display), dark_background, font)};
+    return ThemeView{
+        lv_theme_mono_init(raw_or_null(display), dark_background, font)};
 }
 
-ThemeView mono_theme() noexcept {
-    return ThemeView{lv_theme_mono_get()};
-}
+ThemeView mono_theme() noexcept { return ThemeView{lv_theme_mono_get()}; }
 
-void mono_theme_deinit() noexcept {
-    lv_theme_mono_deinit();
-}
+void mono_theme_deinit() noexcept { lv_theme_mono_deinit(); }
 #endif
 
-}  // namespace lvglpp
+} // namespace lvglpp

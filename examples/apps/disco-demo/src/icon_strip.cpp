@@ -19,7 +19,7 @@ namespace lvglpp::app::disco_demo {
 
 namespace {
 
-namespace lc  = ::lvglpp::core;
+namespace lc = ::lvglpp::core;
 namespace rle = ::lvglpp::core::rle;
 
 // Decode an RLE icon into `buf` (sized to width*height). Returns the icon
@@ -29,10 +29,11 @@ namespace rle = ::lvglpp::core::rle;
 std::optional<std::pair<std::uint32_t, std::uint32_t>>
 decode_icon(std::span<const std::uint8_t> blob, std::vector<lc::Color>& buf) {
     auto parsed = rle::parse_blob(blob);
-    if (!parsed.has_value()) return std::nullopt;
+    if (!parsed.has_value())
+        return std::nullopt;
     const auto& view = parsed.value();
-    const std::size_t total =
-        static_cast<std::size_t>(view.width) * static_cast<std::size_t>(view.height);
+    const std::size_t total = static_cast<std::size_t>(view.width) *
+                              static_cast<std::size_t>(view.height);
     buf.assign(total, lc::Color{});
     if (!rle::decode_into(view, std::span<lc::Color>(buf)).has_value()) {
         return std::nullopt;
@@ -41,7 +42,7 @@ decode_icon(std::span<const std::uint8_t> blob, std::vector<lc::Color>& buf) {
                      static_cast<std::uint32_t>(view.height)};
 }
 
-}  // namespace
+} // namespace
 
 void IconStrip::set_slot(std::size_t index, IconSlot slot) {
     if (index < SLOT_COUNT) {
@@ -65,12 +66,13 @@ void IconStrip::draw(core::Renderer& renderer) const {
     std::vector<lc::Color> buf;
     for (std::size_t index = 0; index < SLOT_COUNT; ++index) {
         const auto& maybe = slots_[index];
-        if (!maybe.has_value()) continue;
+        if (!maybe.has_value())
+            continue;
         const IconSlot& slot = *maybe;
 
         if (auto dims = decode_icon(slot.rle, buf)) {
-            const auto [w, h]   = *dims;
-            const core::Rect b  = slot_bounds(index);
+            const auto [w, h] = *dims;
+            const core::Rect b = slot_bounds(index);
             const std::int32_t x =
                 b.x + (b.width - static_cast<std::int32_t>(w)) / 2;
             const std::int32_t y =
@@ -94,12 +96,14 @@ void IconStrip::draw(core::Renderer& renderer) const {
 
 bool IconStrip::handle_event(const core::Event& event) {
     const auto* pr = std::get_if<core::event::PressRelease>(&event);
-    if (pr == nullptr) return false;
+    if (pr == nullptr)
+        return false;
 
     const std::int32_t step = icon_size_ + gap_;
     for (std::size_t index = 0; index < SLOT_COUNT; ++index) {
         auto& maybe = slots_[index];
-        if (!maybe.has_value() || !maybe->enabled) continue;
+        if (!maybe.has_value() || !maybe->enabled)
+            continue;
 
         const std::int32_t i = static_cast<std::int32_t>(index);
         const std::int32_t cell_top =
@@ -119,4 +123,4 @@ bool IconStrip::handle_event(const core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo

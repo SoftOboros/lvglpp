@@ -38,18 +38,22 @@ inline std::vector<std::string> wrap_text(std::string_view text,
     }
     std::size_t start = 0;
     while (true) {
-        const std::size_t nl  = text.find('\n', start);
-        const std::size_t end = (nl == std::string_view::npos) ? text.size() : nl;
+        const std::size_t nl = text.find('\n', start);
+        const std::size_t end =
+            (nl == std::string_view::npos) ? text.size() : nl;
         const std::string_view paragraph = text.substr(start, end - start);
         const std::size_t start_len = out.size();
         std::string current;
 
         std::size_t i = 0;
         while (i < paragraph.size()) {
-            while (i < paragraph.size() && wrap_is_space(paragraph[i])) ++i;
+            while (i < paragraph.size() && wrap_is_space(paragraph[i]))
+                ++i;
             const std::size_t ws = i;
-            while (i < paragraph.size() && !wrap_is_space(paragraph[i])) ++i;
-            if (ws == i) break;
+            while (i < paragraph.size() && !wrap_is_space(paragraph[i]))
+                ++i;
+            if (ws == i)
+                break;
             const std::string_view word = paragraph.substr(ws, i - ws);
 
             if (word.size() > max_cols) {
@@ -68,7 +72,8 @@ inline std::vector<std::string> wrap_text(std::string_view text,
                 out.push_back(std::move(current));
                 current.clear();
             }
-            if (!current.empty()) current.push_back(' ');
+            if (!current.empty())
+                current.push_back(' ');
             current.append(word);
         }
 
@@ -78,7 +83,8 @@ inline std::vector<std::string> wrap_text(std::string_view text,
             out.emplace_back();
         }
 
-        if (nl == std::string_view::npos) break;
+        if (nl == std::string_view::npos)
+            break;
         start = nl + 1;
     }
     return out;
@@ -88,12 +94,13 @@ inline std::vector<std::string> wrap_text(std::string_view text,
 inline std::string join_newline(const std::vector<std::string>& lines) {
     std::string joined;
     for (std::size_t i = 0; i < lines.size(); ++i) {
-        if (i != 0) joined.push_back('\n');
+        if (i != 0)
+            joined.push_back('\n');
         joined.append(lines[i]);
     }
     return joined;
 }
 
-}  // namespace lvglpp::app::disco_demo::detail
+} // namespace lvglpp::app::disco_demo::detail
 
-#endif  // LVGLPP_APP_DISCO_DEMO_DETAIL_TEXT_WRAP_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_DETAIL_TEXT_WRAP_HPP

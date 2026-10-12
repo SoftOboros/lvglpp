@@ -16,7 +16,7 @@ namespace {
 constexpr std::int32_t kSquareSize = 10;
 constexpr std::int32_t kInnerInset = 2;
 constexpr std::int32_t kTextOffset = kSquareSize + 4;
-}  // namespace
+} // namespace
 
 void Checkbox::draw(::lvglpp::core::Renderer& renderer) const {
     namespace lc = ::lvglpp::core;
@@ -29,27 +29,23 @@ void Checkbox::draw(::lvglpp::core::Renderer& renderer) const {
 
     // 2. 10×10 box anchored at the bounds origin.
     const lc::Rect box_rect{bounds_.x, bounds_.y, kSquareSize, kSquareSize};
-    lc::fill_rounded_rect(renderer, box_rect,
-                          style.border_color.with_alpha(a), r);
+    lc::fill_rounded_rect(renderer, box_rect, style.border_color.with_alpha(a),
+                          r);
 
     // 3. Check mark — 6×6 inset 2px on every side.
     if (checked_) {
         const lc::Rect inner{
             box_rect.x + kInnerInset,
             box_rect.y + kInnerInset,
-            box_rect.width  - 2 * kInnerInset,
+            box_rect.width - 2 * kInnerInset,
             box_rect.height - 2 * kInnerInset,
         };
-        lc::fill_rounded_rect(renderer, inner,
-                              check_color.with_alpha(a), r);
+        lc::fill_rounded_rect(renderer, inner, check_color.with_alpha(a), r);
     }
 
     // 4. Label text right of the box; baseline at bottom-left.
-    renderer.draw_text(
-        bounds_.x + kTextOffset,
-        bounds_.y + bounds_.height,
-        text_,
-        text_color.with_alpha(a));
+    renderer.draw_text(bounds_.x + kTextOffset, bounds_.y + bounds_.height,
+                       text_, text_color.with_alpha(a));
 }
 
 bool Checkbox::handle_event(const ::lvglpp::core::Event& event) {
@@ -64,4 +60,4 @@ bool Checkbox::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

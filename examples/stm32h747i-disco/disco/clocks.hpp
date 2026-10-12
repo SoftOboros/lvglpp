@@ -17,29 +17,29 @@ namespace lvglpp::disco::clocks {
 // PLAT-02b §5.1 + §5.2. Defaults are byte-for-byte rlvgl parity.
 struct Plan {
     // HSE crystal frequency. The board carries a 25 MHz Y3.
-    std::uint32_t hse_hz   = 25'000'000;
+    std::uint32_t hse_hz = 25'000'000;
     // PLL1: VCO = 800, P→SYSCLK=400, Q→200 (for SDMMC).
-    std::uint8_t  pll1_m   = 5;
-    std::uint16_t pll1_n   = 160;
-    std::uint8_t  pll1_p   = 2;
-    std::uint8_t  pll1_q   = 4;
-    std::uint8_t  pll1_r   = 2; // unused; written as default
+    std::uint8_t pll1_m = 5;
+    std::uint16_t pll1_n = 160;
+    std::uint8_t pll1_p = 2;
+    std::uint8_t pll1_q = 4;
+    std::uint8_t pll1_r = 2; // unused; written as default
     // PLL2: VCO = 300, R→FMC kernel = 150.
-    std::uint8_t  pll2_m   = 5;
-    std::uint16_t pll2_n   = 60;
-    std::uint8_t  pll2_p   = 2;
-    std::uint8_t  pll2_q   = 2;
-    std::uint8_t  pll2_r   = 2;
+    std::uint8_t pll2_m = 5;
+    std::uint16_t pll2_n = 60;
+    std::uint8_t pll2_p = 2;
+    std::uint8_t pll2_q = 2;
+    std::uint8_t pll2_r = 2;
     // PLL3: VCO = 660, R→LTDC pixel = 27.5 MHz. Matches rlvgl's required
     // pixel clock (HSE/5 * 132 / 24; display_init.rs:625 — the DSI
     // adapted-command-mode pixel rate the NT35510 link is timed for).
     // Was 32 MHz (n=160,r=25); 32 MHz over-clocked the DSI pixel feed →
     // rainbow snow over otherwise-correct geometry (PLAT-02d bench iter).
-    std::uint8_t  pll3_m   = 5;
-    std::uint16_t pll3_n   = 132;
-    std::uint8_t  pll3_p   = 2;
-    std::uint8_t  pll3_q   = 2;
-    std::uint8_t  pll3_r   = 24;
+    std::uint8_t pll3_m = 5;
+    std::uint16_t pll3_n = 132;
+    std::uint8_t pll3_p = 2;
+    std::uint8_t pll3_q = 2;
+    std::uint8_t pll3_r = 24;
 };
 
 // Run the ten-step bring-up sequence. On any timeout, traps via

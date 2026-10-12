@@ -58,9 +58,10 @@ void test_move_transfers_ownership() {
 
 void test_flags_and_states() {
     auto screen = lvglpp::LvObject::make_screen();
-    auto child  = lvglpp::LvObject::make_child(screen.borrow());
+    auto child = lvglpp::LvObject::make_child(screen.borrow());
 
-    // A compound flag retains all-of query and independent-axis update semantics.
+    // A compound flag retains all-of query and independent-axis update
+    // semantics.
     child.set_flag(lvglpp::ObjectFlag::ScrollChain, true);
     assert(lv_obj_is_scroll_chain_hor(child.borrow_raw()));
     assert(lv_obj_is_scroll_chain_ver(child.borrow_raw()));
@@ -94,9 +95,9 @@ void test_flags_and_states() {
 
 void test_reparent_and_order() {
     auto first_parent = lvglpp::LvObject::make_screen();
-    auto next_parent  = lvglpp::LvObject::make_screen();
-    auto a            = lvglpp::LvObject::make_child(first_parent.borrow());
-    auto b            = lvglpp::LvObject::make_child(first_parent.borrow());
+    auto next_parent = lvglpp::LvObject::make_screen();
+    auto a = lvglpp::LvObject::make_child(first_parent.borrow());
+    auto b = lvglpp::LvObject::make_child(first_parent.borrow());
 
     assert(first_parent.child_count() == 2);
     assert(first_parent.child(0).borrow_raw() == a.borrow_raw());
@@ -121,7 +122,7 @@ void test_parent_deletion_invalidates_child_owner() {
     lvglpp::LvObject child;
     {
         auto screen = lvglpp::LvObject::make_screen();
-        child       = lvglpp::LvObject::make_child(screen.borrow());
+        child = lvglpp::LvObject::make_child(screen.borrow());
         assert(child.valid());
     }
 
@@ -132,7 +133,7 @@ void test_parent_deletion_invalidates_child_owner() {
 
 void test_clean_children_invalidates_child_owner() {
     auto screen = lvglpp::LvObject::make_screen();
-    auto child  = lvglpp::LvObject::make_child(screen.borrow());
+    auto child = lvglpp::LvObject::make_child(screen.borrow());
 
     assert(screen.child_count() == 1);
     screen.clean_children();
@@ -140,7 +141,7 @@ void test_clean_children_invalidates_child_owner() {
     assert(!child.valid());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;
