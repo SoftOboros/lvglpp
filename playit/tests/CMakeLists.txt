@@ -84,3 +84,11 @@ target_link_libraries(lvglpp_playit_lvgl_input_bridge_test
 )
 add_test(NAME lvglpp_playit_lvgl_input_bridge
     COMMAND lvglpp_playit_lvgl_input_bridge_test)
+
+# PLAYIT-07a: real LVGL snapshots preserve existing dump bytes and present gates.
+add_executable(lvglpp_playit_lvgl_snapshot_reader_test lvgl_snapshot_reader_test.cpp)
+target_link_libraries(lvglpp_playit_lvgl_snapshot_reader_test
+    PRIVATE lvglpp::playit lvglpp_warnings)
+add_test(NAME lvglpp_playit_lvgl_snapshot_reader
+    COMMAND lvglpp_playit_lvgl_snapshot_reader_test)
+set_tests_properties(lvglpp_playit_lvgl_snapshot_reader PROPERTIES SKIP_RETURN_CODE 77)

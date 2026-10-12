@@ -28,7 +28,7 @@ namespace lvglpp {
 // Returns the lvglpp library version as a compile-time string view.
 // Returns: borrows a static string; caller must not free.
 [[nodiscard]] constexpr std::string_view library_version() noexcept {
-    return "0.1.0";
+    return "0.1.1";
 }
 
 // Errors that the Runtime constructor / factory can produce.

@@ -5,8 +5,9 @@
 // LVGL:   N/A.
 // DELTA:  none (abstract base instead of trait).
 //
-// Platform backends implement this to expose the visible framebuffer
-// to the Executor for `D` dump commands (PLAYIT-07a).
+// Platform backends expose framebuffer pixels; LvglSnapshotReader exposes
+// an immutable presented-screen snapshot to the same D dump executor.
+// Capture occurs outside poll(); read_pixel/read_row must not allocate.
 
 #ifndef LVGLPP_PLAYIT_FRAMEBUFFER_HPP
 #define LVGLPP_PLAYIT_FRAMEBUFFER_HPP

@@ -36,6 +36,9 @@
 #define LV_USE_LABEL 1
 #define LV_USE_BUTTON 1
 
+/* PLAYIT-07a: LVGL snapshot-backed dump reader. */
+#define LV_USE_SNAPSHOT 1
+
 /* I18N-02: lv_translation bridge (docs/i18n/01-lv-translation-bridge.md). */
 #define LV_USE_TRANSLATION 1
 

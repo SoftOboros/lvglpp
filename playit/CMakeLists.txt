@@ -17,6 +17,7 @@ target_sources(lvglpp_playit
         src/executor.cpp
         src/format.cpp
         src/lvgl_input_bridge.cpp
+        src/lvgl_snapshot_reader.cpp
         src/parser.cpp
 )
 
