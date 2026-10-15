@@ -36,15 +36,13 @@ public:
 
     // Built-in FONT_6X10 (rlvgl bring-up parity font), top-left
     // anchored at (x, y) per BitmapFont::draw_str.
-    void draw_text(std::int32_t x,
-                   std::int32_t y,
-                   std::string_view text,
+    void draw_text(std::int32_t x, std::int32_t y, std::string_view text,
                    core::Color color) override;
 
 private:
     static constexpr std::uint32_t DMA2D_MIN_AREA = 64;
 
-    FrameBuffer* fb_;  // borrows: see constructor contract.
+    FrameBuffer* fb_; // borrows: see constructor contract.
 };
 
 } // namespace lvglpp::disco

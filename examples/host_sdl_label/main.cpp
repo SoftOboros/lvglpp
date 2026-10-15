@@ -59,8 +59,10 @@ namespace {
 
 bool is_quit_key(const lc::Event& event) noexcept {
     const auto* kd = std::get_if<lc::event::KeyDown>(&event);
-    if (kd == nullptr) return false;
-    if (std::holds_alternative<lc::key::Escape>(kd->key)) return true;
+    if (kd == nullptr)
+        return false;
+    if (std::holds_alternative<lc::key::Escape>(kd->key))
+        return true;
     if (const auto* ch = std::get_if<lc::key::Character>(&kd->key)) {
         return ch->codepoint == static_cast<std::uint32_t>('q') ||
                ch->codepoint == static_cast<std::uint32_t>('Q');
@@ -69,46 +71,43 @@ bool is_quit_key(const lc::Event& event) noexcept {
 }
 
 // Apply a palette to all the styled widgets at once.
-void apply_palette(lw::Label& status,
-                   lw::Button& ok_button,
-                   lw::Checkbox& dark_check,
-                   lw::Switch& mute_switch,
-                   lw::Slider& volume_slider,
-                   bool dark) {
+void apply_palette(lw::Label& status, lw::Button& ok_button,
+                   lw::Checkbox& dark_check, lw::Switch& mute_switch,
+                   lw::Slider& volume_slider, bool dark) {
     if (dark) {
         const lc::Color bg{32, 32, 48, 255};
         const lc::Color fg{255, 255, 255, 255};
         const lc::Color accent{60, 90, 200, 255};
-        status.style.bg_color     = bg;
-        status.text_color         = fg;
+        status.style.bg_color = bg;
+        status.text_color = fg;
         ok_button.style().bg_color = accent;
-        ok_button.text_color()     = fg;
+        ok_button.text_color() = fg;
         dark_check.style.bg_color = bg;
-        dark_check.text_color     = fg;
-        dark_check.check_color    = accent;
+        dark_check.text_color = fg;
+        dark_check.check_color = accent;
         mute_switch.style.bg_color = bg;
-        mute_switch.knob_color     = accent;
-        volume_slider.style.bg_color  = bg;
-        volume_slider.knob_color      = accent;
+        mute_switch.knob_color = accent;
+        volume_slider.style.bg_color = bg;
+        volume_slider.knob_color = accent;
     } else {
         const lc::Color bg{240, 240, 245, 255};
         const lc::Color fg{16, 16, 16, 255};
         const lc::Color accent{60, 120, 60, 255};
-        status.style.bg_color     = bg;
-        status.text_color         = fg;
+        status.style.bg_color = bg;
+        status.text_color = fg;
         ok_button.style().bg_color = accent;
-        ok_button.text_color()     = lc::Color{255, 255, 255, 255};
+        ok_button.text_color() = lc::Color{255, 255, 255, 255};
         dark_check.style.bg_color = bg;
-        dark_check.text_color     = fg;
-        dark_check.check_color    = accent;
+        dark_check.text_color = fg;
+        dark_check.check_color = accent;
         mute_switch.style.bg_color = bg;
-        mute_switch.knob_color     = accent;
-        volume_slider.style.bg_color  = bg;
-        volume_slider.knob_color      = accent;
+        mute_switch.knob_color = accent;
+        volume_slider.style.bg_color = bg;
+        volume_slider.knob_color = accent;
     }
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     auto backend_or = lp::HostSdlBackend::try_make(
@@ -130,29 +129,26 @@ int main() {
     status_label->style.border_width = 1;
     auto* status_ptr = status_label.get();
 
-    auto button = std::make_unique<lw::Button>(
-        std::string{"Toggle theme"},
-        lc::Rect{10, 70, 200, 50});
+    auto button = std::make_unique<lw::Button>(std::string{"Toggle theme"},
+                                               lc::Rect{10, 70, 200, 50});
     button->style().border_color = lc::Color{255, 255, 255, 255};
     button->style().border_width = 2;
     auto* button_ptr = button.get();
 
     auto dark_check = std::make_unique<lw::Checkbox>(
-        std::string{"Dark mode"},
-        lc::Rect{220, 70, 180, 50});
+        std::string{"Dark mode"}, lc::Rect{220, 70, 180, 50});
     dark_check->style.border_color = lc::Color{200, 200, 220, 255};
     dark_check->style.border_width = 1;
-    dark_check->set_checked(true);  // app starts in dark mode
+    dark_check->set_checked(true); // app starts in dark mode
     auto* dark_check_ptr = dark_check.get();
 
-    auto mute_switch = std::make_unique<lw::Switch>(
-        lc::Rect{410, 70, 80, 50});
+    auto mute_switch = std::make_unique<lw::Switch>(lc::Rect{410, 70, 80, 50});
     mute_switch->style.border_color = lc::Color{200, 200, 220, 255};
     mute_switch->style.border_width = 1;
     auto* mute_ptr = mute_switch.get();
 
-    auto volume_slider = std::make_unique<lw::Slider>(
-        lc::Rect{10, 140, 620, 60}, 0, 100);
+    auto volume_slider =
+        std::make_unique<lw::Slider>(lc::Rect{10, 140, 620, 60}, 0, 100);
     volume_slider->style.border_color = lc::Color{200, 200, 220, 255};
     volume_slider->style.border_width = 1;
     volume_slider->set_value(50);
@@ -160,44 +156,42 @@ int main() {
 
     // ---- WidgetNode tree -------------------------------------------
 
-    auto root_filler = std::make_unique<lw::Label>(
-        std::string{""}, lc::Rect{-1, -1, 0, 0});
+    auto root_filler =
+        std::make_unique<lw::Label>(std::string{""}, lc::Rect{-1, -1, 0, 0});
     lc::WidgetNode root{std::move(root_filler), "root"};
-    root.add_child(lc::WidgetNode{std::move(status_label),  "status_label"});
-    root.add_child(lc::WidgetNode{std::move(button),        "ok_button"});
-    root.add_child(lc::WidgetNode{std::move(dark_check),    "dark_mode"});
-    root.add_child(lc::WidgetNode{std::move(mute_switch),   "mute"});
+    root.add_child(lc::WidgetNode{std::move(status_label), "status_label"});
+    root.add_child(lc::WidgetNode{std::move(button), "ok_button"});
+    root.add_child(lc::WidgetNode{std::move(dark_check), "dark_mode"});
+    root.add_child(lc::WidgetNode{std::move(mute_switch), "mute"});
     root.add_child(lc::WidgetNode{std::move(volume_slider), "volume"});
 
     // Initial palette.
-    apply_palette(*status_ptr, *button_ptr, *dark_check_ptr,
-                  *mute_ptr, *volume_ptr, /*dark=*/true);
+    apply_palette(*status_ptr, *button_ptr, *dark_check_ptr, *mute_ptr,
+                  *volume_ptr, /*dark=*/true);
 
     // Button shares its callback with the Checkbox so either can
     // toggle theme. State is read from dark_check.
     auto refresh_status = [&]() {
         status_ptr->set_text(
-            "vol=" + std::to_string(volume_ptr->value()) +
-            "  mute=" + (mute_ptr->is_on() ? std::string{"on"}
-                                            : std::string{"off"}) +
-            "  theme=" + (dark_check_ptr->is_checked()
-                              ? std::string{"dark"}
-                              : std::string{"light"}));
+            "vol=" + std::to_string(volume_ptr->value()) + "  mute=" +
+            (mute_ptr->is_on() ? std::string{"on"} : std::string{"off"}) +
+            "  theme=" +
+            (dark_check_ptr->is_checked() ? std::string{"dark"}
+                                          : std::string{"light"}));
     };
     button_ptr->set_on_click([&](lw::Button&) {
         dark_check_ptr->set_checked(!dark_check_ptr->is_checked());
-        apply_palette(*status_ptr, *button_ptr, *dark_check_ptr,
-                      *mute_ptr, *volume_ptr,
-                      dark_check_ptr->is_checked());
+        apply_palette(*status_ptr, *button_ptr, *dark_check_ptr, *mute_ptr,
+                      *volume_ptr, dark_check_ptr->is_checked());
         refresh_status();
     });
 
     // ---- playit stack ----------------------------------------------
 
     lpit::StdioTransport transport;
-    lpit::Dispatcher     dispatcher{root};
-    lpit::EventRecorder  recorder;
-    lpit::Executor       executor{transport, dispatcher};
+    lpit::Dispatcher dispatcher{root};
+    lpit::EventRecorder recorder;
+    lpit::Executor executor{transport, dispatcher};
     executor.set_recorder(&recorder);
 
     // PLAYIT-04a — gesture pipeline turns raw Pointer{Down,Up,Move}
@@ -205,11 +199,13 @@ int main() {
     lpit::GesturePipeline pipeline{60};
 
     auto dispatch_pipeline_output = [&](const lpit::PipelineOutput& out) {
-        if (out.primary)   (void)root.dispatch_event(*out.primary);
-        if (out.secondary) (void)root.dispatch_event(*out.secondary);
+        if (out.primary)
+            (void)root.dispatch_event(*out.primary);
+        if (out.secondary)
+            (void)root.dispatch_event(*out.secondary);
     };
 
-    std::uint32_t tick_counter    = 0;
+    std::uint32_t tick_counter = 0;
     std::uint32_t present_counter = 0;
 
     // Snapshot widget state each frame to detect changes; the
@@ -217,8 +213,7 @@ int main() {
     // we observe state and refresh the status label when anything
     // moves.
     auto snapshot = std::make_tuple(dark_check_ptr->is_checked(),
-                                     mute_ptr->is_on(),
-                                     volume_ptr->value());
+                                    mute_ptr->is_on(), volume_ptr->value());
 
     while (!backend.quit_requested()) {
         // SDL events through the recogniser.
@@ -240,14 +235,13 @@ int main() {
 
         // Refresh on widget-state change. Apply theme too, since
         // ticking the Checkbox or Button both flip the palette.
-        const auto fresh = std::make_tuple(dark_check_ptr->is_checked(),
-                                            mute_ptr->is_on(),
-                                            volume_ptr->value());
+        const auto fresh =
+            std::make_tuple(dark_check_ptr->is_checked(), mute_ptr->is_on(),
+                            volume_ptr->value());
         if (fresh != snapshot) {
             // Sync theme from checkbox state.
-            apply_palette(*status_ptr, *button_ptr, *dark_check_ptr,
-                          *mute_ptr, *volume_ptr,
-                          dark_check_ptr->is_checked());
+            apply_palette(*status_ptr, *button_ptr, *dark_check_ptr, *mute_ptr,
+                          *volume_ptr, dark_check_ptr->is_checked());
             refresh_status();
             snapshot = fresh;
         }

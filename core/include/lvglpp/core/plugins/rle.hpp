@@ -26,8 +26,8 @@
 #include <cstdint>
 #include <span>
 
-#include "lvglpp/core/widget.hpp"   // core::Color
-#include "lvglpp/std/expected.hpp"  // lvglpp::expected / lvglpp::unexpected
+#include "lvglpp/core/widget.hpp"  // core::Color
+#include "lvglpp/std/expected.hpp" // lvglpp::expected / lvglpp::unexpected
 
 namespace lvglpp::core::rle {
 
@@ -39,33 +39,33 @@ namespace consts {
 // Control keys in the RLE byte stream.
 inline constexpr std::uint8_t ENCODE_KEY_SINGLE_INLINE_PIXEL = 0xFF;
 inline constexpr std::uint8_t ENCODE_KEY_DOUBLE_INLINE_PIXEL = 0xFE;
-inline constexpr std::uint8_t ENCODE_KEY_LONG_REPEAT         = 0xFD;
+inline constexpr std::uint8_t ENCODE_KEY_LONG_REPEAT = 0xFD;
 
 // Short-repeat data bytes encode runs of 1..=60 pixels.
 inline constexpr std::uint8_t SHORT_REPEAT_MAX = 60;
 // Long repeats cover 61..=316 pixels (kept for contract completeness; the
 // decoder derives counts directly from SHORT_REPEAT_MAX).
-inline constexpr std::uint16_t LONG_REPEAT_MIN = SHORT_REPEAT_MAX + 1U;  // 61
+inline constexpr std::uint16_t LONG_REPEAT_MIN = SHORT_REPEAT_MAX + 1U; // 61
 inline constexpr std::uint16_t LONG_REPEAT_MAX = 316;
 // Palette cap keeps the short-repeat range below ENCODE_KEY_LONG_REPEAT.
 inline constexpr std::size_t MAX_PALETTE = 192;
 
 // RLEC blob magic and fixed header size:
 //   magic(4) + width(2) + height(2) + palette_len(2) = 10 bytes.
-inline constexpr std::uint8_t BLOB_MAGIC[4]    = {'R', 'L', 'E', 'C'};
-inline constexpr std::size_t  BLOB_HEADER_SIZE = 10;
+inline constexpr std::uint8_t BLOB_MAGIC[4] = {'R', 'L', 'E', 'C'};
+inline constexpr std::size_t BLOB_HEADER_SIZE = 10;
 
-}  // namespace consts
+} // namespace consts
 
 // Error set for parse/decode. FROZEN (Standards Action) — mirrors
 // rlvgl/rlvgl-decomp/src/lib.rs:42 `enum Error`. PaletteTooLarge is raised
 // by the decoder when a blob's palette exceeds MAX_PALETTE (the encoder,
 // which is the other rlvgl raiser, is not ported here).
 enum class Error : std::uint8_t {
-    SizeMismatch,     // out.size() != width*height (or stream under-fills)
-    Truncated,        // header/stream/inline-pixel terminated prematurely
-    PaletteTooLarge,  // palette entry count exceeds MAX_PALETTE
-    BadMagic,         // first four bytes are not "RLEC"
+    SizeMismatch,    // out.size() != width*height (or stream under-fills)
+    Truncated,       // header/stream/inline-pixel terminated prematurely
+    PaletteTooLarge, // palette entry count exceeds MAX_PALETTE
+    BadMagic,        // first four bytes are not "RLEC"
 };
 
 // Zero-copy view of a parsed RLEC blob.
@@ -75,7 +75,7 @@ enum class Error : std::uint8_t {
 // the original blob storage and MUST NOT outlive it. The decoder owns
 // nothing and allocates nothing.
 struct ParsedBlob {
-    std::uint16_t width  = 0;
+    std::uint16_t width = 0;
     std::uint16_t height = 0;
     // borrows: palette as consecutive little-endian u16 RGB565 pairs.
     std::span<const std::uint8_t> palette_le;
@@ -113,6 +113,6 @@ parse_blob(std::span<const std::uint8_t> data) noexcept;
 [[nodiscard]] lvglpp::expected<void, Error>
 decode_into(const ParsedBlob& blob, std::span<core::Color> out) noexcept;
 
-}  // namespace lvglpp::core::rle
+} // namespace lvglpp::core::rle
 
-#endif  // LVGLPP_CORE_RLE_HPP
+#endif // LVGLPP_CORE_RLE_HPP

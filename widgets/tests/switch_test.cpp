@@ -14,12 +14,16 @@ namespace lw = lvglpp::widgets;
 namespace {
 
 struct RecordingRenderer : lc::Renderer {
-    struct FillOp { lc::Rect rect; lc::Color color; };
+    struct FillOp {
+        lc::Rect rect;
+        lc::Color color;
+    };
     std::vector<FillOp> fills;
     void fill_rect(lc::Rect rect, lc::Color color) override {
         fills.push_back(FillOp{rect, color});
     }
-    void draw_text(std::int32_t, std::int32_t, std::string_view, lc::Color) override {}
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   lc::Color) override {}
 };
 
 void test_switch_defaults() {
@@ -52,7 +56,8 @@ void test_switch_other_events_ignored() {
         lc::Event{lc::event::PointerUp{5, 5}},
         lc::Event{lc::event::Tick{}},
     };
-    for (const auto& e : others) assert(!s.handle_event(e));
+    for (const auto& e : others)
+        assert(!s.handle_event(e));
     assert(!s.is_on());
 }
 
@@ -64,8 +69,8 @@ void test_switch_draw_off_knob_on_left() {
     // bg fill + knob fill = 2.
     assert(r.fills.size() == 2);
     // Knob is the second fill: left half.
-    assert(r.fills[1].rect.x      == 0);
-    assert(r.fills[1].rect.width  == 20);  // bounds.width / 2
+    assert(r.fills[1].rect.x == 0);
+    assert(r.fills[1].rect.width == 20); // bounds.width / 2
     assert(r.fills[1].rect.height == 20);
 }
 
@@ -76,11 +81,11 @@ void test_switch_draw_on_knob_on_right() {
     s.draw(r);
     assert(r.fills.size() == 2);
     // Knob anchored on right: x = bounds.x + bounds.width - knob_width.
-    assert(r.fills[1].rect.x      == 20);
-    assert(r.fills[1].rect.width  == 20);
+    assert(r.fills[1].rect.x == 20);
+    assert(r.fills[1].rect.width == 20);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_switch_defaults();

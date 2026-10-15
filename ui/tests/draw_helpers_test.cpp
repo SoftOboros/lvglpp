@@ -64,9 +64,9 @@ void test_draw_panel_header_golden() {
     const lc::Color close_color{0xFF, 0x00, 0x00, 0xFF};
     const lc::Color divider_color{0x80, 0x80, 0x80, 0xFF};
 
-    const std::int32_t body_y = lu::draw_panel_header(
-        r, bounds, accent, "Panel", lc::fonts::FONT_6X10, title_color,
-        close_color, divider_color);
+    const std::int32_t body_y =
+        lu::draw_panel_header(r, bounds, accent, "Panel", lc::fonts::FONT_6X10,
+                              title_color, close_color, divider_color);
 
     // FONT_6X10 is 6x10 @ scale 2 -> scaled_height() == 20.
     // title_y = 0 + 20 + 20 = 40
@@ -98,7 +98,7 @@ void test_constants_match_rlvgl() {
     static_assert(lu::kCloseSize == 48, "CLOSE_SIZE parity");
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_panel_close_hit_boundaries();

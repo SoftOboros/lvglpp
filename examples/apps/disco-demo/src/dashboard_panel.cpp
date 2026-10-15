@@ -28,30 +28,29 @@ using detail::join_newline;
 using detail::wrap_text;
 
 // FROZEN palette — mirror dashboard_panel.rs:17-22.
-constexpr lc::Color  kPanelBg{22, 29, 41, 255};
-constexpr lc::Color  kPanelBorder{75, 94, 122, 255};
-constexpr lc::Color  kTitleColor{240, 244, 248, 255};
-constexpr lc::Color  kBodyColor{188, 201, 214, 255};
-constexpr lc::Color  kGridColor{44, 58, 79, 255};
-constexpr lc::Color  kCloseColor{255, 80, 80, 255};
-constexpr std::int32_t kPadding      = 20;
-constexpr std::uint8_t kPanelRadius  = 18;  // mirrors rlvgl_ui::PANEL_RADIUS
+constexpr lc::Color kPanelBg{22, 29, 41, 255};
+constexpr lc::Color kPanelBorder{75, 94, 122, 255};
+constexpr lc::Color kTitleColor{240, 244, 248, 255};
+constexpr lc::Color kBodyColor{188, 201, 214, 255};
+constexpr lc::Color kGridColor{44, 58, 79, 255};
+constexpr lc::Color kCloseColor{255, 80, 80, 255};
+constexpr std::int32_t kPadding = 20;
+constexpr std::uint8_t kPanelRadius = 18; // mirrors rlvgl_ui::PANEL_RADIUS
 
-}  // namespace
+} // namespace
 
 DashboardPanel::DashboardPanel(core::Rect bounds, std::string title,
                                std::string caption)
-    : bounds_{bounds},
-      title_{std::move(title)},
-      font_{&core::fonts::FONT_6X10} {
+    : bounds_{bounds}, title_{std::move(title)}, font_{
+                                                     &core::fonts::FONT_6X10} {
     set_caption(std::move(caption));
 }
 
 std::size_t DashboardPanel::text_cols() const noexcept {
     const std::int32_t inner = std::max(bounds_.width - kPadding * 2, 0);
     // advance per char = scaled_width + scale (see BitmapFont::draw_str).
-    const std::int32_t advance =
-        std::max(font_->scaled_width() + static_cast<std::int32_t>(font_->scale), 1);
+    const std::int32_t advance = std::max(
+        font_->scaled_width() + static_cast<std::int32_t>(font_->scale), 1);
     return static_cast<std::size_t>(inner / advance);
 }
 
@@ -76,15 +75,16 @@ core::Rect DashboardPanel::bounds() const {
 }
 
 void DashboardPanel::draw(core::Renderer& renderer) const {
-    if (!visible_) return;
+    if (!visible_)
+        return;
 
     core::fill_rounded_rect(renderer, bounds_, kPanelBg, kPanelRadius);
     // DELTA: straight border (core lacks rounded-border path).
     core::detail::draw_border_straight(renderer, bounds_, kPanelBorder, 2);
 
-    const std::int32_t body_y = ui::draw_panel_header(
-        renderer, bounds_, accent_, title_, *font_, kTitleColor, kCloseColor,
-        kGridColor);
+    const std::int32_t body_y =
+        ui::draw_panel_header(renderer, bounds_, accent_, title_, *font_,
+                              kTitleColor, kCloseColor, kGridColor);
 
     // Caption below header.
     const std::int32_t caption_line_h = font_->scaled_height() + 4;
@@ -98,34 +98,37 @@ void DashboardPanel::draw(core::Renderer& renderer) const {
                         std::string_view{caption_}.substr(cstart, end - cstart),
                         kBodyColor);
         caption_y += caption_line_h;
-        if (nl == std::string::npos) break;
+        if (nl == std::string::npos)
+            break;
         cstart = nl + 1;
     }
 
     // Secondary divider below caption.
     const std::int32_t grid_top = std::max(caption_y + 8, bounds_.y + 108);
-    renderer.fill_rect(
-        core::Rect{bounds_.x + ui::kPanelPadding, grid_top,
-                   bounds_.width - ui::kPanelPadding * 2, 1},
-        kGridColor);
+    renderer.fill_rect(core::Rect{bounds_.x + ui::kPanelPadding, grid_top,
+                                  bounds_.width - ui::kPanelPadding * 2, 1},
+                       kGridColor);
 
     // Tight body line spacing — matches the original 26px pitch for the
     // scale-2 FONT_6X10 so wrapped content fits the 312-tall panel.
-    const std::int32_t body_line_h  = font_->scaled_height() + 6;
-    const std::int32_t body_bottom  = bounds_.y + bounds_.height - kPadding;
+    const std::int32_t body_line_h = font_->scaled_height() + 6;
+    const std::int32_t body_bottom = bounds_.y + bounds_.height - kPadding;
     for (std::size_t index = 0; index < lines_.size(); ++index) {
         const std::int32_t y =
             grid_top + static_cast<std::int32_t>(index) * body_line_h;
-        if (y + font_->scaled_height() > body_bottom) break;
+        if (y + font_->scaled_height() > body_bottom)
+            break;
         font_->draw_str(renderer, bounds_.x + ui::kPanelPadding, y,
                         lines_[index], kBodyColor);
     }
 }
 
 bool DashboardPanel::handle_event(const core::Event& event) {
-    if (!visible_) return false;
+    if (!visible_)
+        return false;
     const auto* pr = std::get_if<core::event::PressRelease>(&event);
-    if (pr == nullptr) return false;
+    if (pr == nullptr)
+        return false;
     if (ui::panel_close_hit(bounds_, pr->x, pr->y)) {
         hide();
         return true;
@@ -133,4 +136,4 @@ bool DashboardPanel::handle_event(const core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo

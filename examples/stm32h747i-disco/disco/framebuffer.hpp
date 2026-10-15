@@ -24,23 +24,24 @@ namespace lvglpp::disco {
 // duration of a transfer.
 class FrameBuffer {
 public:
-    constexpr FrameBuffer() noexcept = default;  // invalid handle
-    constexpr FrameBuffer(std::uintptr_t base,
-                          std::uint32_t width,
+    constexpr FrameBuffer() noexcept = default; // invalid handle
+    constexpr FrameBuffer(std::uintptr_t base, std::uint32_t width,
                           std::uint32_t height,
                           std::uint32_t stride_px) noexcept
         : base_{base}, w_{width}, h_{height}, stride_{stride_px} {}
 
-    FrameBuffer(const FrameBuffer&)            = delete;
+    FrameBuffer(const FrameBuffer&) = delete;
     FrameBuffer& operator=(const FrameBuffer&) = delete;
 
     constexpr FrameBuffer(FrameBuffer&& other) noexcept
-        : base_{other.base_}, w_{other.w_}, h_{other.h_},
-          stride_{other.stride_} {
+        : base_{other.base_}, w_{other.w_}, h_{other.h_}, stride_{
+                                                              other.stride_} {
         other.base_ = 0;
     }
     constexpr FrameBuffer& operator=(FrameBuffer&& other) noexcept {
-        base_ = other.base_; w_ = other.w_; h_ = other.h_;
+        base_ = other.base_;
+        w_ = other.w_;
+        h_ = other.h_;
         stride_ = other.stride_;
         other.base_ = 0;
         return *this;
@@ -49,7 +50,9 @@ public:
     [[nodiscard]] constexpr bool valid() const noexcept { return base_ != 0; }
     [[nodiscard]] constexpr std::uint32_t width() const noexcept { return w_; }
     [[nodiscard]] constexpr std::uint32_t height() const noexcept { return h_; }
-    [[nodiscard]] constexpr std::uint32_t stride_px() const noexcept { return stride_; }
+    [[nodiscard]] constexpr std::uint32_t stride_px() const noexcept {
+        return stride_;
+    }
 
     // dma: pointer into the region; valid()==true required. Caller
     // must not cache it across a move into an InFlight token.
@@ -60,10 +63,10 @@ public:
     }
 
 private:
-    std::uintptr_t base_   = 0;  // external/dma: see class comment
-    std::uint32_t  w_      = 0;
-    std::uint32_t  h_      = 0;
-    std::uint32_t  stride_ = 0;
+    std::uintptr_t base_ = 0; // external/dma: see class comment
+    std::uint32_t w_ = 0;
+    std::uint32_t h_ = 0;
+    std::uint32_t stride_ = 0;
 };
 
 } // namespace lvglpp::disco

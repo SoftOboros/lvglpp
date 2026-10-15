@@ -25,10 +25,10 @@
 namespace lvglpp::playit {
 
 // PLAYIT-04a §5.1 — frozen duration constants.
-inline constexpr std::uint32_t SETTLE_MS               = 200;
-inline constexpr std::uint32_t SHORT_PRESS_MAX_MS      = 250;
-inline constexpr std::uint32_t DOUBLE_TAP_WINDOW_MS    = 400;
-inline constexpr std::int32_t  DOUBLE_TAP_MAX_DISTANCE = 20;
+inline constexpr std::uint32_t SETTLE_MS = 200;
+inline constexpr std::uint32_t SHORT_PRESS_MAX_MS = 250;
+inline constexpr std::uint32_t DOUBLE_TAP_WINDOW_MS = 400;
+inline constexpr std::int32_t DOUBLE_TAP_MAX_DISTANCE = 20;
 
 // PLAYIT-04a §5.2 — ms_to_ticks(ms, hz) = ceil(ms*hz / 1000).
 [[nodiscard]] constexpr std::uint8_t
@@ -55,31 +55,31 @@ public:
             pos_x_ = pd->x;
             pos_y_ = pd->y;
             switch (state_) {
-                case State::Idle:
-                    state_ = State::Down;
-                    return ::lvglpp::core::Event{e::PressDown{pd->x, pd->y}};
-                case State::Down:
-                    return std::nullopt;  // drag
-                case State::PendingRelease:
-                    // Bounce — re-arm Down, suppress repeat PressDown.
-                    state_  = State::Down;
-                    settle_ = 0;
-                    return std::nullopt;
+            case State::Idle:
+                state_ = State::Down;
+                return ::lvglpp::core::Event{e::PressDown{pd->x, pd->y}};
+            case State::Down:
+                return std::nullopt; // drag
+            case State::PendingRelease:
+                // Bounce — re-arm Down, suppress repeat PressDown.
+                state_ = State::Down;
+                settle_ = 0;
+                return std::nullopt;
             }
         }
         if (const auto* pu = std::get_if<e::PointerUp>(&event)) {
             pos_x_ = pu->x;
             pos_y_ = pu->y;
             switch (state_) {
-                case State::Down:
-                    state_  = State::PendingRelease;
-                    settle_ = max_settle_;
-                    return std::nullopt;
-                case State::PendingRelease:
-                    settle_ = max_settle_;
-                    return std::nullopt;
-                case State::Idle:
-                    return std::nullopt;  // spurious
+            case State::Down:
+                state_ = State::PendingRelease;
+                settle_ = max_settle_;
+                return std::nullopt;
+            case State::PendingRelease:
+                settle_ = max_settle_;
+                return std::nullopt;
+            case State::Idle:
+                return std::nullopt; // spurious
             }
         }
         if (const auto* pm = std::get_if<e::PointerMove>(&event)) {
@@ -99,7 +99,8 @@ public:
     [[nodiscard]] std::optional<::lvglpp::core::Event> tick() noexcept {
         namespace e = ::lvglpp::core::event;
         if (state_ == State::PendingRelease) {
-            if (settle_ > 0) --settle_;
+            if (settle_ > 0)
+                --settle_;
             if (settle_ == 0) {
                 state_ = State::Idle;
                 return ::lvglpp::core::Event{e::PressRelease{pos_x_, pos_y_}};
@@ -115,11 +116,11 @@ private:
         PendingRelease,
     };
 
-    State         state_      = State::Idle;
-    std::int32_t  pos_x_      = 0;
-    std::int32_t  pos_y_      = 0;
-    std::uint8_t  settle_     = 0;
-    std::uint8_t  max_settle_;
+    State state_ = State::Idle;
+    std::int32_t pos_x_ = 0;
+    std::int32_t pos_y_ = 0;
+    std::uint8_t settle_ = 0;
+    std::uint8_t max_settle_;
 };
 
 // ---------------------------------------------------------------------------
@@ -149,46 +150,45 @@ public:
             const bool is_short = hold_ticks <= short_press_max_ticks_;
 
             switch (state_) {
-                case State::Idle:
-                    if (is_short) {
-                        state_      = State::Armed;
-                        armed_x_    = pr->x;
-                        armed_y_    = pr->y;
-                        countdown_  = window_ticks_;
-                        return PipelineOutput{std::nullopt, std::nullopt};
-                    }
-                    // Long press — pass through immediately.
-                    return PipelineOutput{event, std::nullopt};
-
-                case State::Armed: {
-                    const std::int32_t dx = (armed_x_ - pr->x);
-                    const std::int32_t dy = (armed_y_ - pr->y);
-                    const std::int32_t dist =
-                        (dx < 0 ? -dx : dx) + (dy < 0 ? -dy : dy);
-
-                    if (is_short && dist <= DOUBLE_TAP_MAX_DISTANCE) {
-                        state_     = State::Idle;
-                        countdown_ = 0;
-                        return PipelineOutput{
-                            ::lvglpp::core::Event{
-                                e::DoubleTap{pr->x, pr->y}},
-                            std::nullopt};
-                    }
-                    // Out of range — emit the buffered first tap.
-                    ::lvglpp::core::Event first{
-                        e::PressRelease{armed_x_, armed_y_}};
-                    if (is_short) {
-                        // Re-arm with the new position.
-                        armed_x_   = pr->x;
-                        armed_y_   = pr->y;
-                        countdown_ = window_ticks_;
-                        return PipelineOutput{first, std::nullopt};
-                    }
-                    // Long press — emit both and go idle.
-                    state_     = State::Idle;
-                    countdown_ = 0;
-                    return PipelineOutput{first, event};
+            case State::Idle:
+                if (is_short) {
+                    state_ = State::Armed;
+                    armed_x_ = pr->x;
+                    armed_y_ = pr->y;
+                    countdown_ = window_ticks_;
+                    return PipelineOutput{std::nullopt, std::nullopt};
                 }
+                // Long press — pass through immediately.
+                return PipelineOutput{event, std::nullopt};
+
+            case State::Armed: {
+                const std::int32_t dx = (armed_x_ - pr->x);
+                const std::int32_t dy = (armed_y_ - pr->y);
+                const std::int32_t dist =
+                    (dx < 0 ? -dx : dx) + (dy < 0 ? -dy : dy);
+
+                if (is_short && dist <= DOUBLE_TAP_MAX_DISTANCE) {
+                    state_ = State::Idle;
+                    countdown_ = 0;
+                    return PipelineOutput{
+                        ::lvglpp::core::Event{e::DoubleTap{pr->x, pr->y}},
+                        std::nullopt};
+                }
+                // Out of range — emit the buffered first tap.
+                ::lvglpp::core::Event first{
+                    e::PressRelease{armed_x_, armed_y_}};
+                if (is_short) {
+                    // Re-arm with the new position.
+                    armed_x_ = pr->x;
+                    armed_y_ = pr->y;
+                    countdown_ = window_ticks_;
+                    return PipelineOutput{first, std::nullopt};
+                }
+                // Long press — emit both and go idle.
+                state_ = State::Idle;
+                countdown_ = 0;
+                return PipelineOutput{first, event};
+            }
             }
         }
         // All other events pass through unchanged.
@@ -201,7 +201,8 @@ public:
         tick_counter_ = static_cast<std::uint8_t>(tick_counter_ + 1U);
 
         if (state_ == State::Armed) {
-            if (countdown_ > 0) --countdown_;
+            if (countdown_ > 0)
+                --countdown_;
             if (countdown_ == 0) {
                 state_ = State::Idle;
                 return ::lvglpp::core::Event{
@@ -214,14 +215,14 @@ public:
 private:
     enum class State : std::uint8_t { Idle, Armed };
 
-    State         state_     = State::Idle;
-    std::int32_t  armed_x_   = 0;
-    std::int32_t  armed_y_   = 0;
-    std::uint8_t  countdown_ = 0;
-    std::uint8_t  down_tick_ = 0;
-    std::uint8_t  tick_counter_ = 0;
-    std::uint8_t  short_press_max_ticks_;
-    std::uint8_t  window_ticks_;
+    State state_ = State::Idle;
+    std::int32_t armed_x_ = 0;
+    std::int32_t armed_y_ = 0;
+    std::uint8_t countdown_ = 0;
+    std::uint8_t down_tick_ = 0;
+    std::uint8_t tick_counter_ = 0;
+    std::uint8_t short_press_max_ticks_;
+    std::uint8_t window_ticks_;
 };
 
 // ---------------------------------------------------------------------------
@@ -262,14 +263,17 @@ public:
 
     // Exposed for tests + applications that want to drive the
     // recogniser stages directly.
-    [[nodiscard]] TapRecognizer&        tap()        noexcept { return tap_; }
-    [[nodiscard]] DoubleTapRecognizer&  double_tap() noexcept { return double_tap_; }
+    [[nodiscard]] TapRecognizer& tap() noexcept { return tap_; }
+    [[nodiscard]] DoubleTapRecognizer& double_tap() noexcept {
+        return double_tap_;
+    }
 
 private:
-    static void push_output(
-        PipelineOutput& outputs,
-        const std::optional<::lvglpp::core::Event>& event) noexcept {
-        if (!event.has_value()) return;
+    static void
+    push_output(PipelineOutput& outputs,
+                const std::optional<::lvglpp::core::Event>& event) noexcept {
+        if (!event.has_value())
+            return;
         if (!outputs.primary.has_value()) {
             outputs.primary = event;
         } else if (!outputs.secondary.has_value()) {
@@ -279,10 +283,10 @@ private:
         // rlvgl/examples/disco-sim/src/main.rs:165.
     }
 
-    TapRecognizer       tap_;
+    TapRecognizer tap_;
     DoubleTapRecognizer double_tap_;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_GESTURE_HPP
+#endif // LVGLPP_PLAYIT_GESTURE_HPP

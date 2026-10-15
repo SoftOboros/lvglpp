@@ -12,43 +12,38 @@ namespace lvglpp::disco::pinmux {
 namespace {
 
 // Generic 2-bit-per-pin field write (MODER, OSPEEDR, PUPDR shape).
-void write_2bit(volatile std::uint32_t& reg,
-                std::uint8_t pin,
+void write_2bit(volatile std::uint32_t& reg, std::uint8_t pin,
                 std::uint32_t value_2b) noexcept {
     const std::uint32_t shift = static_cast<std::uint32_t>(pin) * 2u;
-    const std::uint32_t mask  = 0b11u << shift;
-    const std::uint32_t v     = reg;
+    const std::uint32_t mask = 0b11u << shift;
+    const std::uint32_t v = reg;
     reg = (v & ~mask) | ((value_2b & 0b11u) << shift);
 }
 
 // 4-bit-per-pin field write (AFRL pins 0..7, AFRH pins 8..15).
-void write_4bit(volatile std::uint32_t& reg,
-                std::uint8_t pin_in_reg,
+void write_4bit(volatile std::uint32_t& reg, std::uint8_t pin_in_reg,
                 std::uint32_t value_4b) noexcept {
     const std::uint32_t shift = static_cast<std::uint32_t>(pin_in_reg) * 4u;
-    const std::uint32_t mask  = 0xFu << shift;
-    const std::uint32_t v     = reg;
+    const std::uint32_t mask = 0xFu << shift;
+    const std::uint32_t v = reg;
     reg = (v & ~mask) | ((value_4b & 0xFu) << shift);
 }
 
 } // namespace
 
-void af_speed(MmioAddr<regs::GpioPort> port,
-              std::uint8_t pin,
-              std::uint8_t af,
-              Speed        speed) noexcept {
+void af_speed(MmioAddr<regs::GpioPort> port, std::uint8_t pin, std::uint8_t af,
+              Speed speed) noexcept {
     auto& p = port.ref();
-    write_2bit(p.moder,   pin, regs::moder::ALTERNATE);
+    write_2bit(p.moder, pin, regs::moder::ALTERNATE);
     write_2bit(p.ospeedr, pin, static_cast<std::uint32_t>(speed));
     if (pin < 8) {
-        write_4bit(p.afrl, pin,     af);
+        write_4bit(p.afrl, pin, af);
     } else {
         write_4bit(p.afrh, pin - 8, af);
     }
 }
 
-void floating_input(MmioAddr<regs::GpioPort> port,
-                    std::uint8_t pin) noexcept {
+void floating_input(MmioAddr<regs::GpioPort> port, std::uint8_t pin) noexcept {
     auto& p = port.ref();
     write_2bit(p.moder, pin, regs::moder::INPUT);
     write_2bit(p.pupdr, pin, 0b00u); // no pull

@@ -47,4 +47,4 @@ std::span<const std::uint8_t> icon_play48() noexcept {
     return std::span<const std::uint8_t>(detail::ICON_PLAY_48_BYTES);
 }
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo

@@ -35,7 +35,9 @@ namespace {
 ad::DiscoController make_with(ad::DiscoCapabilities caps) {
     return ad::DiscoController::make(lp::Screen::landscape(800, 480), caps);
 }
-ad::DiscoController make_sim() { return make_with(ad::DiscoCapabilities::simulator()); }
+ad::DiscoController make_sim() {
+    return make_with(ad::DiscoCapabilities::simulator());
+}
 
 void key(ad::DiscoController& c, lc::Key k) {
     (void)c.dispatch_event(lc::Event{lc::event::KeyDown{std::move(k)}});
@@ -46,25 +48,29 @@ lc::Key character(char ch) {
 
 // ---- command predicates ---------------------------------------------------
 
-template <typename T>
-bool has(const std::vector<ad::DiscoCommand>& v) {
+template <typename T> bool has(const std::vector<ad::DiscoCommand>& v) {
     for (const auto& c : v) {
-        if (std::holds_alternative<T>(c)) return true;
+        if (std::holds_alternative<T>(c))
+            return true;
     }
     return false;
 }
-bool has_set_backlight(const std::vector<ad::DiscoCommand>& v, std::uint8_t level) {
+bool has_set_backlight(const std::vector<ad::DiscoCommand>& v,
+                       std::uint8_t level) {
     for (const auto& c : v) {
         if (const auto* p = std::get_if<ad::cmd::SetBacklight>(&c)) {
-            if (p->level == level) return true;
+            if (p->level == level)
+                return true;
         }
     }
     return false;
 }
-bool has_start_effect(const std::vector<ad::DiscoCommand>& v, ad::DiscoEffect e) {
+bool has_start_effect(const std::vector<ad::DiscoCommand>& v,
+                      ad::DiscoEffect e) {
     for (const auto& c : v) {
         if (const auto* p = std::get_if<ad::cmd::StartEffect>(&c)) {
-            if (p->effect == e) return true;
+            if (p->effect == e)
+                return true;
         }
     }
     return false;
@@ -201,7 +207,7 @@ void test_focus_highlight_wiring() {
 
 void test_hotkey_s_activates_settings() {
     auto c = make_sim();
-    key(c, lc::Key{lc::key::ArrowDown{}});  // move off slot 0
+    key(c, lc::Key{lc::key::ArrowDown{}}); // move off slot 0
     key(c, character('s'));
     assert(hotspot_width(c, "disco.settings.audio") > 0);
 }
@@ -219,7 +225,7 @@ void test_hotkey_i_activates_info() {
 }
 
 void test_hotkey_b_cycles_backlight() {
-    auto c = make_sim();  // default backlight is 75
+    auto c = make_sim(); // default backlight is 75
     key(c, character('b'));
     assert(has_set_backlight(c.drain_commands(), 100));
     key(c, character('b'));
@@ -245,24 +251,24 @@ void test_effect_command_for_enabled_platform() {
     auto c = make_with(ad::DiscoCapabilities::stm32h747i_disco());
     key(c, lc::Key{lc::key::ArrowDown{}});
     key(c, lc::Key{lc::key::ArrowDown{}});
-    key(c, lc::Key{lc::key::Enter{}});  // open info wing
+    key(c, lc::Key{lc::key::Enter{}}); // open info wing
     key(c, lc::Key{lc::key::ArrowDown{}});
     key(c, lc::Key{lc::key::ArrowDown{}});
-    key(c, lc::Key{lc::key::Enter{}});  // activate StarCrawl (index 2)
+    key(c, lc::Key{lc::key::Enter{}}); // activate StarCrawl (index 2)
     assert(has_start_effect(c.drain_commands(), ad::DiscoEffect::StarCrawl));
 }
 
 void test_audio_capable_emits_start_effect() {
     auto c = make_with(ad::DiscoCapabilities::stm32h747i_disco());
-    key(c, lc::Key{lc::key::Enter{}});  // open settings wing
-    key(c, lc::Key{lc::key::Enter{}});  // activate audio (index 0)
+    key(c, lc::Key{lc::key::Enter{}}); // open settings wing
+    key(c, lc::Key{lc::key::Enter{}}); // activate audio (index 0)
     assert(has_start_effect(c.drain_commands(), ad::DiscoEffect::AudioScope));
 }
 
 void test_info_diagnostics_emits_show_status() {
     auto c = make_sim();
     key(c, character('i'));
-    key(c, lc::Key{lc::key::Enter{}});  // activate diagnostics (index 0)
+    key(c, lc::Key{lc::key::Enter{}}); // activate diagnostics (index 0)
     assert(has<ad::cmd::ShowStatus>(c.drain_commands()));
 }
 
@@ -290,8 +296,8 @@ void test_publish_status_surfaces_everywhere() {
 
 void test_unsupported_audio_neutralizes() {
     auto c = make_with(ad::DiscoCapabilities::uefi());
-    key(c, lc::Key{lc::key::Enter{}});  // open settings
-    key(c, lc::Key{lc::key::Enter{}});  // activate audio — unavailable
+    key(c, lc::Key{lc::key::Enter{}}); // open settings
+    key(c, lc::Key{lc::key::Enter{}}); // activate audio — unavailable
     const auto cmds = c.drain_commands();
     assert(has<ad::cmd::NoOp>(cmds));
     assert(has<ad::cmd::ShowStatus>(cmds));
@@ -299,28 +305,29 @@ void test_unsupported_audio_neutralizes() {
 
 void test_effects_disabled_star_crawl_neutralizes() {
     // Custom caps: simulator-like but effects disabled.
-    ad::DiscoCapabilities caps{/*audio=*/false, /*storage=*/true,
-                               /*diagnostics=*/true, /*effects=*/false,
-                               /*pointer=*/true, /*platform=*/"custom"};
+    ad::DiscoCapabilities caps{
+        /*audio=*/false,      /*storage=*/true,
+        /*diagnostics=*/true, /*effects=*/false,
+        /*pointer=*/true,     /*platform=*/"custom"};
     auto c = make_with(caps);
-    key(c, character('i'));              // open info wing
+    key(c, character('i')); // open info wing
     key(c, lc::Key{lc::key::ArrowDown{}});
     key(c, lc::Key{lc::key::ArrowDown{}});
-    key(c, lc::Key{lc::key::Enter{}});  // activate StarCrawl (index 2)
+    key(c, lc::Key{lc::key::Enter{}}); // activate StarCrawl (index 2)
     const auto cmds = c.drain_commands();
     assert(has<ad::cmd::NoOp>(cmds));
     assert(!has_start_effect(cmds, ad::DiscoEffect::StarCrawl));
 }
 
 void test_pointer_ignored_when_disabled() {
-    auto c = make_with(ad::DiscoCapabilities::uefi());  // pointer=false
+    auto c = make_with(ad::DiscoCapabilities::uefi()); // pointer=false
     (void)c.dispatch_event(lc::Event{lc::event::PressRelease{100, 100}});
     // Gated path queues an "ignored" status (ShowStatus).
     assert(has<ad::cmd::ShowStatus>(c.drain_commands()));
 }
 
 void test_pointer_enabled_no_ignore_status() {
-    auto c = make_sim();  // pointer=true
+    auto c = make_sim(); // pointer=true
     // A raw PressRelease is consumed by the first always-visible hotspot
     // (disco.main.settings) — hotspots fire on any PressRelease (bounds are
     // only used for tag-targeted dispatch), mirroring rlvgl. With pointer
@@ -336,17 +343,26 @@ void test_pointer_enabled_no_ignore_status() {
 // ---------------------------------------------------------------------------
 
 void test_required_tags_present() {
-    const char* tags[] = {
-        "disco.root",          "disco.dashboard",     "disco.subtitle",
-        "disco.footer",        "disco.events",        "disco.main.settings",
-        "disco.main.files",    "disco.main.info",     "disco.settings.audio",
-        "disco.settings.camera", "disco.settings.display",
-        "disco.settings.locale", "disco.settings.backlight",
-        "disco.info.diagnostics", "disco.info.live_stats",
-        "disco.info.star_crawl", "disco.info.audio_scope"};
-    for (auto caps : {ad::DiscoCapabilities::simulator(),
-                      ad::DiscoCapabilities::uefi(),
-                      ad::DiscoCapabilities::stm32h747i_disco()}) {
+    const char* tags[] = {"disco.root",
+                          "disco.dashboard",
+                          "disco.subtitle",
+                          "disco.footer",
+                          "disco.events",
+                          "disco.main.settings",
+                          "disco.main.files",
+                          "disco.main.info",
+                          "disco.settings.audio",
+                          "disco.settings.camera",
+                          "disco.settings.display",
+                          "disco.settings.locale",
+                          "disco.settings.backlight",
+                          "disco.info.diagnostics",
+                          "disco.info.live_stats",
+                          "disco.info.star_crawl",
+                          "disco.info.audio_scope"};
+    for (auto caps :
+         {ad::DiscoCapabilities::simulator(), ad::DiscoCapabilities::uefi(),
+          ad::DiscoCapabilities::stm32h747i_disco()}) {
         auto c = make_with(caps);
         for (const char* tag : tags) {
             assert(lc::find_by_tag(c.root(), tag) != nullptr);
@@ -379,7 +395,7 @@ void test_tick_advances_without_panicking() {
     assert(c.drain_commands().empty());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_initial_state();

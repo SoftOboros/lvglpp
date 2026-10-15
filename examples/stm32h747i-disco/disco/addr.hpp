@@ -18,11 +18,9 @@
 
 namespace lvglpp::disco {
 
-template <typename Block>
-class MmioAddr {
+template <typename Block> class MmioAddr {
 public:
-    constexpr explicit MmioAddr(std::uintptr_t addr) noexcept
-        : addr_{addr} {}
+    constexpr explicit MmioAddr(std::uintptr_t addr) noexcept : addr_{addr} {}
 
     // Typed reference to the underlying register block. The naked
     // reinterpret_cast lives here so caller code never needs to.

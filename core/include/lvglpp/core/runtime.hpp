@@ -28,13 +28,13 @@ namespace lvglpp {
 // Returns the lvglpp library version as a compile-time string view.
 // Returns: borrows a static string; caller must not free.
 [[nodiscard]] constexpr std::string_view library_version() noexcept {
-    return "0.1.0";
+    return "0.1.1";
 }
 
 // Errors that the Runtime constructor / factory can produce.
 enum class RuntimeError : std::uint8_t {
     AlreadyAlive = 1,
-    InitFailed   = 2,
+    InitFailed = 2,
 };
 
 // RAII guard that calls lv_init() on construction. Constructing a second
@@ -52,7 +52,7 @@ public:
     // unavailable; use try_make() which returns lvglpp::expected.
     Runtime();
 
-    Runtime(const Runtime&)            = delete;
+    Runtime(const Runtime&) = delete;
     Runtime& operator=(const Runtime&) = delete;
 
     // Move-construct only — the source is left inert so its destructor
@@ -69,7 +69,8 @@ public:
 
     // Non-throwing factory mirroring rlvgl's Result<Runtime, _>.
     // Returns: owns Runtime on success; RuntimeError on failure.
-    [[nodiscard]] static lvglpp::expected<Runtime, RuntimeError> try_make() noexcept;
+    [[nodiscard]] static lvglpp::expected<Runtime, RuntimeError>
+    try_make() noexcept;
 
 private:
     struct PrivateTag {};
@@ -95,7 +96,7 @@ public:
     explicit ObjectView(lv_obj_t* raw) noexcept : raw_{raw} {}
 
     [[nodiscard]] lv_obj_t* borrow_raw() const noexcept { return raw_; }
-    [[nodiscard]] bool      empty()      const noexcept { return raw_ == nullptr; }
+    [[nodiscard]] bool empty() const noexcept { return raw_ == nullptr; }
 
 private:
     // external: owned by the LVGL object tree; freed by lv_obj_del() on
@@ -103,6 +104,6 @@ private:
     lv_obj_t* raw_;
 };
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_RUNTIME_HPP
+#endif // LVGLPP_CORE_RUNTIME_HPP

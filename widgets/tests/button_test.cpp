@@ -20,7 +20,10 @@ struct RecordingRenderer : lc::Renderer {
     int fill_calls = 0;
     int text_calls = 0;
     void fill_rect(lc::Rect, lc::Color) override { ++fill_calls; }
-    void draw_text(std::int32_t, std::int32_t, std::string_view, lc::Color) override { ++text_calls; }
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   lc::Color) override {
+        ++text_calls;
+    }
 };
 
 void test_button_basic_accessors() {
@@ -119,7 +122,7 @@ void test_button_draw_delegates_to_label() {
     assert(rb.text_calls == rl.text_calls);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_button_basic_accessors();

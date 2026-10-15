@@ -14,7 +14,8 @@
 namespace lvglpp::widgets {
 
 bool Button::handle_event(const ::lvglpp::core::Event& event) {
-    if (const auto* pr = std::get_if<::lvglpp::core::event::PressRelease>(&event)) {
+    if (const auto* pr =
+            std::get_if<::lvglpp::core::event::PressRelease>(&event)) {
         if (inside_bounds(pr->x, pr->y)) {
             if (on_click_) {
                 on_click_(*this);
@@ -25,4 +26,4 @@ bool Button::handle_event(const ::lvglpp::core::Event& event) {
     return false;
 }
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets

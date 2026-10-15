@@ -30,12 +30,9 @@ public:
     //           storage MUST outlive this widget (rlvgl &'a [Color]
     //           parity). Typically the decoded output of a CORE-07
     //           plugin owned by the enclosing composition.
-    Image(::lvglpp::core::Rect bounds,
-          std::int32_t width,
-          std::int32_t height,
+    Image(::lvglpp::core::Rect bounds, std::int32_t width, std::int32_t height,
           std::span<const ::lvglpp::core::Color> pixels) noexcept
-        : bounds_{bounds}, width_{width}, height_{height},
-          pixels_{pixels} {}
+        : bounds_{bounds}, width_{width}, height_{height}, pixels_{pixels} {}
 
     // Public — parity with rlvgl `pub style`.
     ::lvglpp::core::Style style{};
@@ -44,7 +41,9 @@ public:
     [[nodiscard]] std::int32_t height() const noexcept { return height_; }
     // borrows: see constructor contract.
     [[nodiscard]] std::span<const ::lvglpp::core::Color>
-    pixels() const noexcept { return pixels_; }
+    pixels() const noexcept {
+        return pixels_;
+    }
 
     // ---- Widget overrides ----------------------------------------
 
@@ -55,19 +54,19 @@ public:
     void draw(::lvglpp::core::Renderer& renderer) const override;
 
     // Images are non-interactive (image.rs:46–49).
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& /*event*/) override {
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& /*event*/) override {
         return false;
     }
 
 private:
     ::lvglpp::core::Rect bounds_{};
-    std::int32_t width_  = 0;
+    std::int32_t width_ = 0;
     std::int32_t height_ = 0;
     // borrows: caller-owned decoded pixels (constructor contract).
     std::span<const ::lvglpp::core::Color> pixels_{};
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_IMAGE_HPP
+#endif // LVGLPP_WIDGETS_IMAGE_HPP

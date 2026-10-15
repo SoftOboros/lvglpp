@@ -2,7 +2,8 @@
 //
 // PARITY: rlvgl/ui/src/draw_helpers.rs (v0.2.0 @ 79f730d).
 // LVGL:   N/A (composite UI helper, not an LVGL primitive).
-// DELTA:  free functions in lvglpp::ui; &str -> std::string_view. No behavioral delta.
+// DELTA:  free functions in lvglpp::ui; &str -> std::string_view. No behavioral
+// delta.
 //
 // docs/disco-demo/02-ui-draw-helpers.md (DEMO-02).
 
@@ -12,9 +13,9 @@
 #include <cstdint>
 #include <string_view>
 
-#include "lvglpp/core/font.hpp"      // BitmapFont
-#include "lvglpp/core/renderer.hpp"  // Renderer
-#include "lvglpp/core/widget.hpp"    // Color, Rect
+#include "lvglpp/core/font.hpp"     // BitmapFont
+#include "lvglpp/core/renderer.hpp" // Renderer
+#include "lvglpp/core/widget.hpp"   // Color, Rect
 
 namespace lvglpp::ui {
 
@@ -44,13 +45,10 @@ inline constexpr std::int32_t kCloseSize = 48;
 // Returns:
 //   the Y coordinate below the divider — callers render body content
 //   starting there (div_y + 12).
-std::int32_t draw_panel_header(core::Renderer& r,
-                               core::Rect bounds,
-                               core::Color accent,
-                               std::string_view title,
+std::int32_t draw_panel_header(core::Renderer& r, core::Rect bounds,
+                               core::Color accent, std::string_view title,
                                const core::BitmapFont& font,
-                               core::Color title_color,
-                               core::Color close_color,
+                               core::Color title_color, core::Color close_color,
                                core::Color divider_color);
 
 // Close-button hit test for panels using draw_panel_header. The hit
@@ -62,10 +60,9 @@ std::int32_t draw_panel_header(core::Renderer& r,
 //   x, y:   pointer coordinates to test.
 // Returns:
 //   true iff (x, y) falls inside the close-button square.
-[[nodiscard]] bool panel_close_hit(core::Rect bounds,
-                                   std::int32_t x,
+[[nodiscard]] bool panel_close_hit(core::Rect bounds, std::int32_t x,
                                    std::int32_t y) noexcept;
 
-}  // namespace lvglpp::ui
+} // namespace lvglpp::ui
 
-#endif  // LVGLPP_UI_DRAW_HELPERS_HPP
+#endif // LVGLPP_UI_DRAW_HELPERS_HPP

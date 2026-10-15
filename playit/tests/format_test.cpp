@@ -22,16 +22,15 @@ namespace {
 // (without CRLF for easier assertions).
 std::string format_line(const Response& resp) {
     std::array<char, 256> buf{};
-    std::size_t n = format_response(resp, std::span<char>{buf.data(), buf.size()});
-    assert(n >= 2);  // CRLF at minimum
+    std::size_t n =
+        format_response(resp, std::span<char>{buf.data(), buf.size()});
+    assert(n >= 2); // CRLF at minimum
     assert(buf[n - 2] == '\r');
     assert(buf[n - 1] == '\n');
     return std::string{buf.data(), n - 2};
 }
 
-void test_ok() {
-    assert(format_line(Response{response::Ok{}}) == "OK");
-}
+void test_ok() { assert(format_line(Response{response::Ok{}}) == "OK"); }
 
 void test_error() {
     assert(format_line(Response{response::Error{"bad tap"}}) == "ERR: bad tap");
@@ -48,14 +47,15 @@ void test_bounds_negative() {
 }
 
 void test_exists_true_false() {
-    assert(format_line(Response{response::Exists{true}})  == "EXISTS:1");
+    assert(format_line(Response{response::Exists{true}}) == "EXISTS:1");
     assert(format_line(Response{response::Exists{false}}) == "EXISTS:0");
 }
 
 void test_child_count() {
-    assert(format_line(Response{response::ChildCount{0}})    == "CHILDREN:0");
-    assert(format_line(Response{response::ChildCount{7}})    == "CHILDREN:7");
-    assert(format_line(Response{response::ChildCount{12345}}) == "CHILDREN:12345");
+    assert(format_line(Response{response::ChildCount{0}}) == "CHILDREN:0");
+    assert(format_line(Response{response::ChildCount{7}}) == "CHILDREN:7");
+    assert(format_line(Response{response::ChildCount{12345}}) ==
+           "CHILDREN:12345");
 }
 
 void test_status() {
@@ -80,8 +80,9 @@ void test_bounds_int32_min() {
 // Short buffer truncates silently; return value never exceeds buffer size.
 void test_short_buffer_truncates() {
     std::array<char, 4> small{};
-    std::size_t n = format_response(Response{response::Bounds{1, 2, 3, 4}},
-                                    std::span<char>{small.data(), small.size()});
+    std::size_t n =
+        format_response(Response{response::Bounds{1, 2, 3, 4}},
+                        std::span<char>{small.data(), small.size()});
     assert(n == small.size());
     assert(small[0] == 'B');
     assert(small[1] == 'O');
@@ -90,14 +91,14 @@ void test_short_buffer_truncates() {
 }
 
 void test_zero_buffer_no_writes() {
-    std::array<char, 1> zero{};  // intentionally not used
+    std::array<char, 1> zero{}; // intentionally not used
     (void)zero;
-    std::size_t n = format_response(Response{response::Ok{}},
-                                    std::span<char>{});
+    std::size_t n =
+        format_response(Response{response::Ok{}}, std::span<char>{});
     assert(n == 0);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_ok();

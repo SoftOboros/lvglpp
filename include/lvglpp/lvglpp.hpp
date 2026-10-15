@@ -25,4 +25,4 @@
 #include "lvglpp/platform/platform.hpp"
 #include "lvglpp/playit/playit.hpp"
 
-#endif  // LVGLPP_LVGLPP_HPP
+#endif // LVGLPP_LVGLPP_HPP

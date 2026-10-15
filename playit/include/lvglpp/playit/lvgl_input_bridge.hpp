@@ -21,10 +21,10 @@ class LvglInputBridge {
 public:
     LvglInputBridge() noexcept = default;
 
-    LvglInputBridge(const LvglInputBridge&)            = delete;
+    LvglInputBridge(const LvglInputBridge&) = delete;
     LvglInputBridge& operator=(const LvglInputBridge&) = delete;
 
-    LvglInputBridge(LvglInputBridge&&)            = delete;
+    LvglInputBridge(LvglInputBridge&&) = delete;
     LvglInputBridge& operator=(LvglInputBridge&&) = delete;
 
     // Args:
@@ -57,13 +57,13 @@ private:
     [[nodiscard]] bool read_pointer_once() noexcept;
     [[nodiscard]] bool read_keypad_once() noexcept;
 
-    void set_pointer(std::int32_t x,
-                     std::int32_t y,
+    void set_pointer(std::int32_t x, std::int32_t y,
                      lv_indev_state_t state) noexcept;
     void set_key(std::uint32_t key, lv_indev_state_t state) noexcept;
 
     [[nodiscard]] static std::uint32_t to_lv_key(const KeySpec& key) noexcept;
-    [[nodiscard]] static lv_indev_state_t to_lv_state(TouchStateSpec state) noexcept;
+    [[nodiscard]] static lv_indev_state_t
+    to_lv_state(TouchStateSpec state) noexcept;
 
     // observes: LVGL input device owned outside this bridge.
     lv_indev_t* pointer_ = nullptr;
@@ -82,6 +82,6 @@ private:
     int keypad_reads_ = 0;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_LVGL_INPUT_BRIDGE_HPP
+#endif // LVGLPP_PLAYIT_LVGL_INPUT_BRIDGE_HPP

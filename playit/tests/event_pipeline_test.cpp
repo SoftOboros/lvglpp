@@ -64,7 +64,7 @@ void test_pipeline_secondary_slot() {
     assert(pr && pr->x == 3 && pr->y == 4);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_null_pipeline_process_passthrough();

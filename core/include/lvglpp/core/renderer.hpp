@@ -22,7 +22,7 @@
 #include <span>
 #include <string_view>
 
-#include "lvglpp/core/widget.hpp"  // Color, Rect
+#include "lvglpp/core/widget.hpp" // Color, Rect
 
 namespace lvglpp::core {
 
@@ -36,12 +36,12 @@ namespace lvglpp::core {
 // a single draw() call and MUST NOT retain a reference past return.
 class Renderer {
 public:
-    Renderer()                                   = default;
-    Renderer(const Renderer&)                    = default;
-    Renderer(Renderer&&) noexcept                = default;
-    Renderer& operator=(const Renderer&)         = default;
-    Renderer& operator=(Renderer&&) noexcept     = default;
-    virtual ~Renderer()                          = default;
+    Renderer() = default;
+    Renderer(const Renderer&) = default;
+    Renderer(Renderer&&) noexcept = default;
+    Renderer& operator=(const Renderer&) = default;
+    Renderer& operator=(Renderer&&) noexcept = default;
+    virtual ~Renderer() = default;
 
     // Fill a rectangle with a solid color. Pure virtual.
     virtual void fill_rect(Rect rect, Color color) = 0;
@@ -53,17 +53,13 @@ public:
     //
     // Args:
     //   text: borrows; must outlive the call. Not retained.
-    virtual void draw_text(std::int32_t x,
-                           std::int32_t y,
-                           std::string_view text,
-                           Color color) = 0;
+    virtual void draw_text(std::int32_t x, std::int32_t y,
+                           std::string_view text, Color color) = 0;
 
     // Alpha-blended rectangle fill. Default: ignore alpha and call
     // fill_rect. Backends with hardware blending SHOULD override.
     // Mirrors rlvgl/core/src/renderer.rs:25.
-    virtual void blend_rect(Rect rect, Color color) {
-        fill_rect(rect, color);
-    }
+    virtual void blend_rect(Rect rect, Color color) { fill_rect(rect, color); }
 
     // Bulk pixel blit. Default: per-pixel fill_rect loop. Backends
     // with bulk-copy / DMA support SHOULD override.
@@ -76,14 +72,13 @@ public:
     //
     // Mirrors rlvgl/core/src/renderer.rs:33 — same loop shape, same
     // out-of-bounds tolerance.
-    virtual void draw_pixels(std::int32_t x,
-                             std::int32_t y,
-                             std::span<const Color> pixels,
-                             std::uint32_t width,
+    virtual void draw_pixels(std::int32_t x, std::int32_t y,
+                             std::span<const Color> pixels, std::uint32_t width,
                              std::uint32_t height) {
         for (std::uint32_t py = 0; py < height; ++py) {
             for (std::uint32_t px = 0; px < width; ++px) {
-                const std::size_t idx = static_cast<std::size_t>(py) * width + px;
+                const std::size_t idx =
+                    static_cast<std::size_t>(py) * width + px;
                 if (idx < pixels.size()) {
                     fill_rect(
                         Rect{
@@ -99,6 +94,6 @@ public:
     }
 };
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_RENDERER_HPP
+#endif // LVGLPP_CORE_RENDERER_HPP

@@ -31,7 +31,7 @@ void test_visibility_gated_bounds() {
     ad::ActionHotspot h{kBounds, [] {}};
     h.with_visibility([&visible] { return visible; });
 
-    assert(h.bounds() == (lc::Rect{0, 0, 0, 0}));  // predicate false -> zero
+    assert(h.bounds() == (lc::Rect{0, 0, 0, 0})); // predicate false -> zero
     visible = true;
     assert(h.bounds() == kBounds);
 }
@@ -54,7 +54,7 @@ void test_non_pressrelease_ignored() {
     assert(taps == 0);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_default_visible_bounds_and_tap();

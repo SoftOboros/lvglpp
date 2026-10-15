@@ -14,7 +14,7 @@ namespace {
     return object.empty() ? nullptr : object.borrow_raw();
 }
 
-}  // namespace
+} // namespace
 
 void set_scrollbar_mode(ObjectView object, ScrollbarMode mode) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
@@ -29,7 +29,8 @@ ScrollbarMode scrollbar_mode(ObjectView object) noexcept {
     return ScrollbarMode::Auto;
 }
 
-void set_scroll_direction(ObjectView object, ScrollDirection direction) noexcept {
+void set_scroll_direction(ObjectView object,
+                          ScrollDirection direction) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_set_scroll_dir(raw, to_lv(direction));
     }
@@ -96,43 +97,35 @@ ScrollOffset scroll_end(ObjectView object) noexcept {
     return ScrollOffset{};
 }
 
-void scroll_by(ObjectView object,
-               std::int32_t dx,
-               std::int32_t dy,
+void scroll_by(ObjectView object, std::int32_t dx, std::int32_t dy,
                AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_by(raw, dx, dy, to_lv(animation));
     }
 }
 
-void scroll_by_bounded(ObjectView object,
-                       std::int32_t dx,
-                       std::int32_t dy,
+void scroll_by_bounded(ObjectView object, std::int32_t dx, std::int32_t dy,
                        AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_by_bounded(raw, dx, dy, to_lv(animation));
     }
 }
 
-void scroll_to(ObjectView object,
-               std::int32_t x,
-               std::int32_t y,
+void scroll_to(ObjectView object, std::int32_t x, std::int32_t y,
                AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_to(raw, x, y, to_lv(animation));
     }
 }
 
-void scroll_to_x(ObjectView object,
-                 std::int32_t x,
+void scroll_to_x(ObjectView object, std::int32_t x,
                  AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_to_x(raw, x, to_lv(animation));
     }
 }
 
-void scroll_to_y(ObjectView object,
-                 std::int32_t y,
+void scroll_to_y(ObjectView object, std::int32_t y,
                  AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_to_y(raw, y, to_lv(animation));
@@ -145,7 +138,8 @@ void scroll_to_view(ObjectView object, AnimationMode animation) noexcept {
     }
 }
 
-void scroll_to_view_recursive(ObjectView object, AnimationMode animation) noexcept {
+void scroll_to_view_recursive(ObjectView object,
+                              AnimationMode animation) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_scroll_to_view_recursive(raw, to_lv(animation));
     }
@@ -195,4 +189,4 @@ void scrollbar_invalidate(ObjectView object) noexcept {
     }
 }
 
-}  // namespace lvglpp
+} // namespace lvglpp

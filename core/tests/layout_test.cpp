@@ -19,8 +19,7 @@ struct DisplayFixture {
     DisplayFixture() : display{lvglpp::LvDisplay::make(240, 160)} {
         assert(!display.empty());
         display.set_default();
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
     }
@@ -29,8 +28,7 @@ struct DisplayFixture {
 void load_screen(lvglpp::LvObject& screen) {
     lv_screen_load(screen.borrow_raw());
     lvglpp::remove_all_styles(screen.borrow());
-    lvglpp::set_size(screen.borrow(),
-                     lvglpp::SizeValue::pixels(240),
+    lvglpp::set_size(screen.borrow(), lvglpp::SizeValue::pixels(240),
                      lvglpp::SizeValue::pixels(160));
 }
 
@@ -67,22 +65,19 @@ void test_geometry_size_alignment_and_content() {
     auto screen = lvglpp::LvObject::make_screen();
     load_screen(screen);
     auto parent = lvglpp::LvObject::make_child(screen.borrow());
-    auto child  = lvglpp::LvObject::make_child(parent.borrow());
+    auto child = lvglpp::LvObject::make_child(parent.borrow());
     strip_default_style(parent);
     strip_default_style(child);
 
-    lvglpp::set_size(parent.borrow(),
-                     lvglpp::SizeValue::pixels(200),
+    lvglpp::set_size(parent.borrow(), lvglpp::SizeValue::pixels(200),
                      lvglpp::SizeValue::pixels(100));
     lvglpp::set_pos(parent.borrow(), 10, 20);
-    lvglpp::set_size(child.borrow(),
-                     lvglpp::SizeValue::percent(50),
+    lvglpp::set_size(child.borrow(), lvglpp::SizeValue::percent(50),
                      lvglpp::SizeValue::content());
     lvglpp::set_pos(child.borrow(), 7, 9);
     auto grandchild = lvglpp::LvObject::make_child(child.borrow());
     strip_default_style(grandchild);
-    lvglpp::set_size(grandchild.borrow(),
-                     lvglpp::SizeValue::pixels(30),
+    lvglpp::set_size(grandchild.borrow(), lvglpp::SizeValue::pixels(30),
                      lvglpp::SizeValue::pixels(18));
     lvglpp::update_layout(screen.borrow());
 
@@ -103,7 +98,7 @@ void test_geometry_size_alignment_and_content() {
     lvglpp::center(child.borrow());
     lvglpp::update_layout(screen.borrow());
     const lvglpp::LvArea parent_coords = lvglpp::coords(parent.borrow());
-    const lvglpp::LvArea child_coords  = lvglpp::coords(child.borrow());
+    const lvglpp::LvArea child_coords = lvglpp::coords(child.borrow());
     assert(parent_coords.x1 == 10);
     assert(parent_coords.y1 == 20);
     assert(child_coords.x1 >= parent_coords.x1);
@@ -156,28 +151,30 @@ void test_layout_dirty_and_style_helpers() {
     assert(style.get_prop(LV_STYLE_MARGIN_RIGHT, value) == LV_STYLE_RES_FOUND);
     assert(value.num == 11);
 
-    lvglpp::local_style_set_width(
-        object.borrow(), lvglpp::SizeValue::pixels(22), lvglpp::StyleSelector{});
-    lvglpp::local_style_set_height(
-        object.borrow(), lvglpp::SizeValue::pixels(33), lvglpp::StyleSelector{});
-    lvglpp::local_style_set_pad_all(object.borrow(), 4, lvglpp::StyleSelector{});
-    lvglpp::local_style_set_margin_all(object.borrow(), 5, lvglpp::StyleSelector{});
-    lvglpp::local_style_set_row_gap(object.borrow(), 6, lvglpp::StyleSelector{});
-    lvglpp::local_style_set_column_gap(object.borrow(), 7, lvglpp::StyleSelector{});
-    lvglpp::local_style_set_align(
-        object.borrow(), lvglpp::Align::Center, lvglpp::StyleSelector{});
-    lvglpp::local_style_set_layout(
-        object.borrow(), lvglpp::LayoutKind::None, lvglpp::StyleSelector{});
+    lvglpp::local_style_set_width(object.borrow(),
+                                  lvglpp::SizeValue::pixels(22),
+                                  lvglpp::StyleSelector{});
+    lvglpp::local_style_set_height(object.borrow(),
+                                   lvglpp::SizeValue::pixels(33),
+                                   lvglpp::StyleSelector{});
+    lvglpp::local_style_set_pad_all(object.borrow(), 4,
+                                    lvglpp::StyleSelector{});
+    lvglpp::local_style_set_margin_all(object.borrow(), 5,
+                                       lvglpp::StyleSelector{});
+    lvglpp::local_style_set_row_gap(object.borrow(), 6,
+                                    lvglpp::StyleSelector{});
+    lvglpp::local_style_set_column_gap(object.borrow(), 7,
+                                       lvglpp::StyleSelector{});
+    lvglpp::local_style_set_align(object.borrow(), lvglpp::Align::Center,
+                                  lvglpp::StyleSelector{});
+    lvglpp::local_style_set_layout(object.borrow(), lvglpp::LayoutKind::None,
+                                   lvglpp::StyleSelector{});
 
-    assert(lvglpp::local_style_prop(object.borrow(),
-                                    LV_STYLE_HEIGHT,
-                                    value,
+    assert(lvglpp::local_style_prop(object.borrow(), LV_STYLE_HEIGHT, value,
                                     lvglpp::StyleSelector{}) ==
            LV_STYLE_RES_FOUND);
     assert(value.num == 33);
-    assert(lvglpp::local_style_prop(object.borrow(),
-                                    LV_STYLE_PAD_ROW,
-                                    value,
+    assert(lvglpp::local_style_prop(object.borrow(), LV_STYLE_PAD_ROW, value,
                                     lvglpp::StyleSelector{}) ==
            LV_STYLE_RES_FOUND);
     assert(value.num == 6);
@@ -189,27 +186,22 @@ void test_flex_layout() {
     auto screen = lvglpp::LvObject::make_screen();
     load_screen(screen);
     auto container = lvglpp::LvObject::make_child(screen.borrow());
-    auto first     = lvglpp::LvObject::make_child(container.borrow());
-    auto second    = lvglpp::LvObject::make_child(container.borrow());
+    auto first = lvglpp::LvObject::make_child(container.borrow());
+    auto second = lvglpp::LvObject::make_child(container.borrow());
     strip_default_style(container);
     strip_default_style(first);
     strip_default_style(second);
 
-    lvglpp::set_size(container.borrow(),
-                     lvglpp::SizeValue::pixels(100),
+    lvglpp::set_size(container.borrow(), lvglpp::SizeValue::pixels(100),
                      lvglpp::SizeValue::pixels(30));
-    lvglpp::set_size(first.borrow(),
-                     lvglpp::SizeValue::pixels(10),
+    lvglpp::set_size(first.borrow(), lvglpp::SizeValue::pixels(10),
                      lvglpp::SizeValue::pixels(10));
-    lvglpp::set_size(second.borrow(),
-                     lvglpp::SizeValue::pixels(10),
+    lvglpp::set_size(second.borrow(), lvglpp::SizeValue::pixels(10),
                      lvglpp::SizeValue::pixels(10));
     lvglpp::set_layout(container.borrow(), lvglpp::LayoutKind::Flex);
     lvglpp::set_flex_flow(container.borrow(), lvglpp::FlexFlow::Row);
-    lvglpp::set_flex_align(container.borrow(),
-                           lvglpp::FlexAlign::Start,
-                           lvglpp::FlexAlign::Start,
-                           lvglpp::FlexAlign::Start);
+    lvglpp::set_flex_align(container.borrow(), lvglpp::FlexAlign::Start,
+                           lvglpp::FlexAlign::Start, lvglpp::FlexAlign::Start);
     lvglpp::set_flex_grow(second.borrow(), 1);
     lvglpp::update_layout(screen.borrow());
 
@@ -238,33 +230,26 @@ void test_grid_layout() {
     auto screen = lvglpp::LvObject::make_screen();
     load_screen(screen);
     auto container = lvglpp::LvObject::make_child(screen.borrow());
-    auto child     = lvglpp::LvObject::make_child(container.borrow());
+    auto child = lvglpp::LvObject::make_child(container.borrow());
     strip_default_style(container);
     strip_default_style(child);
 
     const std::int32_t columns_raw[] = {lvglpp::grid_fr(1), lvglpp::grid_fr(1)};
-    const std::int32_t rows_raw[]    = {30};
+    const std::int32_t rows_raw[] = {30};
     lvglpp::GridTrackList columns{columns_raw};
     lvglpp::GridTrackList rows{rows_raw};
     assert(columns.track_count() == 2);
     assert(columns.values().back() == LV_GRID_TEMPLATE_LAST);
     assert(rows.track_count() == 1);
 
-    lvglpp::set_size(container.borrow(),
-                     lvglpp::SizeValue::pixels(100),
+    lvglpp::set_size(container.borrow(), lvglpp::SizeValue::pixels(100),
                      lvglpp::SizeValue::pixels(30));
     lvglpp::set_layout(container.borrow(), lvglpp::LayoutKind::Grid);
     lvglpp::set_grid_descriptor_array(container.borrow(), columns, rows);
-    lvglpp::set_grid_align(container.borrow(),
-                           lvglpp::GridAlign::Stretch,
+    lvglpp::set_grid_align(container.borrow(), lvglpp::GridAlign::Stretch,
                            lvglpp::GridAlign::Stretch);
-    lvglpp::set_grid_cell(child.borrow(),
-                          lvglpp::GridAlign::Stretch,
-                          1,
-                          1,
-                          lvglpp::GridAlign::Stretch,
-                          0,
-                          1);
+    lvglpp::set_grid_cell(child.borrow(), lvglpp::GridAlign::Stretch, 1, 1,
+                          lvglpp::GridAlign::Stretch, 0, 1);
     lvglpp::update_layout(screen.borrow());
 
     assert(lvglpp::is_layout_positioned(child.borrow()));
@@ -296,7 +281,7 @@ void test_grid_layout() {
 }
 #endif
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

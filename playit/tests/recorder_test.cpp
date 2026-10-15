@@ -28,7 +28,8 @@ struct MemoryTransport final : lp::Transport {
     std::vector<std::uint8_t> out_bytes;
 
     [[nodiscard]] std::optional<std::uint8_t> read_byte() noexcept override {
-        if (in_bytes.empty()) return std::nullopt;
+        if (in_bytes.empty())
+            return std::nullopt;
         std::uint8_t b = in_bytes.front();
         in_bytes.pop_front();
         return b;
@@ -37,7 +38,8 @@ struct MemoryTransport final : lp::Transport {
         out_bytes.insert(out_bytes.end(), bytes.begin(), bytes.end());
     }
     void feed(std::string_view s) {
-        for (char c : s) in_bytes.push_back(static_cast<std::uint8_t>(c));
+        for (char c : s)
+            in_bytes.push_back(static_cast<std::uint8_t>(c));
     }
     std::string drain() {
         std::string s{out_bytes.begin(), out_bytes.end()};
@@ -48,14 +50,14 @@ struct MemoryTransport final : lp::Transport {
 
 struct Fixture {
     lc::WidgetNode root;
-    int            clicks = 0;
+    int clicks = 0;
     Fixture() {
         auto root_w = std::make_unique<lw::Label>(std::string{""},
-                                                   lc::Rect{-1, -1, 0, 0});
+                                                  lc::Rect{-1, -1, 0, 0});
         root = lc::WidgetNode{std::move(root_w), "root"};
 
         auto btn = std::make_unique<lw::Button>(std::string{"OK"},
-                                                 lc::Rect{0, 0, 100, 50});
+                                                lc::Rect{0, 0, 100, 50});
         btn->set_on_click([this](lw::Button&) { ++clicks; });
         root.add_child(lc::WidgetNode{std::move(btn), "ok"});
     }
@@ -65,31 +67,36 @@ struct Fixture {
 
 std::string fmt(const lp::EventSpec& spec) {
     std::array<char, 128> buf{};
-    std::size_t n = lp::format_event_spec(spec,
-        std::span<char>{buf.data(), buf.size()});
+    std::size_t n =
+        lp::format_event_spec(spec, std::span<char>{buf.data(), buf.size()});
     return std::string{buf.data(), n};
 }
 
 void test_format_event_spec_variants() {
     using namespace lp;
-    assert(fmt(EventSpec{event_spec::Tick{}})                          == "TK");
-    assert(fmt(EventSpec{event_spec::PressRelease{100, 200}})          == "T100,200");
-    assert(fmt(EventSpec{event_spec::PressDown{42, 84}})               == "TD42,84");
-    assert(fmt(EventSpec{event_spec::DoubleTap{70, 80}})               == "TT70,80");
-    assert(fmt(EventSpec{event_spec::PointerDown{10, 20}})             == "PD10,20");
-    assert(fmt(EventSpec{event_spec::PointerUp{30, 40}})               == "PU30,40");
-    assert(fmt(EventSpec{event_spec::PointerMove{15, 25}})             == "PM15,25");
-    assert(fmt(EventSpec{event_spec::KeyDown{KeySpec{KeySpec::Kind::Enter, 0}}}) == "KD:Enter");
-    assert(fmt(EventSpec{event_spec::KeyUp{KeySpec{KeySpec::Kind::Function, 5}}}) == "KU:F5");
-    assert(fmt(EventSpec{event_spec::KeyDown{KeySpec{KeySpec::Kind::Character, 'a'}}}) == "KD:a");
-    assert(fmt(EventSpec{event_spec::KeyDown{KeySpec{KeySpec::Kind::Other, 12345}}}) == "KD:12345");
+    assert(fmt(EventSpec{event_spec::Tick{}}) == "TK");
+    assert(fmt(EventSpec{event_spec::PressRelease{100, 200}}) == "T100,200");
+    assert(fmt(EventSpec{event_spec::PressDown{42, 84}}) == "TD42,84");
+    assert(fmt(EventSpec{event_spec::DoubleTap{70, 80}}) == "TT70,80");
+    assert(fmt(EventSpec{event_spec::PointerDown{10, 20}}) == "PD10,20");
+    assert(fmt(EventSpec{event_spec::PointerUp{30, 40}}) == "PU30,40");
+    assert(fmt(EventSpec{event_spec::PointerMove{15, 25}}) == "PM15,25");
+    assert(fmt(EventSpec{event_spec::KeyDown{
+               KeySpec{KeySpec::Kind::Enter, 0}}}) == "KD:Enter");
+    assert(fmt(EventSpec{event_spec::KeyUp{
+               KeySpec{KeySpec::Kind::Function, 5}}}) == "KU:F5");
+    assert(fmt(EventSpec{event_spec::KeyDown{
+               KeySpec{KeySpec::Kind::Character, 'a'}}}) == "KD:a");
+    assert(fmt(EventSpec{event_spec::KeyDown{
+               KeySpec{KeySpec::Kind::Other, 12345}}}) == "KD:12345");
 }
 
 void test_format_event_spec_touch_frame() {
     lp::event_spec::Touch touch{};
-    touch.count     = 2;
-    touch.points[0] = lp::TouchPointSpec{0, lp::TouchStateSpec::Down,    10, 20};
-    touch.points[1] = lp::TouchPointSpec{1, lp::TouchStateSpec::Contact, 30, 40};
+    touch.count = 2;
+    touch.points[0] = lp::TouchPointSpec{0, lp::TouchStateSpec::Down, 10, 20};
+    touch.points[1] =
+        lp::TouchPointSpec{1, lp::TouchStateSpec::Contact, 30, 40};
     assert(fmt(lp::EventSpec{touch}) == "MT2:0,D,10,20;1,C,30,40");
 }
 
@@ -133,11 +140,11 @@ void test_recorder_fill_and_stop() {
     lp::EventRecorder r;
     r.start();
     for (std::uint32_t i = 0; i < lp::EventRecorder::CAPACITY + 5U; ++i) {
-        r.record(lp::EventSpec{lp::event_spec::PressRelease{
-            static_cast<std::int32_t>(i), 0}});
+        r.record(lp::EventSpec{
+            lp::event_spec::PressRelease{static_cast<std::int32_t>(i), 0}});
     }
     // Buffer filled exactly to CAPACITY; recorder auto-stopped.
-    assert(r.size()  == lp::EventRecorder::CAPACITY);
+    assert(r.size() == lp::EventRecorder::CAPACITY);
     assert(r.is_full());
     assert(!r.running());
 
@@ -152,7 +159,7 @@ void test_recorder_fill_and_stop() {
             first = false;
         }
     });
-    assert(!first);  // for_each ran at least once.
+    assert(!first); // for_each ran at least once.
 }
 
 // PLAYIT-06a §5.3 — tick() between records produces the expected
@@ -164,11 +171,14 @@ void test_recorder_tick_delta_basic() {
     // Frame 0: record an event.
     r.record(lp::EventSpec{lp::event_spec::PointerDown{10, 20}});
     // Advance 3 ticks.
-    r.tick(); r.tick(); r.tick();
+    r.tick();
+    r.tick();
+    r.tick();
     // Frame 3: another event.
     r.record(lp::EventSpec{lp::event_spec::PointerMove{15, 25}});
     // Advance 2 more ticks.
-    r.tick(); r.tick();
+    r.tick();
+    r.tick();
     r.record(lp::EventSpec{lp::event_spec::PointerUp{20, 30}});
 
     r.stop();
@@ -203,7 +213,8 @@ void test_recorder_tick_delta_saturates() {
 // PLAYIT-06a §5.2 — tick() while stopped is a no-op.
 void test_recorder_tick_while_stopped_is_noop() {
     lp::EventRecorder r;
-    for (int i = 0; i < 100; ++i) r.tick();  // recorder is stopped
+    for (int i = 0; i < 100; ++i)
+        r.tick(); // recorder is stopped
     r.start();
     r.record(lp::EventSpec{lp::event_spec::Tick{}});
     // First record after start has delta 0 — pre-start ticks did
@@ -243,7 +254,8 @@ void test_executor_records_inject_then_dumps() {
     exec.set_recorder(&rec);
 
     tx.feed("RS\nT@ok:50,25\nT100,200\nRD\n");
-    while (exec.poll() > 0) {}
+    while (exec.poll() > 0) {
+    }
 
     const std::string out = tx.drain();
     // Expected sequence:
@@ -255,14 +267,13 @@ void test_executor_records_inject_then_dumps() {
     //   @0 T100,200\r\n          (no recorder.tick() between the
     //                             two records → both deltas = 0)
     //   REC:END\r\n
-    const std::string expected =
-        "REC:recording\r\n"
-        "OK\r\n"
-        "OK\r\n"
-        "REC:START,2\r\n"
-        "@0 T50,25\r\n"
-        "@0 T100,200\r\n"
-        "REC:END\r\n";
+    const std::string expected = "REC:recording\r\n"
+                                 "OK\r\n"
+                                 "OK\r\n"
+                                 "REC:START,2\r\n"
+                                 "@0 T50,25\r\n"
+                                 "@0 T100,200\r\n"
+                                 "REC:END\r\n";
     assert(out == expected);
 
     // The button click fired during recording.
@@ -281,25 +292,30 @@ void test_executor_dump_with_tick_advance() {
 
     // RS, then alternate: tap, tick, tick, tick, tap, tick, tick, tap, RD.
     tx.feed("RS\nT@ok:50,25\n");
-    while (exec.poll() > 0) {}
-    rec.tick(); rec.tick(); rec.tick();
+    while (exec.poll() > 0) {
+    }
+    rec.tick();
+    rec.tick();
+    rec.tick();
     tx.feed("T@ok:60,30\n");
-    while (exec.poll() > 0) {}
-    rec.tick(); rec.tick();
+    while (exec.poll() > 0) {
+    }
+    rec.tick();
+    rec.tick();
     tx.feed("T@ok:70,35\nRD\n");
-    while (exec.poll() > 0) {}
+    while (exec.poll() > 0) {
+    }
 
     const std::string out = tx.drain();
-    const std::string expected =
-        "REC:recording\r\n"
-        "OK\r\n"
-        "OK\r\n"
-        "OK\r\n"
-        "REC:START,3\r\n"
-        "@0 T50,25\r\n"
-        "@3 T60,30\r\n"
-        "@2 T70,35\r\n"
-        "REC:END\r\n";
+    const std::string expected = "REC:recording\r\n"
+                                 "OK\r\n"
+                                 "OK\r\n"
+                                 "OK\r\n"
+                                 "REC:START,3\r\n"
+                                 "@0 T50,25\r\n"
+                                 "@3 T60,30\r\n"
+                                 "@2 T70,35\r\n"
+                                 "REC:END\r\n";
     assert(out == expected);
 }
 
@@ -312,15 +328,15 @@ void test_executor_re_dumps_then_stops() {
     exec.set_recorder(&rec);
 
     tx.feed("RS\nTK\nRE\n");
-    while (exec.poll() > 0) {}
+    while (exec.poll() > 0) {
+    }
 
     const std::string out = tx.drain();
-    const std::string expected =
-        "REC:recording\r\n"
-        "OK\r\n"                  // Inject(Tick) dispatch
-        "REC:START,1\r\n"
-        "@0 TK\r\n"
-        "REC:END\r\n";
+    const std::string expected = "REC:recording\r\n"
+                                 "OK\r\n" // Inject(Tick) dispatch
+                                 "REC:START,1\r\n"
+                                 "@0 TK\r\n"
+                                 "REC:END\r\n";
     assert(out == expected);
     assert(!rec.running());
 }
@@ -329,7 +345,7 @@ void test_executor_without_recorder_falls_through() {
     Fixture fx;
     lp::Dispatcher dispatcher{fx.root};
     MemoryTransport tx;
-    lp::Executor exec{tx, dispatcher};  // no recorder attached
+    lp::Executor exec{tx, dispatcher}; // no recorder attached
 
     tx.feed("RS\n");
     assert(exec.poll() == 1);
@@ -337,7 +353,7 @@ void test_executor_without_recorder_falls_through() {
     assert(tx.drain() == "ERR: not implemented\r\n");
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_format_event_spec_variants();

@@ -21,8 +21,8 @@ namespace lvglpp::app::disco_demo {
 
 // Effect hooks requested by the shared demo controller. FROZEN.
 enum class DiscoEffect : std::uint8_t {
-    AudioScope,  // audio-scope / audio-reactive visualizations.
-    StarCrawl,   // Star Wars style crawl used by the STM32 demo.
+    AudioScope, // audio-scope / audio-reactive visualizations.
+    StarCrawl,  // Star Wars style crawl used by the STM32 demo.
 };
 
 // Command payloads. One aggregate per DiscoCommand variant so std::visit
@@ -37,7 +37,8 @@ struct SetBacklight {
 
 // Request that the runtime populate or refresh storage details.
 struct LoadStorageSummary {
-    [[nodiscard]] bool operator==(const LoadStorageSummary&) const noexcept = default;
+    [[nodiscard]] bool
+    operator==(const LoadStorageSummary&) const noexcept = default;
 };
 
 // Request that a runtime-specific visual effect should start.
@@ -63,18 +64,14 @@ struct NoOp {
     [[nodiscard]] bool operator==(const NoOp&) const noexcept = default;
 };
 
-}  // namespace cmd
+} // namespace cmd
 
 // Commands emitted by the shared demo controller for a runtime adapter.
 // FROZEN variant set (Standards Action, DEMO-06 §2).
-using DiscoCommand = std::variant<
-    cmd::SetBacklight,
-    cmd::LoadStorageSummary,
-    cmd::StartEffect,
-    cmd::StopEffect,
-    cmd::ShowStatus,
-    cmd::NoOp>;
+using DiscoCommand =
+    std::variant<cmd::SetBacklight, cmd::LoadStorageSummary, cmd::StartEffect,
+                 cmd::StopEffect, cmd::ShowStatus, cmd::NoOp>;
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_COMMAND_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_COMMAND_HPP

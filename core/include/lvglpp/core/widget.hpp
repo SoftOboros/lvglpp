@@ -29,9 +29,9 @@ class Renderer;
 // Coordinates are relative to the parent widget; signed to simplify
 // layout arithmetic.
 struct Rect {
-    std::int32_t x      = 0;
-    std::int32_t y      = 0;
-    std::int32_t width  = 0;
+    std::int32_t x = 0;
+    std::int32_t y = 0;
+    std::int32_t width = 0;
     std::int32_t height = 0;
 
     constexpr bool operator==(const Rect&) const noexcept = default;
@@ -55,7 +55,7 @@ struct Color {
     [[nodiscard]] constexpr std::uint32_t to_argb8888() const noexcept {
         return (static_cast<std::uint32_t>(a) << 24) |
                (static_cast<std::uint32_t>(r) << 16) |
-               (static_cast<std::uint32_t>(g) << 8)  |
+               (static_cast<std::uint32_t>(g) << 8) |
                (static_cast<std::uint32_t>(b));
     }
 
@@ -63,9 +63,11 @@ struct Color {
     // new Color. Mirrors rlvgl/core/src/widget.rs:52 — the
     // computation `(a as u16 * opacity as u16) / 255` is preserved
     // exactly.
-    [[nodiscard]] constexpr Color with_alpha(std::uint8_t opacity) const noexcept {
+    [[nodiscard]] constexpr Color
+    with_alpha(std::uint8_t opacity) const noexcept {
         const auto blended = (static_cast<std::uint16_t>(a) *
-                              static_cast<std::uint16_t>(opacity)) / 255U;
+                              static_cast<std::uint16_t>(opacity)) /
+                             255U;
         return Color{r, g, b, static_cast<std::uint8_t>(blended)};
     }
 };
@@ -85,12 +87,12 @@ struct Color {
 // `external` lifetime tag.
 class Widget {
 public:
-    Widget()                                 = default;
-    Widget(const Widget&)                    = default;
-    Widget(Widget&&) noexcept                = default;
-    Widget& operator=(const Widget&)         = default;
-    Widget& operator=(Widget&&) noexcept     = default;
-    virtual ~Widget()                        = default;
+    Widget() = default;
+    Widget(const Widget&) = default;
+    Widget(Widget&&) noexcept = default;
+    Widget& operator=(const Widget&) = default;
+    Widget& operator=(Widget&&) noexcept = default;
+    virtual ~Widget() = default;
 
     // Bounds of this widget, relative to its parent.
     // Returns: a Rect by value. Pure virtual.
@@ -121,6 +123,6 @@ public:
     }
 };
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_WIDGET_HPP
+#endif // LVGLPP_CORE_WIDGET_HPP

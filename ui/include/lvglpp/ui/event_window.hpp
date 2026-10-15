@@ -16,9 +16,9 @@
 #include <vector>
 
 #include "lvglpp/core/event.hpp"
-#include "lvglpp/core/font.hpp"      // BitmapFont
+#include "lvglpp/core/font.hpp" // BitmapFont
 #include "lvglpp/core/renderer.hpp"
-#include "lvglpp/core/widget.hpp"    // Color, Rect, Widget
+#include "lvglpp/core/widget.hpp" // Color, Rect, Widget
 
 namespace lvglpp::ui {
 
@@ -88,8 +88,8 @@ public:
     // Never consumes (returns false) for pointer / key events — the
     // close-button hit test is part of the deferred board surface.
     // Mirrors :238.
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
     // Returns the panel rect while the clear countdown is active and the
     // window is hidden, decrementing the countdown. Mirrors :268.
@@ -100,7 +100,7 @@ private:
 
     // A single event log entry. Mirrors event_window.rs:28.
     struct EventEntry {
-        std::string   text;
+        std::string text;
         std::uint32_t age = 0;
     };
 
@@ -111,8 +111,8 @@ private:
     ::lvglpp::core::Color border_color_{};
     ::lvglpp::core::Color text_color_{};
     std::uint8_t border_width_ = 2;
-    std::uint8_t radius_       = 18;
-    std::int32_t padding_      = 12;
+    std::uint8_t radius_ = 18;
+    std::int32_t padding_ = 12;
     std::uint32_t expire_ticks_ = kDefaultExpireTicks;
     std::uint8_t clear_countdown_ = 0;
     bool visible_ = false;
@@ -157,12 +157,12 @@ private:
     ::lvglpp::core::Color border_color_{80, 80, 80, 255};
     ::lvglpp::core::Color text_color_{220, 220, 220, 255};
     std::uint8_t border_width_ = 2;
-    std::uint8_t radius_       = 18;
+    std::uint8_t radius_ = 18;
     std::uint32_t expire_ticks_ = kDefaultExpireTicks;
     // borrows: see EventWindowBuilder ctor.
     const ::lvglpp::core::BitmapFont* font_;
 };
 
-}  // namespace lvglpp::ui
+} // namespace lvglpp::ui
 
-#endif  // LVGLPP_UI_EVENT_WINDOW_HPP
+#endif // LVGLPP_UI_EVENT_WINDOW_HPP

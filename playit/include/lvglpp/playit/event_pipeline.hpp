@@ -47,12 +47,12 @@ struct PipelineOutput {
 // across frames.
 class EventPipeline {
 public:
-    EventPipeline()                                    = default;
-    EventPipeline(const EventPipeline&)                = default;
-    EventPipeline(EventPipeline&&) noexcept            = default;
-    EventPipeline& operator=(const EventPipeline&)     = default;
+    EventPipeline() = default;
+    EventPipeline(const EventPipeline&) = default;
+    EventPipeline(EventPipeline&&) noexcept = default;
+    EventPipeline& operator=(const EventPipeline&) = default;
     EventPipeline& operator=(EventPipeline&&) noexcept = default;
-    virtual ~EventPipeline()                           = default;
+    virtual ~EventPipeline() = default;
 
     // Transform one input event into zero, one, or two output events.
     // Args:
@@ -79,6 +79,6 @@ public:
     }
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_EVENT_PIPELINE_HPP
+#endif // LVGLPP_PLAYIT_EVENT_PIPELINE_HPP

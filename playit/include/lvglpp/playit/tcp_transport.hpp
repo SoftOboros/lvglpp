@@ -33,16 +33,14 @@ public:
     [[nodiscard]] static std::optional<TcpServerTransport>
     bind_loopback(std::uint16_t port) noexcept;
 
-    TcpServerTransport(const TcpServerTransport&)            = delete;
+    TcpServerTransport(const TcpServerTransport&) = delete;
     TcpServerTransport& operator=(const TcpServerTransport&) = delete;
     TcpServerTransport(TcpServerTransport&& other) noexcept;
-    TcpServerTransport& operator=(TcpServerTransport&&)      = delete;
+    TcpServerTransport& operator=(TcpServerTransport&&) = delete;
     ~TcpServerTransport() override;
 
     // The bound port (resolves OS-assigned when constructed with 0).
-    [[nodiscard]] std::uint16_t local_port() const noexcept {
-        return port_;
-    }
+    [[nodiscard]] std::uint16_t local_port() const noexcept { return port_; }
 
     // Transport: non-blocking read; accepts a pending client first.
     [[nodiscard]] std::optional<std::uint8_t> read_byte() noexcept override;
@@ -60,13 +58,13 @@ private:
     void flush_write_buf() noexcept;
     void fill_read_buf() noexcept;
 
-    int listener_fd_ = -1;  // owns: closed in destructor.
-    int stream_fd_   = -1;  // owns: current client, -1 = none.
+    int listener_fd_ = -1; // owns: closed in destructor.
+    int stream_fd_ = -1;   // owns: current client, -1 = none.
     std::uint16_t port_ = 0;
     std::deque<std::uint8_t> read_buf_;
     std::deque<std::uint8_t> write_buf_;
 };
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_TCP_TRANSPORT_HPP
+#endif // LVGLPP_PLAYIT_TCP_TRANSPORT_HPP

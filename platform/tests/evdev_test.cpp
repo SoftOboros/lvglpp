@@ -19,8 +19,7 @@ constexpr std::uint16_t EV_SYN = 0, EV_KEY = 1, EV_ABS = 3;
 constexpr std::uint16_t SYN_REPORT = 0, BTN_TOUCH = 0x14A;
 constexpr std::uint16_t ABS_X = 0, ABS_Y = 1;
 constexpr std::uint16_t ABS_MT_SLOT = 0x2F, ABS_MT_POSITION_X = 0x35,
-                        ABS_MT_POSITION_Y = 0x36,
-                        ABS_MT_TRACKING_ID = 0x39;
+                        ABS_MT_POSITION_Y = 0x36, ABS_MT_TRACKING_ID = 0x39;
 
 void test_single_touch_cycle() {
     auto in = EvdevInput::make_detached_for_test();
@@ -72,7 +71,7 @@ void test_mt_protocol_b_slot0() {
     assert(std::get_if<lc::event::PointerUp>(&*ev) != nullptr);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_single_touch_cycle();

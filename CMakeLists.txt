@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(lvglpp
-    VERSION 0.1.0
+    VERSION 0.1.1
     DESCRIPTION "Modern C++ wrapper around LVGL with strict and explicit ownership"
     LANGUAGES C CXX)
 
@@ -250,4 +250,26 @@ endif()
 
 if(LVGLPP_BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+# Development-only targets: never impose formatter/Python requirements on
+# downstream add_subdirectory consumers or ordinary library builds.
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    find_package(Python3 QUIET COMPONENTS Interpreter)
+    if(Python3_Interpreter_FOUND)
+        set(_lvglpp_format_python "${Python3_EXECUTABLE}")
+    else()
+        set(_lvglpp_format_python python3)
+    endif()
+    set(LVGLPP_CLANG_FORMAT "" CACHE FILEPATH "LLVM clang-format 14.0.6 executable")
+    add_custom_target(clang-format
+        COMMAND "${_lvglpp_format_python}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/format.py"
+            --fix --clang-format "${LVGLPP_CLANG_FORMAT}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        VERBATIM)
+    add_custom_target(clang-format-check
+        COMMAND "${_lvglpp_format_python}" "${CMAKE_CURRENT_SOURCE_DIR}/scripts/format.py"
+            --check --clang-format "${LVGLPP_CLANG_FORMAT}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        VERBATIM)
 endif()

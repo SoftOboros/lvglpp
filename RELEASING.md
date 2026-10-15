@@ -39,6 +39,13 @@ objects only; working-tree edits and the Rust reference are excluded. Archive
 members are sorted and their modes, owners, timestamps, and gzip timestamp
 are normalized. Checksums describe the actual uploaded compressed bytes.
 
+Before packaging, the mandatory `format` job uses LLVM clang-format 14.0.6
+and `make format-check` against the selected commit. Its checked SHA is passed
+to packaging and subsequent jobs so they use the same source revision. A formatting violation,
+missing/wrong formatter, or failing gate regression test prevents packaging,
+archive validation, and draft creation. Local fixes use `make format`; CI never
+rewrites sources. See [development formatting commands](README.md#building).
+
 CI checks the extracted source pair with no Git metadata or Rust checkout:
 
 - Host tests and C++ warnings as errors.

@@ -18,7 +18,7 @@
 #include <optional>
 #include <span>
 
-#include "lvglpp/core/widget.hpp"  // core::Color, core::Rect
+#include "lvglpp/core/widget.hpp" // core::Color, core::Rect
 
 namespace lvglpp::platform::lnx {
 
@@ -32,17 +32,15 @@ public:
     [[nodiscard]] static std::optional<FbdevDisplay>
     open(const char* path) noexcept;
 
-    FbdevDisplay(const FbdevDisplay&)            = delete;
+    FbdevDisplay(const FbdevDisplay&) = delete;
     FbdevDisplay& operator=(const FbdevDisplay&) = delete;
     FbdevDisplay(FbdevDisplay&& other) noexcept;
-    FbdevDisplay& operator=(FbdevDisplay&&)      = delete;
+    FbdevDisplay& operator=(FbdevDisplay&&) = delete;
     ~FbdevDisplay();
 
     [[nodiscard]] std::uint32_t width() const noexcept { return width_; }
     [[nodiscard]] std::uint32_t height() const noexcept { return height_; }
-    [[nodiscard]] std::uint32_t bits_per_pixel() const noexcept {
-        return bpp_;
-    }
+    [[nodiscard]] std::uint32_t bits_per_pixel() const noexcept { return bpp_; }
 
     // Write `colors` (row-major, rect.width × rect.height) into the
     // device, converting ARGB → the device format (32bpp BGRA8888 /
@@ -52,19 +50,18 @@ public:
     //
     // Args:
     //   colors: borrows for the call; size must be ≥ rect area.
-    void flush(core::Rect rect,
-               std::span<const core::Color> colors) noexcept;
+    void flush(core::Rect rect, std::span<const core::Color> colors) noexcept;
 
 private:
     FbdevDisplay() = default;
 
-    int            fd_   = -1;       // owns
-    std::uint8_t*  mem_  = nullptr;  // owns (munmap), mmio-like: device memory
-    std::size_t    mlen_ = 0;
-    std::uint32_t  width_ = 0, height_ = 0, bpp_ = 0;
-    std::uint32_t  line_length_ = 0;  // bytes per device row
+    int fd_ = -1;                 // owns
+    std::uint8_t* mem_ = nullptr; // owns (munmap), mmio-like: device memory
+    std::size_t mlen_ = 0;
+    std::uint32_t width_ = 0, height_ = 0, bpp_ = 0;
+    std::uint32_t line_length_ = 0; // bytes per device row
 };
 
-}  // namespace lvglpp::platform::lnx
+} // namespace lvglpp::platform::lnx
 
-#endif  // LVGLPP_PLATFORM_LNX_FBDEV_DISPLAY_HPP
+#endif // LVGLPP_PLATFORM_LNX_FBDEV_DISPLAY_HPP

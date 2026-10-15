@@ -61,11 +61,19 @@ Implemented (PLAYIT-01 + PLAYIT-02 — landed 2026-04-27):
   pointer/keypad input devices without changing the wire grammar. Test
   target: `lvglpp_playit_lvgl_input_bridge`.
 
+- **PLAYIT-07a snapshot source:** `LvglSnapshotReader` captures the active
+  LVGL screen with `lv_snapshot_take()` outside `Executor::poll()`. RAII owns
+  the draw buffer; successful captures adopt completed-present counts. The
+  existing executor/dump protocol and its priming/count gates are unchanged.
+  Compile-gated by `LV_USE_SNAPSHOT`; bundled host fallback enables it.
+  Real-LVGL integration tests cover pixels, clipping, immutable captures,
+  wire bytes, multi-frame gating, replacement, detach, and counter rollover.
+
 Stubbed (later phases):
 
-- PLAYIT-03+ richer pipelines (debouncer, double-tap recogniser),
-  PLAYIT-04 tagged-widget queries (gated on CORE-03 widget tree
-  execution), PLAYIT-05 framebuffer dump, PLAYIT-06 event recorder.
+- LVGL-backed tagged-widget dispatch remains deferred: existing tagged
+  queries target the compatibility `WidgetNode` tree. Snapshot readback
+  uses the LVGL screen tree independently of that dispatcher.
 
 ## Blockers
 
@@ -112,6 +120,12 @@ Stubbed (later phases):
   Owned by `docs/lvgl-parity/04-event-focus-input.md`; adapted from
   playit `EventSpec` injection to feed LVGL `lv_indev_t` read state
   instead of the compatibility `WidgetNode` dispatcher.
+
+- **`LvglSnapshotReader`** — As defined in
+  `playit/include/lvglpp/playit/lvgl_snapshot_reader.hpp:18`; adapted: implements
+  the `rlvgl/playit/src/framebuffer.rs` read/present seam using upstream
+  `lvgl/include/lvgl/draw/lv_snapshot.h` instead of physical framebuffer access.
+  Its LVGL capture allocation occurs outside the frozen PLAYIT-07 poll contract.
 
 ## Change log
 
@@ -217,3 +231,10 @@ Stubbed (later phases):
   LVGL click and `KeyDown` reaches the focused object through an
   `LvGroup`.
 - 2026-10-07 — Module builds can be selected for library-only cross compilation using LVGLPP_BUILD_LIBRARIES, independently of tests/examples and without a Rust reference checkout.
+
+- 2026-10-12 — PLAYIT-07a LVGL snapshot adapter added for v0.1.1. Captures
+  outside poll with explicit RAII ownership; no wire grammar, pixel encoding,
+  priming, present-count, or rlvgl reference-pin changes. Existing compatibility
+  renderer readers remain available. Active-screen re-rendering excludes separate
+  display layers and physical-driver transforms; downstream hardware acceptance
+  remains separate from host protocol/build checks.

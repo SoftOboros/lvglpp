@@ -18,7 +18,10 @@ namespace lw = lvglpp::widgets;
 namespace {
 
 struct RecordingRenderer : lc::Renderer {
-    struct FillOp { lc::Rect rect; lc::Color color; };
+    struct FillOp {
+        lc::Rect rect;
+        lc::Color color;
+    };
     struct TextOp {
         std::int32_t x, y;
         std::string text;
@@ -61,7 +64,8 @@ void test_selection_event() {
     assert(*list.selected() == 1);
 
     // Below the populated rows: ignored.
-    assert(!list.handle_event(lc::Event{lc::event::PressRelease{15, 20 + 3 * 16}}));
+    assert(!list.handle_event(
+        lc::Event{lc::event::PressRelease{15, 20 + 3 * 16}}));
     assert(*list.selected() == 1);
 
     // Above the widget: ignored.
@@ -89,7 +93,7 @@ void test_draw_layout() {
 // style.border_color; others use text_color.
 void test_selected_color() {
     auto list = make_list();
-    list.text_color         = lc::Color{1, 2, 3, 255};
+    list.text_color = lc::Color{1, 2, 3, 255};
     list.style.border_color = lc::Color{200, 100, 50, 255};
     assert(list.handle_event(lc::Event{lc::event::PressRelease{15, 40}}));
     assert(*list.selected() == 1);
@@ -101,7 +105,7 @@ void test_selected_color() {
     assert(r.texts[2].color == (lc::Color{1, 2, 3, 255}));
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_selection_event();

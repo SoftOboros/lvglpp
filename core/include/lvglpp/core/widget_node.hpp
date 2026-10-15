@@ -41,8 +41,8 @@ namespace lvglpp::core {
 //
 // Move-only because of the contained unique_ptr.
 struct WidgetNode {
-    std::unique_ptr<Widget>         widget{};
-    std::vector<WidgetNode>         children{};
+    std::unique_ptr<Widget> widget{};
+    std::vector<WidgetNode> children{};
     std::optional<std::string_view> tag{};
 
     WidgetNode() = default;
@@ -51,9 +51,9 @@ struct WidgetNode {
     WidgetNode(std::unique_ptr<Widget> w, std::string_view t) noexcept
         : widget{std::move(w)}, tag{t} {}
 
-    WidgetNode(const WidgetNode&)            = delete;
+    WidgetNode(const WidgetNode&) = delete;
     WidgetNode& operator=(const WidgetNode&) = delete;
-    WidgetNode(WidgetNode&&) noexcept            = default;
+    WidgetNode(WidgetNode&&) noexcept = default;
     WidgetNode& operator=(WidgetNode&&) noexcept = default;
     ~WidgetNode() = default;
 
@@ -106,8 +106,8 @@ find_by_tag(const WidgetNode& root, std::string_view tag) noexcept {
     return nullptr;
 }
 
-[[nodiscard]] inline WidgetNode*
-find_by_tag(WidgetNode& root, std::string_view tag) noexcept {
+[[nodiscard]] inline WidgetNode* find_by_tag(WidgetNode& root,
+                                             std::string_view tag) noexcept {
     if (root.tag && *root.tag == tag) {
         return &root;
     }
@@ -119,6 +119,6 @@ find_by_tag(WidgetNode& root, std::string_view tag) noexcept {
     return nullptr;
 }
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_WIDGET_NODE_HPP
+#endif // LVGLPP_CORE_WIDGET_NODE_HPP

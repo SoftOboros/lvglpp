@@ -42,10 +42,8 @@ void init() noexcept;
 // Returns:
 //   true on TCIF completion; false if the engine reported
 //   TEIF/CEIF or the bounded poll timed out.
-bool fill(volatile std::uint32_t* dst,
-          std::uint32_t stride_px,
-          std::uint32_t width,
-          std::uint32_t height,
+bool fill(volatile std::uint32_t* dst, std::uint32_t stride_px,
+          std::uint32_t width, std::uint32_t height,
           std::uint32_t argb) noexcept;
 
 // Blocking M2M copy of a width×height ARGB8888 rectangle.
@@ -57,12 +55,9 @@ bool fill(volatile std::uint32_t* dst,
 //   dst:    dma — first destination pixel (same contract as fill()).
 // Returns:
 //   true on TCIF completion; false on TEIF/CEIF or poll timeout.
-bool blit(const volatile std::uint32_t* src,
-          std::uint32_t src_stride_px,
-          volatile std::uint32_t* dst,
-          std::uint32_t dst_stride_px,
-          std::uint32_t width,
-          std::uint32_t height) noexcept;
+bool blit(const volatile std::uint32_t* src, std::uint32_t src_stride_px,
+          volatile std::uint32_t* dst, std::uint32_t dst_stride_px,
+          std::uint32_t width, std::uint32_t height) noexcept;
 
 // Last observed ISR error bits (TEIF|CEIF) from the most recent
 // fill/blit, for D3-SRAM relay diagnosis. 0 = clean.
@@ -89,9 +84,9 @@ void enable_irq() noexcept;
 // compile-visible analogue of rlvgl's InFlight<'dma, T> borrow.
 class InFlight {
 public:
-    InFlight(const InFlight&)            = delete;
+    InFlight(const InFlight&) = delete;
     InFlight& operator=(const InFlight&) = delete;
-    InFlight(InFlight&&) noexcept            = default;
+    InFlight(InFlight&&) noexcept = default;
     InFlight& operator=(InFlight&&) noexcept = default;
 
     // True once the engine has finished the transfer (CR.START
@@ -107,11 +102,12 @@ public:
     [[nodiscard]] FrameBuffer release_blocking() noexcept;
 
 private:
-    friend InFlight start_fill_async(FrameBuffer, std::uint32_t,
+    friend InFlight start_fill_async(FrameBuffer, std::uint32_t, std::uint32_t,
                                      std::uint32_t, std::uint32_t,
-                                     std::uint32_t, std::uint32_t) noexcept;
-    explicit InFlight(FrameBuffer fb) noexcept : fb_{static_cast<FrameBuffer&&>(fb)} {}
-    FrameBuffer fb_;  // owns (the mutation authority) until released
+                                     std::uint32_t) noexcept;
+    explicit InFlight(FrameBuffer fb) noexcept
+        : fb_{static_cast<FrameBuffer&&>(fb)} {}
+    FrameBuffer fb_; // owns (the mutation authority) until released
 };
 
 // Non-blocking R2M fill of a width×height ARGB8888 rect at (x, y)
@@ -125,10 +121,8 @@ private:
 //   take_complete() (ISR latch) or InFlight::done().
 // Traps (bkpt) if a transfer is already outstanding — 05 §5.7
 // engine-exclusivity posture.
-[[nodiscard]] InFlight start_fill_async(FrameBuffer fb,
-                                        std::uint32_t x,
-                                        std::uint32_t y,
-                                        std::uint32_t width,
+[[nodiscard]] InFlight start_fill_async(FrameBuffer fb, std::uint32_t x,
+                                        std::uint32_t y, std::uint32_t width,
                                         std::uint32_t height,
                                         std::uint32_t argb) noexcept;
 

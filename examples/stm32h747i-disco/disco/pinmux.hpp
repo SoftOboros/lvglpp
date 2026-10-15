@@ -16,18 +16,16 @@
 namespace lvglpp::disco::pinmux {
 
 enum class Speed : std::uint8_t {
-    Low      = 0,
-    Medium   = 1,
-    High     = 2,
+    Low = 0,
+    Medium = 1,
+    High = 2,
     VeryHigh = 3,
 };
 
 // Set MODER=AF, OSPEEDR=<speed>, AFRL/AFRH=<af> for one pin (0..15).
 // PUPDR is left untouched (default no pull-up/down on reset).
-void af_speed(MmioAddr<regs::GpioPort> port,
-              std::uint8_t pin,
-              std::uint8_t af,
-              Speed        speed) noexcept;
+void af_speed(MmioAddr<regs::GpioPort> port, std::uint8_t pin, std::uint8_t af,
+              Speed speed) noexcept;
 
 // AF12 + VeryHigh. Mirrors rlvgl's `af12_high!` macro.
 inline void af12_high(MmioAddr<regs::GpioPort> port,
@@ -36,8 +34,7 @@ inline void af12_high(MmioAddr<regs::GpioPort> port,
 }
 
 // MODER=Input, PUPDR=NoPull. For pins observed via IDR (e.g. FT5336 INT).
-void floating_input(MmioAddr<regs::GpioPort> port,
-                    std::uint8_t pin) noexcept;
+void floating_input(MmioAddr<regs::GpioPort> port, std::uint8_t pin) noexcept;
 
 // FMC pin set per PLAT-02b §5.7 — calls af12_high() for every pin
 // the FMC controller (SDRAM Bank 1) consumes. Writes breadcrumb

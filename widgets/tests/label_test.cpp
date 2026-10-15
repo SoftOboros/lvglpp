@@ -19,18 +19,24 @@ namespace lw = lvglpp::widgets;
 namespace {
 
 struct RecordingRenderer : lc::Renderer {
-    struct FillOp  { lc::Rect rect; lc::Color color; };
-    struct BlendOp { lc::Rect rect; lc::Color color; };
-    struct TextOp  {
+    struct FillOp {
+        lc::Rect rect;
+        lc::Color color;
+    };
+    struct BlendOp {
+        lc::Rect rect;
+        lc::Color color;
+    };
+    struct TextOp {
         std::int32_t x;
         std::int32_t y;
-        std::string  text;  // copy because the view's lifetime ends with the call
-        lc::Color    color;
+        std::string text; // copy because the view's lifetime ends with the call
+        lc::Color color;
     };
 
-    std::vector<FillOp>  fills;
+    std::vector<FillOp> fills;
     std::vector<BlendOp> blends;
-    std::vector<TextOp>  texts;
+    std::vector<TextOp> texts;
 
     void fill_rect(lc::Rect rect, lc::Color color) override {
         fills.push_back(FillOp{rect, color});
@@ -38,9 +44,7 @@ struct RecordingRenderer : lc::Renderer {
     void blend_rect(lc::Rect rect, lc::Color color) override {
         blends.push_back(BlendOp{rect, color});
     }
-    void draw_text(std::int32_t x,
-                   std::int32_t y,
-                   std::string_view text,
+    void draw_text(std::int32_t x, std::int32_t y, std::string_view text,
                    lc::Color color) override {
         texts.push_back(TextOp{x, y, std::string{text}, color});
     }
@@ -67,16 +71,16 @@ void test_label_default_style_yields_opaque_white_bg() {
     label.draw(r);
 
     // Exactly one fill_rect for the bg, zero blend_rects (opaque).
-    assert(r.fills.size()  == 1);
+    assert(r.fills.size() == 1);
     assert(r.blends.empty());
 
-    assert(r.fills[0].rect  == (lc::Rect{10, 20, 50, 60}));
+    assert(r.fills[0].rect == (lc::Rect{10, 20, 50, 60}));
     assert(r.fills[0].color == (lc::Color{255, 255, 255, 255}));
 
     // Exactly one draw_text call, baseline anchored at bottom-left.
     assert(r.texts.size() == 1);
-    assert(r.texts[0].x    == 10);
-    assert(r.texts[0].y    == 20 + 60);  // bounds.y + bounds.height
+    assert(r.texts[0].x == 10);
+    assert(r.texts[0].y == 20 + 60); // bounds.y + bounds.height
     assert(r.texts[0].text == "x");
     // text_color default (0,0,0,255) modulated by alpha 255 → (0,0,0,255).
     assert(r.texts[0].color == (lc::Color{0, 0, 0, 255}));
@@ -84,7 +88,7 @@ void test_label_default_style_yields_opaque_white_bg() {
 
 void test_label_translucent_bg_uses_blend_rect() {
     lw::Label label{std::string{"y"}, lc::Rect{0, 0, 10, 10}};
-    label.style.alpha = 128;  // → bg.a = (255*128)/255 = 128, translucent path
+    label.style.alpha = 128; // → bg.a = (255*128)/255 = 128, translucent path
     RecordingRenderer r;
     label.draw(r);
 
@@ -96,13 +100,14 @@ void test_label_translucent_bg_uses_blend_rect() {
 
 void test_label_zero_alpha_skips_bg_entirely() {
     lw::Label label{std::string{"z"}, lc::Rect{0, 0, 10, 10}};
-    label.style.alpha = 0;  // → bg.a = 0, skip path
+    label.style.alpha = 0; // → bg.a = 0, skip path
     RecordingRenderer r;
     label.draw(r);
 
     assert(r.fills.empty());
     assert(r.blends.empty());
-    // draw_text still happens; text_color.with_alpha(0) → a=0 (caller's choice).
+    // draw_text still happens; text_color.with_alpha(0) → a=0 (caller's
+    // choice).
     assert(r.texts.size() == 1);
     assert(r.texts[0].color.a == 0);
 }
@@ -128,18 +133,19 @@ void test_label_border_emits_four_fill_rects() {
 
 void test_label_text_alpha_modulated_by_style_alpha() {
     lw::Label label{std::string{"t"}, lc::Rect{0, 0, 10, 10}};
-    label.style.alpha    = 128;
-    label.text_color     = lc::Color{255, 0, 0, 200};  // semi-transparent red
+    label.style.alpha = 128;
+    label.text_color = lc::Color{255, 0, 0, 200}; // semi-transparent red
     RecordingRenderer r;
     label.draw(r);
 
     // text_color.with_alpha(128): a = (200*128)/255 = 100 (truncating).
     assert(r.texts.size() == 1);
-    assert(r.texts[0].color == (lc::Color{255, 0, 0,
-                                          static_cast<std::uint8_t>((200U * 128U) / 255U)}));
+    assert(r.texts[0].color ==
+           (lc::Color{255, 0, 0,
+                      static_cast<std::uint8_t>((200U * 128U) / 255U)}));
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_label_basic_construction_and_accessors();

@@ -16,7 +16,8 @@
 #include "lvglpp/widgets/switch.hpp"
 
 // Future per-widget headers (added as they land):
-//   #include "lvglpp/widgets/progress.hpp"   // PARITY: rlvgl/widgets/src/progress.rs
-//   #include "lvglpp/widgets/radio.hpp"      // PARITY: rlvgl/widgets/src/radio.rs
+//   #include "lvglpp/widgets/progress.hpp"   // PARITY:
+//   rlvgl/widgets/src/progress.rs #include "lvglpp/widgets/radio.hpp"      //
+//   PARITY: rlvgl/widgets/src/radio.rs
 
-#endif  // LVGLPP_WIDGETS_WIDGETS_HPP
+#endif // LVGLPP_WIDGETS_WIDGETS_HPP

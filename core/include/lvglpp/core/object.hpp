@@ -15,33 +15,35 @@
 namespace lvglpp {
 
 enum class ObjectFlag : std::uint32_t {
-    Hidden         = static_cast<std::uint32_t>(LV_OBJ_FLAG_HIDDEN),
-    Clickable      = static_cast<std::uint32_t>(LV_OBJ_FLAG_CLICKABLE),
+    Hidden = static_cast<std::uint32_t>(LV_OBJ_FLAG_HIDDEN),
+    Clickable = static_cast<std::uint32_t>(LV_OBJ_FLAG_CLICKABLE),
     ClickFocusable = static_cast<std::uint32_t>(LV_OBJ_FLAG_CLICK_FOCUSABLE),
-    Checkable      = static_cast<std::uint32_t>(LV_OBJ_FLAG_CHECKABLE),
-    Scrollable     = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLLABLE),
-    ScrollElastic  = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ELASTIC),
+    Checkable = static_cast<std::uint32_t>(LV_OBJ_FLAG_CHECKABLE),
+    Scrollable = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLLABLE),
+    ScrollElastic = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ELASTIC),
     ScrollMomentum = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_MOMENTUM),
-    ScrollOne      = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ONE),
-    ScrollChainHorizontal = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN_HOR),
-    ScrollChainVertical   = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN_VER),
-    ScrollChain    = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN),
-    ScrollOnFocus  = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ON_FOCUS),
+    ScrollOne = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ONE),
+    ScrollChainHorizontal =
+        static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN_HOR),
+    ScrollChainVertical =
+        static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN_VER),
+    ScrollChain = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_CHAIN),
+    ScrollOnFocus = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_ON_FOCUS),
     ScrollWithArrow = static_cast<std::uint32_t>(LV_OBJ_FLAG_SCROLL_WITH_ARROW),
-    Snappable      = static_cast<std::uint32_t>(LV_OBJ_FLAG_SNAPPABLE),
-    EventBubble    = static_cast<std::uint32_t>(LV_OBJ_FLAG_EVENT_BUBBLE),
-    EventTrickle   = static_cast<std::uint32_t>(LV_OBJ_FLAG_EVENT_TRICKLE),
-    Floating       = static_cast<std::uint32_t>(LV_OBJ_FLAG_FLOATING),
+    Snappable = static_cast<std::uint32_t>(LV_OBJ_FLAG_SNAPPABLE),
+    EventBubble = static_cast<std::uint32_t>(LV_OBJ_FLAG_EVENT_BUBBLE),
+    EventTrickle = static_cast<std::uint32_t>(LV_OBJ_FLAG_EVENT_TRICKLE),
+    Floating = static_cast<std::uint32_t>(LV_OBJ_FLAG_FLOATING),
 };
 
 enum class ObjectState : std::uint16_t {
-    Default  = static_cast<std::uint16_t>(LV_STATE_DEFAULT),
-    Checked  = static_cast<std::uint16_t>(LV_STATE_CHECKED),
-    Focused  = static_cast<std::uint16_t>(LV_STATE_FOCUSED),
+    Default = static_cast<std::uint16_t>(LV_STATE_DEFAULT),
+    Checked = static_cast<std::uint16_t>(LV_STATE_CHECKED),
+    Focused = static_cast<std::uint16_t>(LV_STATE_FOCUSED),
     FocusKey = static_cast<std::uint16_t>(LV_STATE_FOCUS_KEY),
-    Edited   = static_cast<std::uint16_t>(LV_STATE_EDITED),
-    Hovered  = static_cast<std::uint16_t>(LV_STATE_HOVERED),
-    Pressed  = static_cast<std::uint16_t>(LV_STATE_PRESSED),
+    Edited = static_cast<std::uint16_t>(LV_STATE_EDITED),
+    Hovered = static_cast<std::uint16_t>(LV_STATE_HOVERED),
+    Pressed = static_cast<std::uint16_t>(LV_STATE_PRESSED),
     Disabled = static_cast<std::uint16_t>(LV_STATE_DISABLED),
     Scrolled = static_cast<std::uint16_t>(LV_STATE_SCROLLED),
 };
@@ -66,7 +68,7 @@ public:
     [[nodiscard]] static LvObject make_screen() noexcept;
     [[nodiscard]] static LvObject make_child(ObjectView parent) noexcept;
 
-    LvObject(const LvObject&)            = delete;
+    LvObject(const LvObject&) = delete;
     LvObject& operator=(const LvObject&) = delete;
 
     LvObject(LvObject&& other) noexcept;
@@ -75,18 +77,18 @@ public:
     ~LvObject();
 
     [[nodiscard]] ObjectView borrow() const noexcept;
-    [[nodiscard]] lv_obj_t*  borrow_raw() const noexcept;
-    [[nodiscard]] bool       empty() const noexcept;
-    [[nodiscard]] bool       valid() const noexcept;
+    [[nodiscard]] lv_obj_t* borrow_raw() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
+    [[nodiscard]] bool valid() const noexcept;
 
     // Returns: owns raw LVGL handle; caller is responsible for its lifecycle.
     [[nodiscard]] lv_obj_t* release() noexcept;
 
     void reset() noexcept;
 
-    [[nodiscard]] ObjectView   parent() const noexcept;
+    [[nodiscard]] ObjectView parent() const noexcept;
     [[nodiscard]] std::uint32_t child_count() const noexcept;
-    [[nodiscard]] ObjectView   child(std::int32_t index) const noexcept;
+    [[nodiscard]] ObjectView child(std::int32_t index) const noexcept;
 
     void set_parent(ObjectView parent) noexcept;
     void move_to_index(std::int32_t index) noexcept;
@@ -113,6 +115,6 @@ private:
     lv_obj_t* raw_ = nullptr;
 };
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // LVGLPP_CORE_OBJECT_HPP
+#endif // LVGLPP_CORE_OBJECT_HPP

@@ -17,7 +17,7 @@ namespace lvglpp::playit {
 
 // Mirrors rlvgl/playit/src/response.rs:5.
 struct StatusData {
-    std::uint32_t tick_count    = 0;
+    std::uint32_t tick_count = 0;
     std::uint32_t present_count = 0;
 
     constexpr bool operator==(const StatusData&) const noexcept = default;
@@ -38,9 +38,9 @@ struct Error {
 };
 
 struct Bounds {
-    std::int32_t x      = 0;
-    std::int32_t y      = 0;
-    std::int32_t width  = 0;
+    std::int32_t x = 0;
+    std::int32_t y = 0;
+    std::int32_t width = 0;
     std::int32_t height = 0;
     constexpr bool operator==(const Bounds&) const noexcept = default;
 };
@@ -64,20 +64,14 @@ struct DumpEnd {
     constexpr bool operator==(const DumpEnd&) const noexcept = default;
 };
 
-}  // namespace response
+} // namespace response
 
 // Variant ordering matches rlvgl/playit/src/response.rs:14 for
 // parity with any future serialization that depends on tag indices.
-using Response = std::variant<
-    response::Ok,
-    response::Error,
-    response::Bounds,
-    response::Exists,
-    response::ChildCount,
-    response::Status,
-    response::DumpEnd
->;
+using Response = std::variant<response::Ok, response::Error, response::Bounds,
+                              response::Exists, response::ChildCount,
+                              response::Status, response::DumpEnd>;
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_RESPONSE_HPP
+#endif // LVGLPP_PLAYIT_RESPONSE_HPP

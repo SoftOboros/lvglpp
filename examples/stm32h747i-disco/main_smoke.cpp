@@ -8,6 +8,6 @@
 
 int main() {
     for (;;) {
-        asm volatile ("wfe");
+        asm volatile("wfe");
     }
 }

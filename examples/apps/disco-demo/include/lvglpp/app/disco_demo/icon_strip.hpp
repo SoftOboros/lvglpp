@@ -51,9 +51,7 @@ public:
     //   icon_size:  square icon side length.
     //   margin_top: gap above the first slot.
     //   gap:        vertical gap between slots.
-    IconStrip(std::int32_t x,
-              std::int32_t icon_size,
-              std::int32_t margin_top,
+    IconStrip(std::int32_t x, std::int32_t icon_size, std::int32_t margin_top,
               std::int32_t gap) noexcept
         : x_{x}, margin_top_{margin_top}, gap_{gap}, icon_size_{icon_size} {}
 
@@ -78,13 +76,13 @@ private:
     [[nodiscard]] core::Rect slot_bounds(std::size_t index) const noexcept;
 
     std::array<std::optional<IconSlot>, SLOT_COUNT> slots_{};
-    std::int32_t x_          = 0;
+    std::int32_t x_ = 0;
     std::int32_t margin_top_ = 0;
-    std::int32_t gap_        = 0;
-    std::int32_t icon_size_  = 0;
+    std::int32_t gap_ = 0;
+    std::int32_t icon_size_ = 0;
     std::optional<std::size_t> focused_slot_{};
 };
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_ICON_STRIP_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_ICON_STRIP_HPP

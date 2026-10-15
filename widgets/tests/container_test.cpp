@@ -16,7 +16,10 @@ namespace lw = lvglpp::widgets;
 namespace {
 
 struct RecordingRenderer : lc::Renderer {
-    struct FillOp { lc::Rect rect; lc::Color color; };
+    struct FillOp {
+        lc::Rect rect;
+        lc::Color color;
+    };
     std::vector<FillOp> fills;
     void fill_rect(lc::Rect rect, lc::Color color) override {
         fills.push_back(FillOp{rect, color});
@@ -44,7 +47,8 @@ void test_container_passive_events() {
         lc::Event{lc::event::KeyDown{lc::key::Enter{}}},
         lc::Event{lc::event::Tick{}},
     };
-    for (const auto& e : events) assert(!c.handle_event(e));
+    for (const auto& e : events)
+        assert(!c.handle_event(e));
 }
 
 // Default Style: opaque white bg, no border -> a single fill of bounds.
@@ -62,7 +66,7 @@ void test_container_draw_default_bg() {
 // color, on top of the background fill.
 void test_container_draw_with_border() {
     lw::Container c{lc::Rect{0, 0, 40, 20}};
-    c.style.bg_color     = lc::Color{10, 20, 30, 255};
+    c.style.bg_color = lc::Color{10, 20, 30, 255};
     c.style.border_color = lc::Color{200, 0, 0, 255};
     c.style.border_width = 2;
 
@@ -75,7 +79,8 @@ void test_container_draw_with_border() {
 
     bool saw_border = false;
     for (const auto& f : r.fills) {
-        if (f.color == (lc::Color{200, 0, 0, 255})) saw_border = true;
+        if (f.color == (lc::Color{200, 0, 0, 255}))
+            saw_border = true;
     }
     assert(saw_border);
 }
@@ -83,8 +88,8 @@ void test_container_draw_with_border() {
 // Fully transparent background with no border draws nothing.
 void test_container_draw_transparent_noop() {
     lw::Container c{lc::Rect{0, 0, 40, 20}};
-    c.style.bg_color = lc::Color{0, 0, 0, 0};  // alpha 0
-    c.style.alpha    = 255;
+    c.style.bg_color = lc::Color{0, 0, 0, 0}; // alpha 0
+    c.style.alpha = 255;
     c.style.border_width = 0;
 
     RecordingRenderer r;
@@ -92,7 +97,7 @@ void test_container_draw_transparent_noop() {
     assert(r.fills.empty());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_container_bounds_echo();

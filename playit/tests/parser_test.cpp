@@ -18,8 +18,7 @@ namespace {
 
 // Alt-first so call sites have a single template argument and don't
 // trip the assert() macro on a comma between template args.
-template <class Alt, class Variant>
-const Alt* as(const Variant& v) noexcept {
+template <class Alt, class Variant> const Alt* as(const Variant& v) noexcept {
     return std::get_if<Alt>(&v);
 }
 
@@ -253,15 +252,15 @@ void test_mt_two_points() {
     assert(touch);
     assert(touch->count == 2);
 
-    assert(touch->points[0].id    == 0);
+    assert(touch->points[0].id == 0);
     assert(touch->points[0].state == TouchStateSpec::Down);
-    assert(touch->points[0].x     == 10);
-    assert(touch->points[0].y     == 20);
+    assert(touch->points[0].x == 10);
+    assert(touch->points[0].y == 20);
 
-    assert(touch->points[1].id    == 1);
+    assert(touch->points[1].id == 1);
     assert(touch->points[1].state == TouchStateSpec::Up);
-    assert(touch->points[1].x     == 30);
-    assert(touch->points[1].y     == 40);
+    assert(touch->points[1].x == 30);
+    assert(touch->points[1].y == 40);
 }
 
 void test_mt_count_out_of_range() {
@@ -309,7 +308,7 @@ void test_malformed() {
     assert(parse_command("QC:") == Command{command::QueryChildCount{""}});
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_status();

@@ -31,10 +31,10 @@ enum class TouchStateSpec : std::uint8_t {
 
 // Mirrors rlvgl/playit/src/command.rs:74.
 struct TouchPointSpec {
-    std::uint8_t   id    = 0;
+    std::uint8_t id = 0;
     TouchStateSpec state = TouchStateSpec::Up;
-    std::int32_t   x     = 0;
-    std::int32_t   y     = 0;
+    std::int32_t x = 0;
+    std::int32_t y = 0;
 
     constexpr bool operator==(const TouchPointSpec&) const noexcept = default;
 };
@@ -56,12 +56,12 @@ struct KeySpec {
         ArrowDown,
         ArrowLeft,
         ArrowRight,
-        Function,   // value = 1..=12
-        Character,  // value = Unicode scalar value
-        Other,      // value = opaque keycode
+        Function,  // value = 1..=12
+        Character, // value = Unicode scalar value
+        Other,     // value = opaque keycode
     };
 
-    Kind          kind  = Kind::Other;
+    Kind kind = Kind::Other;
     std::uint32_t value = 0;
 
     constexpr bool operator==(const KeySpec&) const noexcept = default;
@@ -123,31 +123,24 @@ struct KeyUp {
 };
 
 struct Touch {
-    std::uint8_t                                 count = 0;
+    std::uint8_t count = 0;
     std::array<TouchPointSpec, MAX_TOUCH_POINTS> points{};
     constexpr bool operator==(const Touch&) const noexcept = default;
 };
 
-}  // namespace event_spec
+} // namespace event_spec
 
 // EventSpec — sum type over the ten variants in
 // docs/core-event/00-event-surface.md §5.1.
 //
 // Variant ordering matches the rlvgl source for parity with any
 // future serialization that depends on tag indices.
-using EventSpec = std::variant<
-    event_spec::Tick,
-    event_spec::PressRelease,
-    event_spec::PressDown,
-    event_spec::PointerDown,
-    event_spec::PointerUp,
-    event_spec::PointerMove,
-    event_spec::DoubleTap,
-    event_spec::KeyDown,
-    event_spec::KeyUp,
-    event_spec::Touch
->;
+using EventSpec = std::variant<event_spec::Tick, event_spec::PressRelease,
+                               event_spec::PressDown, event_spec::PointerDown,
+                               event_spec::PointerUp, event_spec::PointerMove,
+                               event_spec::DoubleTap, event_spec::KeyDown,
+                               event_spec::KeyUp, event_spec::Touch>;
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_EVENT_SPEC_HPP
+#endif // LVGLPP_PLAYIT_EVENT_SPEC_HPP

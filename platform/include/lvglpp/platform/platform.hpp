@@ -23,8 +23,10 @@
 #endif
 
 // Future per-backend headers (added as they land):
-//   #include "lvglpp/platform/stm32h747i_disco.hpp"   // PARITY: rlvgl/platform/src/stm32h747i_disco/
-//   #include "lvglpp/platform/beaglebone_black.hpp"   // PARITY: rlvgl/platform/src/beaglebone/
-//   #include "lvglpp/platform/esp32_lcd.hpp"          // PARITY: rlvgl/platform/src/esp32/
+//   #include "lvglpp/platform/stm32h747i_disco.hpp"   // PARITY:
+//   rlvgl/platform/src/stm32h747i_disco/ #include
+//   "lvglpp/platform/beaglebone_black.hpp"   // PARITY:
+//   rlvgl/platform/src/beaglebone/ #include "lvglpp/platform/esp32_lcd.hpp" //
+//   PARITY: rlvgl/platform/src/esp32/
 
-#endif  // LVGLPP_PLATFORM_PLATFORM_HPP
+#endif // LVGLPP_PLATFORM_PLATFORM_HPP

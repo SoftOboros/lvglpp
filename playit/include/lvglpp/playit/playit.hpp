@@ -21,10 +21,11 @@
 #include "lvglpp/playit/event_spec.hpp"
 #include "lvglpp/playit/gesture.hpp"
 #include "lvglpp/playit/lvgl_input_bridge.hpp"
+#include "lvglpp/playit/lvgl_snapshot_reader.hpp"
 #include "lvglpp/playit/executor.hpp"
 #include "lvglpp/playit/format.hpp"
 #include "lvglpp/playit/parser.hpp"
 #include "lvglpp/playit/response.hpp"
 #include "lvglpp/playit/transport.hpp"
 
-#endif  // LVGLPP_PLAYIT_PLAYIT_HPP
+#endif // LVGLPP_PLAYIT_PLAYIT_HPP

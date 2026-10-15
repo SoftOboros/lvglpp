@@ -29,9 +29,9 @@ public:
     //   on_tap: owned activation callback (observes the controller when
     //           bound; lifetime documented at the bind site, DEMO-06).
     ActionHotspot(core::Rect bounds, std::function<void()> on_tap)
-        : bounds_{bounds},
-          on_tap_{std::move(on_tap)},
-          is_visible_{[] { return true; }} {}
+        : bounds_{bounds}, on_tap_{std::move(on_tap)}, is_visible_{[] {
+              return true;
+          }} {}
 
     // Attach a dynamic visibility predicate (observes a const Wing* when
     // bound). Fluent: returns *this for chaining at the construction site.
@@ -48,11 +48,11 @@ public:
     [[nodiscard]] bool handle_event(const core::Event& event) override;
 
 private:
-    core::Rect            bounds_{};
+    core::Rect bounds_{};
     std::function<void()> on_tap_{};
     std::function<bool()> is_visible_{};
 };
 
-}  // namespace lvglpp::app::disco_demo
+} // namespace lvglpp::app::disco_demo
 
-#endif  // LVGLPP_APP_DISCO_DEMO_HOTSPOT_HPP
+#endif // LVGLPP_APP_DISCO_DEMO_HOTSPOT_HPP

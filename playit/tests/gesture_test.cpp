@@ -17,8 +17,7 @@ namespace lp = lvglpp::playit;
 
 namespace {
 
-template <class Alt, class Variant>
-const Alt* as(const Variant& v) noexcept {
+template <class Alt, class Variant> const Alt* as(const Variant& v) noexcept {
     return std::get_if<Alt>(&v);
 }
 
@@ -26,7 +25,7 @@ const Alt* as(const Variant& v) noexcept {
 
 void test_ms_to_ticks_scales_with_frame_rate() {
     // ceil(200 * 6 / 1000) = 2
-    assert(lp::ms_to_ticks(lp::SETTLE_MS, 6)  == 2);
+    assert(lp::ms_to_ticks(lp::SETTLE_MS, 6) == 2);
     // ceil(200 * 30 / 1000) = 6
     assert(lp::ms_to_ticks(lp::SETTLE_MS, 30) == 6);
     // ceil(200 * 60 / 1000) = 12
@@ -101,37 +100,43 @@ void test_tap_pointer_move_passes_through() {
 // ---- DoubleTapRecognizer --------------------------------------------
 
 // Helper: simulate a complete short tap through the double-tap recognizer.
-std::vector<lc::Event> short_tap(lp::DoubleTapRecognizer& dtap,
-                                  std::int32_t x, std::int32_t y,
-                                  std::uint8_t hold_ticks) {
+std::vector<lc::Event> short_tap(lp::DoubleTapRecognizer& dtap, std::int32_t x,
+                                 std::int32_t y, std::uint8_t hold_ticks) {
     std::vector<lc::Event> out;
     auto pair = dtap.process(lc::Event{lc::event::PressDown{x, y}});
-    if (pair.primary)   out.push_back(*pair.primary);
-    if (pair.secondary) out.push_back(*pair.secondary);
+    if (pair.primary)
+        out.push_back(*pair.primary);
+    if (pair.secondary)
+        out.push_back(*pair.secondary);
     for (std::uint8_t i = 0; i < hold_ticks; ++i) {
-        if (auto e = dtap.tick()) out.push_back(*e);
+        if (auto e = dtap.tick())
+            out.push_back(*e);
     }
     pair = dtap.process(lc::Event{lc::event::PressRelease{x, y}});
-    if (pair.primary)   out.push_back(*pair.primary);
-    if (pair.secondary) out.push_back(*pair.secondary);
+    if (pair.primary)
+        out.push_back(*pair.primary);
+    if (pair.secondary)
+        out.push_back(*pair.secondary);
     return out;
 }
 
-bool contains_double_tap(const std::vector<lc::Event>& evs,
-                          std::int32_t x, std::int32_t y) noexcept {
+bool contains_double_tap(const std::vector<lc::Event>& evs, std::int32_t x,
+                         std::int32_t y) noexcept {
     for (const auto& e : evs) {
         if (auto* dt = as<lc::event::DoubleTap>(e)) {
-            if (dt->x == x && dt->y == y) return true;
+            if (dt->x == x && dt->y == y)
+                return true;
         }
     }
     return false;
 }
 
-bool contains_press_release(const std::vector<lc::Event>& evs,
-                             std::int32_t x, std::int32_t y) noexcept {
+bool contains_press_release(const std::vector<lc::Event>& evs, std::int32_t x,
+                            std::int32_t y) noexcept {
     for (const auto& e : evs) {
         if (auto* pr = as<lc::event::PressRelease>(e)) {
-            if (pr->x == x && pr->y == y) return true;
+            if (pr->x == x && pr->y == y)
+                return true;
         }
     }
     return false;
@@ -159,7 +164,7 @@ void test_double_tap_emits_double_tap_event() {
 void test_single_tap_emits_after_timeout() {
     lp::DoubleTapRecognizer dtap{30};
     auto events = short_tap(dtap, 50, 60, 1);
-    assert(events.size() == 1);  // only PressDown
+    assert(events.size() == 1); // only PressDown
     assert(as<lc::event::PressDown>(events[0]) != nullptr);
 
     const auto window_ticks = lp::ms_to_ticks(lp::DOUBLE_TAP_WINDOW_MS, 30);
@@ -176,15 +181,17 @@ void test_single_tap_emits_after_timeout() {
 
 void test_long_press_passes_through() {
     lp::DoubleTapRecognizer dtap{30};
-    const auto long_hold =
-        static_cast<std::uint8_t>(lp::ms_to_ticks(lp::SHORT_PRESS_MAX_MS, 30) + 5);
+    const auto long_hold = static_cast<std::uint8_t>(
+        lp::ms_to_ticks(lp::SHORT_PRESS_MAX_MS, 30) + 5);
     auto events = short_tap(dtap, 100, 200, long_hold);
     // PressDown + PressRelease both came through (not buffered).
     bool saw_pd = false, saw_pr = false;
     for (const auto& e : events) {
-        if (as<lc::event::PressDown>(e))    saw_pd = true;
+        if (as<lc::event::PressDown>(e))
+            saw_pd = true;
         if (auto* pr = as<lc::event::PressRelease>(e)) {
-            if (pr->x == 100 && pr->y == 200) saw_pr = true;
+            if (pr->x == 100 && pr->y == 200)
+                saw_pr = true;
         }
     }
     assert(saw_pd && saw_pr);
@@ -199,7 +206,8 @@ void test_double_tap_distance_rejection() {
     auto events = short_tap(dtap, 10 + far, 10, 1);
     bool has_double = false;
     for (const auto& e : events) {
-        if (as<lc::event::DoubleTap>(e)) has_double = true;
+        if (as<lc::event::DoubleTap>(e))
+            has_double = true;
     }
     assert(!has_double);
     assert(contains_press_release(events, 10, 10));
@@ -224,7 +232,8 @@ void test_gesture_pipeline_full_tap_to_press_release() {
     int ticks_with_output = 0;
     for (int i = 0; i < 7; ++i) {
         auto t = pipe.tick();
-        if (t.primary || t.secondary) ++ticks_with_output;
+        if (t.primary || t.secondary)
+            ++ticks_with_output;
     }
     // No output yet — the buffered first PressRelease is held by
     // DoubleTap waiting for a possible second tap.
@@ -249,10 +258,12 @@ void test_gesture_pipeline_two_taps_yield_double_tap() {
     (void)pipe.process(lc::Event{lc::event::PointerDown{100, 100}});
     (void)pipe.process(lc::Event{lc::event::PointerUp{100, 100}});
     const auto settle_ticks = lp::ms_to_ticks(lp::SETTLE_MS, 30);
-    for (std::uint8_t i = 0; i < settle_ticks; ++i) (void)pipe.tick();
+    for (std::uint8_t i = 0; i < settle_ticks; ++i)
+        (void)pipe.tick();
 
     // Small gap — within the double-tap window.
-    for (int i = 0; i < 2; ++i) (void)pipe.tick();
+    for (int i = 0; i < 2; ++i)
+        (void)pipe.tick();
 
     // Second tap.
     (void)pipe.process(lc::Event{lc::event::PointerDown{100, 100}});
@@ -270,7 +281,7 @@ void test_gesture_pipeline_two_taps_yield_double_tap() {
     assert(double_tap_seen);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_ms_to_ticks_scales_with_frame_rate();

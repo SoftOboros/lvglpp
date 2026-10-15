@@ -31,23 +31,22 @@ namespace {
 
 // Bounded spin. At HSI 64 MHz boot, 1M cycles ≈ 16 ms — comfortably
 // longer than VOSRDY / HSERDY / PLLnRDY datasheet typicals.
-template <typename Pred>
-[[nodiscard]] bool wait_until(Pred pred) noexcept {
+template <typename Pred> [[nodiscard]] bool wait_until(Pred pred) noexcept {
     for (std::uint32_t i = 0; i < 1'000'000u; ++i) {
-        if (pred()) return true;
+        if (pred())
+            return true;
     }
     return false;
 }
 
 [[noreturn]] void trap() noexcept {
-    for (;;) asm volatile ("bkpt 0");
+    for (;;)
+        asm volatile("bkpt 0");
 }
 
-void write_pll_dividers(volatile std::uint32_t& divr,
-                        std::uint16_t n,
-                        std::uint8_t  p,
-                        std::uint8_t  q,
-                        std::uint8_t  r) noexcept {
+void write_pll_dividers(volatile std::uint32_t& divr, std::uint16_t n,
+                        std::uint8_t p, std::uint8_t q,
+                        std::uint8_t r) noexcept {
     using namespace regs::plldivr;
     divr = pack(n, p, q, r);
 }
@@ -63,7 +62,7 @@ void init(const Plan& plan) noexcept {
         // SMPS-only by clearing LDOEN and setting SDEN. RM0399 §7.6.4.
         std::uint32_t cr3 = PWR->cr3;
         cr3 &= ~cr3::LDOEN;
-        cr3 |=  cr3::SDEN;
+        cr3 |= cr3::SDEN;
         PWR->cr3 = cr3;
 
         // Drive VOS to VOS1 (1.2 V).
@@ -84,10 +83,12 @@ void init(const Plan& plan) noexcept {
     // DIVMx + PLLSRC.
     {
         const std::uint32_t pllckselr =
-            pllckselr::PLLSRC_HSE
-            | (static_cast<std::uint32_t>(plan.pll1_m) << pllckselr::DIVM1_SHIFT)
-            | (static_cast<std::uint32_t>(plan.pll2_m) << pllckselr::DIVM2_SHIFT)
-            | (static_cast<std::uint32_t>(plan.pll3_m) << pllckselr::DIVM3_SHIFT);
+            pllckselr::PLLSRC_HSE |
+            (static_cast<std::uint32_t>(plan.pll1_m)
+             << pllckselr::DIVM1_SHIFT) |
+            (static_cast<std::uint32_t>(plan.pll2_m)
+             << pllckselr::DIVM2_SHIFT) |
+            (static_cast<std::uint32_t>(plan.pll3_m) << pllckselr::DIVM3_SHIFT);
         RCC->pllckselr = pllckselr;
     }
 
@@ -95,14 +96,16 @@ void init(const Plan& plan) noexcept {
     // 5 MHz — RGE = 0b10 (4..8 MHz). VCO target 800/300/800 MHz; all
     // ≥ 192 MHz so VCOSEL=0 (wide-VCO range, 192..836 MHz). FRACEN
     // off (no fractional multiplier).
-    RCC->pllcfgr =
-          pllcfgr::PLL1RGE_4_8 | pllcfgr::DIVP1EN | pllcfgr::DIVQ1EN
-        | pllcfgr::PLL2RGE_4_8 | pllcfgr::DIVR2EN
-        | pllcfgr::PLL3RGE_4_8 | pllcfgr::DIVR3EN;
+    RCC->pllcfgr = pllcfgr::PLL1RGE_4_8 | pllcfgr::DIVP1EN | pllcfgr::DIVQ1EN |
+                   pllcfgr::PLL2RGE_4_8 | pllcfgr::DIVR2EN |
+                   pllcfgr::PLL3RGE_4_8 | pllcfgr::DIVR3EN;
 
-    write_pll_dividers(RCC->pll1divr, plan.pll1_n, plan.pll1_p, plan.pll1_q, plan.pll1_r);
-    write_pll_dividers(RCC->pll2divr, plan.pll2_n, plan.pll2_p, plan.pll2_q, plan.pll2_r);
-    write_pll_dividers(RCC->pll3divr, plan.pll3_n, plan.pll3_p, plan.pll3_q, plan.pll3_r);
+    write_pll_dividers(RCC->pll1divr, plan.pll1_n, plan.pll1_p, plan.pll1_q,
+                       plan.pll1_r);
+    write_pll_dividers(RCC->pll2divr, plan.pll2_n, plan.pll2_p, plan.pll2_q,
+                       plan.pll2_r);
+    write_pll_dividers(RCC->pll3divr, plan.pll3_n, plan.pll3_p, plan.pll3_q,
+                       plan.pll3_r);
 
     // --- Step 4: Latch PLL1, PLL2, PLL3 -----------------------------
     // BENCH ITER (PLAT-02d §15.9): turn on ALL THREE PLLs here, BEFORE the
@@ -131,9 +134,9 @@ void init(const Plan& plan) noexcept {
         cfgr = (cfgr & ~cfgr::SW_MASK) | cfgr::SW_PLL1;
         RCC->cfgr = cfgr;
     }
-    if (!wait_until([] {
-        return (RCC->cfgr & cfgr::SWS_MASK) == cfgr::SWS_PLL1;
-    })) trap();
+    if (!wait_until(
+            [] { return (RCC->cfgr & cfgr::SWS_MASK) == cfgr::SWS_PLL1; }))
+        trap();
 
     // --- Step 7: Peripheral clock-gates -----------------------------
     // The H7 has dual-core RCC: each peripheral clock gate exists in
@@ -144,11 +147,11 @@ void init(const Plan& plan) noexcept {
     // PLAT-02e §5.1 FIX: DMA2D is AHB3 bit 4 on the H7 (the old
     // ahb1enr bit-23 gate was the F4/F7 position — DMA2D was never
     // clocked). rlvgl bench AHB3ENR=0x1010 = FMC|DMA2D.
-    RCC->ahb3enr    = RCC->ahb3enr
-                    | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
-    RCC->c1_ahb3enr = RCC->c1_ahb3enr
-                    | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
-    RCC->apb3enr    = RCC->apb3enr    | apb3enr::LTDCEN | apb3enr::DSIEN;
+    RCC->ahb3enr =
+        RCC->ahb3enr | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
+    RCC->c1_ahb3enr =
+        RCC->c1_ahb3enr | ahb3enr::FMCEN | ahb3enr::MDMAEN | ahb3enr::DMA2DEN;
+    RCC->apb3enr = RCC->apb3enr | apb3enr::LTDCEN | apb3enr::DSIEN;
     // PLAT-02d FIX: LTDC/DSI also need the per-core (CM7) gate, exactly
     // like FMC above. Without RCC_C1_APB3ENR set, the LTDC is ungated
     // from CM7's perspective during normal run: register writes are
@@ -161,17 +164,16 @@ void init(const Plan& plan) noexcept {
     // GPIO ports A,B,D,E,F,G,H,I,J,K (NOT C — no FMC/LTDC/DSI/touch
     // pin uses PCx in the PLAT-02b set; sub-phases that need PCx opt
     // in by setting the bit themselves).
-    RCC->ahb4enr = RCC->ahb4enr
-        | ahb4enr::bit(0)   // GPIOA
-        | ahb4enr::bit(1)   // GPIOB
-        | ahb4enr::bit(3)   // GPIOD
-        | ahb4enr::bit(4)   // GPIOE
-        | ahb4enr::bit(5)   // GPIOF
-        | ahb4enr::bit(6)   // GPIOG
-        | ahb4enr::bit(7)   // GPIOH
-        | ahb4enr::bit(8)   // GPIOI
-        | ahb4enr::bit(9)   // GPIOJ
-        | ahb4enr::bit(10); // GPIOK
+    RCC->ahb4enr = RCC->ahb4enr | ahb4enr::bit(0) // GPIOA
+                   | ahb4enr::bit(1)              // GPIOB
+                   | ahb4enr::bit(3)              // GPIOD
+                   | ahb4enr::bit(4)              // GPIOE
+                   | ahb4enr::bit(5)              // GPIOF
+                   | ahb4enr::bit(6)              // GPIOG
+                   | ahb4enr::bit(7)              // GPIOH
+                   | ahb4enr::bit(8)              // GPIOI
+                   | ahb4enr::bit(9)              // GPIOJ
+                   | ahb4enr::bit(10);            // GPIOK
 
     // --- Step 8: Kernel-clock muxes ---------------------------------
     // FMCSEL=PLL2_R required: SDCR.SDCLK=0b01 only produces a usable

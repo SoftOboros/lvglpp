@@ -19,8 +19,7 @@ namespace lvglpp::widgets {
 
 class Switch final : public ::lvglpp::core::Widget {
 public:
-    explicit Switch(::lvglpp::core::Rect bounds) noexcept
-        : bounds_{bounds} {}
+    explicit Switch(::lvglpp::core::Rect bounds) noexcept : bounds_{bounds} {}
 
     [[nodiscard]] bool is_on() const noexcept { return on_; }
     void set_on(bool value) noexcept { on_ = value; }
@@ -37,21 +36,20 @@ public:
 
     void draw(::lvglpp::core::Renderer& renderer) const override;
 
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
 private:
-    [[nodiscard]] bool inside_bounds(std::int32_t x, std::int32_t y) const noexcept {
-        return x >= bounds_.x &&
-               x <  bounds_.x + bounds_.width &&
-               y >= bounds_.y &&
-               y <  bounds_.y + bounds_.height;
+    [[nodiscard]] bool inside_bounds(std::int32_t x,
+                                     std::int32_t y) const noexcept {
+        return x >= bounds_.x && x < bounds_.x + bounds_.width &&
+               y >= bounds_.y && y < bounds_.y + bounds_.height;
     }
 
     ::lvglpp::core::Rect bounds_;
-    bool                 on_ = false;
+    bool on_ = false;
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_SWITCH_HPP
+#endif // LVGLPP_WIDGETS_SWITCH_HPP

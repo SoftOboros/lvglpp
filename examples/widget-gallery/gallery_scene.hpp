@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#include "lvglpp/core/plugins/rle.hpp"  // CORE-07n (LVGLPP_CORE_RLE)
+#include "lvglpp/core/plugins/rle.hpp" // CORE-07n (LVGLPP_CORE_RLE)
 #include "lvglpp/core/widget_node.hpp"
 #include "lvglpp/widgets/container.hpp"
 #include "lvglpp/widgets/image.hpp"
@@ -46,40 +46,38 @@ struct Scene {
 //   owns the Scene, or nullopt when the blob fails to decode.
 inline std::optional<Scene>
 build_scene(std::span<const std::uint8_t> icon_blob) {
-    Scene scene{core::WidgetNode{
-                    std::make_unique<widgets::Container>(
-                        core::Rect{0, 0, 800, 480}),
-                    "gallery.root"},
-                {}, 0, 0};
-    if (auto* cont = static_cast<widgets::Container*>(
-            scene.root.widget.get())) {
+    Scene scene{core::WidgetNode{std::make_unique<widgets::Container>(
+                                     core::Rect{0, 0, 800, 480}),
+                                 "gallery.root"},
+                {},
+                0,
+                0};
+    if (auto* cont =
+            static_cast<widgets::Container*>(scene.root.widget.get())) {
         cont->style.bg_color = core::Color{16, 24, 48, 255};
     }
 
     auto parsed = core::rle::parse_blob(icon_blob);
-    if (!parsed.has_value()) return std::nullopt;
+    if (!parsed.has_value())
+        return std::nullopt;
     const auto& view = parsed.value();
     scene.icon_w = view.width;
     scene.icon_h = view.height;
-    scene.icon_pixels.assign(
-        static_cast<std::size_t>(view.width) * view.height,
-        core::Color{});
-    if (!core::rle::decode_into(
-            view, std::span<core::Color>(scene.icon_pixels))
+    scene.icon_pixels.assign(static_cast<std::size_t>(view.width) * view.height,
+                             core::Color{});
+    if (!core::rle::decode_into(view, std::span<core::Color>(scene.icon_pixels))
              .has_value()) {
         return std::nullopt;
     }
 
-    auto list = std::make_unique<widgets::List>(
-        core::Rect{40, 40, 200, 80});
-    list->style.bg_color     = core::Color{16, 24, 48, 255};
+    auto list = std::make_unique<widgets::List>(core::Rect{40, 40, 200, 80});
+    list->style.bg_color = core::Color{16, 24, 48, 255};
     list->style.border_color = core::Color{255, 200, 0, 255};
-    list->text_color         = core::Color{255, 255, 255, 255};
+    list->text_color = core::Color{255, 255, 255, 255};
     list->add_item("alpha");
     list->add_item("beta");
     list->add_item("gamma");
-    scene.root.add_child(core::WidgetNode{std::move(list),
-                                          "gallery.list"});
+    scene.root.add_child(core::WidgetNode{std::move(list), "gallery.list"});
 
     auto image = std::make_unique<widgets::Image>(
         core::Rect{300, 40, static_cast<std::int32_t>(scene.icon_w),
@@ -87,10 +85,9 @@ build_scene(std::span<const std::uint8_t> icon_blob) {
         static_cast<std::int32_t>(scene.icon_w),
         static_cast<std::int32_t>(scene.icon_h),
         std::span<const core::Color>(scene.icon_pixels));
-    image->style.alpha = 0;  // pure blit; no bg behind the icon
-    scene.root.add_child(core::WidgetNode{std::move(image),
-                                          "gallery.icon"});
+    image->style.alpha = 0; // pure blit; no bg behind the icon
+    scene.root.add_child(core::WidgetNode{std::move(image), "gallery.icon"});
     return scene;
 }
 
-}  // namespace lvglpp::gallery
+} // namespace lvglpp::gallery

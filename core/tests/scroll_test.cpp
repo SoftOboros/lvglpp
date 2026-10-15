@@ -23,15 +23,15 @@ struct DisplayFixture {
     DisplayFixture() : display{lvglpp::LvDisplay::make(96, 96)} {
         assert(!display.empty());
         display.set_default();
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
         display.set_flush_callback(noop_flush);
     }
 
     [[nodiscard]] lvglpp::ObjectView active_screen() const noexcept {
-        return lvglpp::ObjectView{lv_display_get_screen_active(display.borrow_raw())};
+        return lvglpp::ObjectView{
+            lv_display_get_screen_active(display.borrow_raw())};
     }
 };
 
@@ -41,8 +41,8 @@ struct ScrollFixture {
     lvglpp::LvObject child;
 
     ScrollFixture()
-        : display{},
-          container{lvglpp::LvObject::make_child(display.active_screen())},
+        : display{}, container{lvglpp::LvObject::make_child(
+                         display.active_screen())},
           child{lvglpp::LvObject::make_child(container.borrow())} {
         container.add_flag(lvglpp::ObjectFlag::Scrollable);
         lv_obj_set_pos(container.borrow_raw(), 8, 8);
@@ -75,10 +75,17 @@ void record_scroll(lv_event_t* raw) {
     }
 
     switch (event.code().kind()) {
-        case lvglpp::EventCode::Kind::ScrollBegin: ++trace->begin; break;
-        case lvglpp::EventCode::Kind::Scroll:      ++trace->scroll; break;
-        case lvglpp::EventCode::Kind::ScrollEnd:   ++trace->end; break;
-        default: break;
+    case lvglpp::EventCode::Kind::ScrollBegin:
+        ++trace->begin;
+        break;
+    case lvglpp::EventCode::Kind::Scroll:
+        ++trace->scroll;
+        break;
+    case lvglpp::EventCode::Kind::ScrollEnd:
+        ++trace->end;
+        break;
+    default:
+        break;
     }
 }
 
@@ -106,14 +113,17 @@ void test_modes_and_snap_wrappers() {
     assert(lvglpp::scroll_direction(fixture.container.borrow()) ==
            lvglpp::ScrollDirection::Vertical);
 
-    lvglpp::set_scrollbar_mode(fixture.container.borrow(), lvglpp::ScrollbarMode::On);
+    lvglpp::set_scrollbar_mode(fixture.container.borrow(),
+                               lvglpp::ScrollbarMode::On);
     assert(lvglpp::scrollbar_mode(fixture.container.borrow()) ==
            lvglpp::ScrollbarMode::On);
 
-    lvglpp::set_scroll_snap_y(fixture.container.borrow(), lvglpp::ScrollSnap::Start);
+    lvglpp::set_scroll_snap_y(fixture.container.borrow(),
+                              lvglpp::ScrollSnap::Start);
     assert(lvglpp::scroll_snap_y(fixture.container.borrow()) ==
            lvglpp::ScrollSnap::Start);
-    lvglpp::set_scroll_snap_x(fixture.container.borrow(), lvglpp::ScrollSnap::Center);
+    lvglpp::set_scroll_snap_x(fixture.container.borrow(),
+                              lvglpp::ScrollSnap::Center);
     assert(lvglpp::scroll_snap_x(fixture.container.borrow()) ==
            lvglpp::ScrollSnap::Center);
 
@@ -125,33 +135,38 @@ void test_modes_and_snap_wrappers() {
 void test_programmatic_scroll_offsets_and_events() {
     ScrollFixture fixture;
     ScrollTrace trace;
-    auto all_events = lvglpp::add_event_callback(
-        fixture.container.borrow(), lvglpp::EventCode::all(), record_scroll, &trace);
+    auto all_events = lvglpp::add_event_callback(fixture.container.borrow(),
+                                                 lvglpp::EventCode::all(),
+                                                 record_scroll, &trace);
 
-    const auto initial_offset = lvglpp::scroll_offset(fixture.container.borrow());
+    const auto initial_offset =
+        lvglpp::scroll_offset(fixture.container.borrow());
     const lvglpp::ScrollOffset zero_offset{0, 0};
     assert(initial_offset == zero_offset);
     const auto extents = lvglpp::scroll_extents(fixture.container.borrow());
     assert(extents.bottom > 0);
 
-    lvglpp::scroll_to_y(fixture.container.borrow(), 24, lvglpp::AnimationMode::Off);
+    lvglpp::scroll_to_y(fixture.container.borrow(), 24,
+                        lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y == 24);
     assert(trace.begin >= 1);
     assert(trace.scroll >= 1);
     assert(trace.end >= 1);
 
-    lvglpp::scroll_by_bounded(
-        fixture.container.borrow(), 0, -10, lvglpp::AnimationMode::Off);
+    lvglpp::scroll_by_bounded(fixture.container.borrow(), 0, -10,
+                              lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y >= 24);
 
-    lvglpp::scroll_to(fixture.container.borrow(), 0, 12, lvglpp::AnimationMode::Off);
+    lvglpp::scroll_to(fixture.container.borrow(), 0, 12,
+                      lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y == 12);
 
     const auto end = lvglpp::scroll_end(fixture.container.borrow());
     assert(end.y == 12);
     assert(!lvglpp::is_scrolling(fixture.container.borrow()));
     lvglpp::stop_scroll_anim(fixture.container.borrow());
-    lvglpp::readjust_scroll(fixture.container.borrow(), lvglpp::AnimationMode::Off);
+    lvglpp::readjust_scroll(fixture.container.borrow(),
+                            lvglpp::AnimationMode::Off);
     lvglpp::update_snap(fixture.container.borrow(), lvglpp::AnimationMode::Off);
 }
 
@@ -165,9 +180,11 @@ void test_scroll_to_view_helpers() {
     lvglpp::scroll_to_view(low_child.borrow(), lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y > 0);
 
-    lvglpp::scroll_to_y(fixture.container.borrow(), 0, lvglpp::AnimationMode::Off);
+    lvglpp::scroll_to_y(fixture.container.borrow(), 0,
+                        lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y == 0);
-    lvglpp::scroll_to_view_recursive(low_child.borrow(), lvglpp::AnimationMode::Off);
+    lvglpp::scroll_to_view_recursive(low_child.borrow(),
+                                     lvglpp::AnimationMode::Off);
     assert(lvglpp::scroll_offset(fixture.container.borrow()).y > 0);
 }
 
@@ -188,11 +205,13 @@ void read_pointer(lv_indev_t* indev, lv_indev_data_t* data) {
 void test_synthetic_input_can_drive_lvgl_scroll_path() {
     ScrollFixture fixture;
     ScrollTrace trace;
-    auto all_events = lvglpp::add_event_callback(
-        fixture.container.borrow(), lvglpp::EventCode::all(), record_scroll, &trace);
+    auto all_events = lvglpp::add_event_callback(fixture.container.borrow(),
+                                                 lvglpp::EventCode::all(),
+                                                 record_scroll, &trace);
 
     PointerState pointer_state;
-    auto pointer = lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
+    auto pointer =
+        lvglpp::LvInputDevice::make(lvglpp::InputDeviceType::Pointer);
     pointer.set_display(fixture.display.display.borrow());
     pointer.set_user_data(&pointer_state);
     pointer.set_read_callback(read_pointer);
@@ -208,7 +227,7 @@ void test_synthetic_input_can_drive_lvgl_scroll_path() {
     assert(trace.begin >= 1 || trace.scroll >= 1);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

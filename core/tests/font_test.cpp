@@ -18,7 +18,7 @@ namespace {
 
 struct RecordingRenderer : Renderer {
     struct Op {
-        Rect  rect;
+        Rect rect;
         Color color;
     };
     std::vector<Op> ops;
@@ -26,10 +26,8 @@ struct RecordingRenderer : Renderer {
     void fill_rect(Rect rect, Color color) override {
         ops.push_back(Op{rect, color});
     }
-    void draw_text(std::int32_t /*x*/,
-                   std::int32_t /*y*/,
-                   std::string_view /*t*/,
-                   Color /*c*/) override {}
+    void draw_text(std::int32_t /*x*/, std::int32_t /*y*/,
+                   std::string_view /*t*/, Color /*c*/) override {}
 };
 
 // Hand-crafted tiny font: 1x1 glyph for ' ' (0x20), where the single
@@ -40,10 +38,11 @@ struct RecordingRenderer : Renderer {
 void test_bitmap_font_minimal_glyph_set() {
     constexpr std::array<std::uint8_t, 1> data{0x80};
     BitmapFont tiny{
-        /*.glyph_width  =*/ 1,
-        /*.glyph_height =*/ 1,
-        /*.scale        =*/ 1,
-        /*.data         =*/ std::span<const std::uint8_t>(data.data(), data.size()),
+        /*.glyph_width  =*/1,
+        /*.glyph_height =*/1,
+        /*.scale        =*/1,
+        /*.data         =*/
+        std::span<const std::uint8_t>(data.data(), data.size()),
     };
 
     RecordingRenderer r;
@@ -57,7 +56,8 @@ void test_bitmap_font_minimal_glyph_set() {
 // Tiny font with bit cleared — draw_char should issue zero calls.
 void test_bitmap_font_minimal_glyph_clear() {
     constexpr std::array<std::uint8_t, 1> data{0x00};
-    BitmapFont tiny{1, 1, 1, std::span<const std::uint8_t>(data.data(), data.size())};
+    BitmapFont tiny{1, 1, 1,
+                    std::span<const std::uint8_t>(data.data(), data.size())};
 
     RecordingRenderer r;
     tiny.draw_char(r, 0, 0, U' ', Color{0, 0, 0, 255});
@@ -66,7 +66,8 @@ void test_bitmap_font_minimal_glyph_clear() {
 
 void test_bitmap_font_skips_non_printable() {
     constexpr std::array<std::uint8_t, 1> data{0xFF};
-    BitmapFont tiny{1, 1, 1, std::span<const std::uint8_t>(data.data(), data.size())};
+    BitmapFont tiny{1, 1, 1,
+                    std::span<const std::uint8_t>(data.data(), data.size())};
 
     RecordingRenderer r;
     tiny.draw_char(r, 0, 0, /*ch=*/0x1F, Color{0, 0, 0, 255}); // below 0x20
@@ -78,10 +79,10 @@ void test_bitmap_font_skips_non_printable() {
 // a known glyph (' ' = blank) produces zero fill_rects.
 void test_built_in_font_6x10_scaled_dimensions() {
     using lvglpp::core::fonts::FONT_6X10;
-    assert(FONT_6X10.glyph_width  == 6);
+    assert(FONT_6X10.glyph_width == 6);
     assert(FONT_6X10.glyph_height == 10);
-    assert(FONT_6X10.scale        == 2);
-    assert(FONT_6X10.scaled_width()  == 12);
+    assert(FONT_6X10.scale == 2);
+    assert(FONT_6X10.scaled_width() == 12);
     assert(FONT_6X10.scaled_height() == 20);
     assert(FONT_6X10.data.size() == 713);
 }
@@ -105,7 +106,7 @@ void test_built_in_font_6x10_known_glyph_emits_fill_rects() {
     FONT_6X10.draw_char(r, 100, 200, U'!', Color{0, 255, 0, 255});
     assert(!r.ops.empty());
     for (const auto& op : r.ops) {
-        assert(op.rect.width  == 2);
+        assert(op.rect.width == 2);
         assert(op.rect.height == 2);
         assert(op.color == (Color{0, 255, 0, 255}));
         // Within the 12x20 scaled glyph box anchored at (100, 200).
@@ -124,11 +125,12 @@ void test_built_in_font_6x10_draw_str_advances() {
     RecordingRenderer single;
     FONT_6X10.draw_char(single, 100, 200, U'!', Color{0, 0, 0, 255});
 
-    FONT_6X10.draw_str(r, 100, 200, std::string_view{"! "}, Color{0, 0, 0, 255});
+    FONT_6X10.draw_str(r, 100, 200, std::string_view{"! "},
+                       Color{0, 0, 0, 255});
     assert(r.ops.size() == single.ops.size());
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_bitmap_font_minimal_glyph_set();

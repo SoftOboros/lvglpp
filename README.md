@@ -45,6 +45,34 @@ ctest --test-dir build --output-on-failure
 
 Requires CMake >= 3.20 and a C++20 toolchain.
 
+Formatting follows the four-space policy in [`.clang-format`](.clang-format).
+The policy preserves include and using-declaration order. Local commands and
+release CI use **LLVM clang-format 14.0.6**:
+
+```bash
+make format        # fix formatting
+make format-check  # read-only conformance check
+```
+
+Set `CLANG_FORMAT=/path/to/clang-format` if it is outside PATH. For example,
+install the pinned binary in a development venv with
+`python3 -m pip install clang-format==14.0.6`. The runner checks its version.
+It includes tracked and untracked C/C++ sources, excludes ignored build output,
+and leaves the LVGL/Rust submodules alone. Python 3.9+ and Git are required for
+these development commands; ordinary consumer builds do not need the formatter.
+
+CMake also provides `clang-format` and `clang-format-check` targets for standalone
+checkouts, including Ninja builds. Set `LVGLPP_CLANG_FORMAT` when configuring to
+select the formatter, or export `CLANG_FORMAT` before invoking the target:
+
+```bash
+cmake --build build --target clang-format
+cmake --build build --target clang-format-check
+```
+
+The Source release workflow requires `format-check` before packaging or preparing
+a release draft. It checks the same commit selected for the PR, tag, or manual run.
+
 ## Consumer and Buildroot builds
 
 Only the `lvgl/` submodule is required to build. Consumers that do not

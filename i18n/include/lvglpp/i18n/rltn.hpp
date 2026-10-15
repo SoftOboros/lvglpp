@@ -27,12 +27,12 @@ inline constexpr std::size_t RLTN_HEADER_SIZE = 8;
 inline constexpr std::size_t RLTN_ENTRY_SIZE = 6;
 
 enum class BlobError : std::uint8_t {
-  TooShort,      // smaller than the fixed header
-  BadMagic,      // header != "RLTN"
-  BadVersion,    // version != 1
-  CountMismatch, // locale/key counts differ from the built-in blob
-  OutOfBounds,   // an index entry points past the end of the blob
-  NoBuiltin,     // register_builtin() has not been called yet
+    TooShort,      // smaller than the fixed header
+    BadMagic,      // header != "RLTN"
+    BadVersion,    // version != 1
+    CountMismatch, // locale/key counts differ from the built-in blob
+    OutOfBounds,   // an index entry points past the end of the blob
+    NoBuiltin,     // register_builtin() has not been called yet
 };
 
 // Validate an RLTN v1 blob: header, version, expected dimensions, and

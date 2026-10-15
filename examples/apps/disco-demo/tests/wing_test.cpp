@@ -24,7 +24,8 @@ struct RecordingRenderer : lc::Renderer {
     int fills = 0;
     int blits = 0;
     void fill_rect(lc::Rect, lc::Color) override { ++fills; }
-    void draw_text(std::int32_t, std::int32_t, std::string_view, lc::Color) override {}
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   lc::Color) override {}
     void draw_pixels(std::int32_t, std::int32_t, std::span<const lc::Color>,
                      std::uint32_t, std::uint32_t) override {
         ++blits;
@@ -47,7 +48,8 @@ std::vector<std::uint8_t> red_2x2() {
     push_u16(blob, 0xF800);
     const std::vector<std::uint8_t> stream = {0x00, 0x04};
     push_u32(blob, static_cast<std::uint32_t>(stream.size()));
-    for (auto b : stream) blob.push_back(b);
+    for (auto b : stream)
+        blob.push_back(b);
     return blob;
 }
 
@@ -64,14 +66,14 @@ void test_visibility_toggle_and_bounds() {
     ad::Wing w{std::span<const IconPair>(pairs)};
 
     assert(!w.is_visible());
-    assert(w.bounds() == (lc::Rect{0, 0, 0, 0}));  // collapse when hidden
+    assert(w.bounds() == (lc::Rect{0, 0, 0, 0})); // collapse when hidden
 
-    assert(w.toggle_visible());  // now visible
+    assert(w.toggle_visible()); // now visible
     assert(w.is_visible());
     const lc::Rect vb = w.bounds();
     assert(vb.width > 0 && vb.height > 0);
 
-    assert(!w.toggle_visible());  // toggles to hidden (close)
+    assert(!w.toggle_visible()); // toggles to hidden (close)
     assert(!w.is_visible());
     assert(w.bounds() == (lc::Rect{0, 0, 0, 0}));
 }
@@ -81,8 +83,8 @@ void test_clear_region_after_close() {
     const auto pairs = two_slots(blob);
     ad::Wing w{std::span<const IconPair>(pairs)};
 
-    w.toggle_visible();  // visible
-    w.close();           // arms CLEAR_FRAMES countdown
+    w.toggle_visible(); // visible
+    w.close();          // arms CLEAR_FRAMES countdown
     // Exactly CLEAR_FRAMES (=3) non-null clear rects, then nullopt.
     for (std::uint8_t k = 0; k < ad::CLEAR_FRAMES; ++k) {
         assert(w.clear_region().has_value());
@@ -103,9 +105,9 @@ void test_tap_fires_and_closes() {
     assert(!w.handle_event(ev));
 
     w.toggle_visible();
-    assert(w.handle_event(ev));               // slot 0 hit (x<=70, y in [0,82))
+    assert(w.handle_event(ev)); // slot 0 hit (x<=70, y in [0,82))
     assert(tapped == std::optional<std::size_t>{0});
-    assert(!w.is_visible());                  // tap closes the wing
+    assert(!w.is_visible()); // tap closes the wing
 }
 
 void test_focus_get_set() {
@@ -129,11 +131,11 @@ void test_draw_visibility_gated() {
     w.toggle_visible();
     RecordingRenderer shown;
     w.draw(shown);
-    assert(shown.blits == 2);   // two decoded icons
-    assert(shown.fills >= 5);   // bg fill + 4-edge border (at least)
+    assert(shown.blits == 2); // two decoded icons
+    assert(shown.fills >= 5); // bg fill + 4-edge border (at least)
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_visibility_toggle_and_bounds();

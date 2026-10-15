@@ -23,7 +23,7 @@
 
 #include "lvglpp/core/renderer.hpp"
 #include "lvglpp/core/style.hpp"
-#include "lvglpp/core/widget.hpp"  // Color, Rect
+#include "lvglpp/core/widget.hpp" // Color, Rect
 
 namespace lvglpp::core {
 
@@ -33,11 +33,10 @@ namespace detail {
 // inside edge of `rect`. Mirrors the radius==0 code path of
 // rlvgl/core/src/draw.rs:425 (draw_border_straight) — four
 // fill_rect calls along the four edges.
-inline void draw_border_straight(Renderer& renderer,
-                                 Rect rect,
-                                 Color color,
+inline void draw_border_straight(Renderer& renderer, Rect rect, Color color,
                                  std::uint8_t width) noexcept {
-    if (width == 0) return;
+    if (width == 0)
+        return;
     const auto w = static_cast<std::int32_t>(width);
     if (rect.width < 2 * w || rect.height < 2 * w) {
         // Border thicker than half the rect — fall back to a solid
@@ -49,20 +48,17 @@ inline void draw_border_straight(Renderer& renderer,
     // Top edge.
     renderer.fill_rect(Rect{rect.x, rect.y, rect.width, w}, color);
     // Bottom edge.
-    renderer.fill_rect(
-        Rect{rect.x, rect.y + rect.height - w, rect.width, w},
-        color);
+    renderer.fill_rect(Rect{rect.x, rect.y + rect.height - w, rect.width, w},
+                       color);
     // Left edge (between top + bottom).
-    renderer.fill_rect(
-        Rect{rect.x, rect.y + w, w, rect.height - 2 * w},
-        color);
+    renderer.fill_rect(Rect{rect.x, rect.y + w, w, rect.height - 2 * w}, color);
     // Right edge.
     renderer.fill_rect(
         Rect{rect.x + rect.width - w, rect.y + w, w, rect.height - 2 * w},
         color);
 }
 
-}  // namespace detail
+} // namespace detail
 
 // fill_rounded_rect — call-shape parity with
 // `rlvgl/core/src/draw.rs:49`. The `radius` parameter is accepted
@@ -71,9 +67,7 @@ inline void draw_border_straight(Renderer& renderer,
 // regardless of radius. Widgets call this with `style.radius` so
 // the rlvgl-equivalent draw shape lands today and the rounding
 // becomes pixel-correct when CORE-04b ships.
-inline void fill_rounded_rect(Renderer& renderer,
-                              Rect rect,
-                              Color color,
+inline void fill_rounded_rect(Renderer& renderer, Rect rect, Color color,
                               std::uint8_t /*radius*/) noexcept {
     // CORE-04a DELTA: rounded rendering deferred to CORE-04b.
     if (color.a == 255) {
@@ -96,8 +90,7 @@ inline void fill_rounded_rect(Renderer& renderer,
 // path (sharp corners) and proceeds. A future CORE-04b sub-phase
 // will route the radius>0 case through fill_rounded_rect /
 // draw_rounded_border.
-inline void draw_widget_bg(Renderer& renderer,
-                           Rect rect,
+inline void draw_widget_bg(Renderer& renderer, Rect rect,
                            const Style& style) noexcept {
     const Color bg = style.bg_color.with_alpha(style.alpha);
     if (bg.a != 0) {
@@ -112,11 +105,11 @@ inline void draw_widget_bg(Renderer& renderer,
         const Color border = style.border_color.with_alpha(style.alpha);
         if (border.a != 0) {
             detail::draw_border_straight(renderer, rect, border,
-                                          style.border_width);
+                                         style.border_width);
         }
     }
 }
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_DRAW_HELPERS_HPP
+#endif // LVGLPP_CORE_DRAW_HELPERS_HPP

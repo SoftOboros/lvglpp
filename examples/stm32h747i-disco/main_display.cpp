@@ -81,7 +81,7 @@
 
 namespace {
 
-inline void dsb() noexcept { asm volatile ("dsb" ::: "memory"); }
+inline void dsb() noexcept { asm volatile("dsb" ::: "memory"); }
 
 inline volatile std::uint32_t* d3(std::uintptr_t off) noexcept {
     return reinterpret_cast<volatile std::uint32_t*>(0x3800'0300u + off);
@@ -93,11 +93,11 @@ inline volatile std::uint32_t* d3(std::uintptr_t off) noexcept {
 //   top-left  RED   top-right    GREEN
 //   bot-left  BLUE  bot-right    WHITE
 void fill_pattern() noexcept {
-    constexpr std::uint32_t W = lvglpp::disco::display::PANEL_W;  // 480
-    constexpr std::uint32_t H = lvglpp::disco::display::PANEL_H;  // 800
-    constexpr std::uint32_t RED   = 0xFFFF'0000u;
+    constexpr std::uint32_t W = lvglpp::disco::display::PANEL_W; // 480
+    constexpr std::uint32_t H = lvglpp::disco::display::PANEL_H; // 800
+    constexpr std::uint32_t RED = 0xFFFF'0000u;
     constexpr std::uint32_t GREEN = 0xFF00'FF00u;
-    constexpr std::uint32_t BLUE  = 0xFF00'00FFu;
+    constexpr std::uint32_t BLUE = 0xFF00'00FFu;
     constexpr std::uint32_t WHITE = 0xFFFF'FFFFu;
 
     auto* fb = reinterpret_cast<volatile std::uint32_t*>(
@@ -108,11 +108,11 @@ void fill_pattern() noexcept {
         for (std::uint32_t x = 0; x < W; ++x) {
             std::uint32_t c;
             if (x == 0 || x == W - 1 || y == 0 || y == H - 1) {
-                c = WHITE;                       // 1px border
+                c = WHITE; // 1px border
             } else if (top) {
-                c = (x < W / 2) ? RED : GREEN;   // top-left / top-right
+                c = (x < W / 2) ? RED : GREEN; // top-left / top-right
             } else {
-                c = (x < W / 2) ? BLUE : WHITE;  // bot-left / bot-right
+                c = (x < W / 2) ? BLUE : WHITE; // bot-left / bot-right
             }
             fb[y * W + x] = c;
         }
@@ -130,10 +130,10 @@ void fill_pattern() noexcept {
 // to the DSI→panel path.
 constexpr std::uint32_t CAP_W = 48;
 constexpr std::uint32_t CAP_H = 80;
-constexpr std::uint32_t CAP_STEP = 10;  // 480/10=48, 800/10=80
+constexpr std::uint32_t CAP_STEP = 10; // 480/10=48, 800/10=80
 
 void capture_framebuffer(std::uintptr_t cap_base) noexcept {
-    constexpr std::uint32_t W = lvglpp::disco::display::PANEL_W;  // 480
+    constexpr std::uint32_t W = lvglpp::disco::display::PANEL_W; // 480
     const auto* fb = reinterpret_cast<volatile std::uint32_t*>(
         lvglpp::disco::display::FRAMEBUFFER_BASE);
     auto* cap = reinterpret_cast<volatile std::uint32_t*>(cap_base);
@@ -147,10 +147,10 @@ void capture_framebuffer(std::uintptr_t cap_base) noexcept {
 
 void relay_status() noexcept {
     using namespace lvglpp::disco::regs;
-    *d3(0x20) = DSI.ref().psr;       // DSI_PSR
-    *d3(0x24) = LTDC.ref().cdsr;     // LTDC_CDSR
-    *d3(0x28) = DSI_W.ref().wisr;    // DSI_WISR
-    *d3(0x2C) = 0x600D'0000u;        // reached-end marker
+    *d3(0x20) = DSI.ref().psr;    // DSI_PSR
+    *d3(0x24) = LTDC.ref().cdsr;  // LTDC_CDSR
+    *d3(0x28) = DSI_W.ref().wisr; // DSI_WISR
+    *d3(0x2C) = 0x600D'0000u;     // reached-end marker
     dsb();
 }
 
@@ -160,21 +160,21 @@ void relay_status() noexcept {
 // visible rectangle proves the DMA2D engine wrote it.
 void dma2d_first_fill() noexcept {
     namespace disco = lvglpp::disco;
-    constexpr std::uint32_t W = disco::display::PANEL_W;  // 480
-    constexpr std::uint32_t H = disco::display::PANEL_H;  // 800
+    constexpr std::uint32_t W = disco::display::PANEL_W; // 480
+    constexpr std::uint32_t H = disco::display::PANEL_H; // 800
     constexpr std::uint32_t RECT_W = 200;
     constexpr std::uint32_t RECT_H = 300;
     constexpr std::uint32_t X0 = (W - RECT_W) / 2;
     constexpr std::uint32_t Y0 = (H - RECT_H) / 2;
     constexpr std::uint32_t MAGENTA = 0xFFFF'00FFu;
 
-    *d3(0x88) = disco::regs::RCC->ahb3enr;  // expect DMA2DEN (bit 4)
+    *d3(0x88) = disco::regs::RCC->ahb3enr; // expect DMA2DEN (bit 4)
 
     disco::dma2d::init();
     auto* fb = reinterpret_cast<volatile std::uint32_t*>(
         disco::display::FRAMEBUFFER_BASE);
-    const bool ok = disco::dma2d::fill(fb + Y0 * W + X0, W,
-                                       RECT_W, RECT_H, MAGENTA);
+    const bool ok =
+        disco::dma2d::fill(fb + Y0 * W + X0, W, RECT_W, RECT_H, MAGENTA);
 
     *d3(0x80) = ok ? 0x600D'F111u : 0xBAD0'F111u;
     *d3(0x84) = disco::dma2d::last_error();
@@ -186,21 +186,23 @@ void dma2d_first_fill() noexcept {
     // CPU pixel-verify (eyes-substitute): sample inside the rect (must
     // be magenta) and just outside each edge (must be the untouched
     // quadrant color). Fail bitmask relayed to 0x38C.
-    struct Sample { std::uint32_t x, y, expect; };
-    constexpr std::uint32_t RED  = 0xFFFF'0000u;
+    struct Sample {
+        std::uint32_t x, y, expect;
+    };
+    constexpr std::uint32_t RED = 0xFFFF'0000u;
     constexpr std::uint32_t GREEN = 0xFF00'FF00u;
     constexpr std::uint32_t BLUE = 0xFF00'00FFu;
     constexpr Sample samples[] = {
-        {X0,              Y0,              MAGENTA},  // rect TL
-        {X0 + RECT_W - 1, Y0,              MAGENTA},  // rect TR
-        {X0,              Y0 + RECT_H - 1, MAGENTA},  // rect BL
-        {X0 + RECT_W - 1, Y0 + RECT_H - 1, MAGENTA},  // rect BR
-        {X0 + RECT_W / 2, Y0 + RECT_H / 2, MAGENTA},  // rect center
-        {X0 - 1,          Y0,              RED},      // left of rect, top
-        {X0 + RECT_W,     Y0,              GREEN},    // right of rect, top
-        {X0 - 1,          Y0 + RECT_H - 1, BLUE},     // left of rect, bottom
-        {X0,              Y0 - 1,          RED},      // above rect
-        {X0,              Y0 + RECT_H,     BLUE},     // below rect
+        {X0, Y0, MAGENTA},                           // rect TL
+        {X0 + RECT_W - 1, Y0, MAGENTA},              // rect TR
+        {X0, Y0 + RECT_H - 1, MAGENTA},              // rect BL
+        {X0 + RECT_W - 1, Y0 + RECT_H - 1, MAGENTA}, // rect BR
+        {X0 + RECT_W / 2, Y0 + RECT_H / 2, MAGENTA}, // rect center
+        {X0 - 1, Y0, RED},                           // left of rect, top
+        {X0 + RECT_W, Y0, GREEN},                    // right of rect, top
+        {X0 - 1, Y0 + RECT_H - 1, BLUE},             // left of rect, bottom
+        {X0, Y0 - 1, RED},                           // above rect
+        {X0, Y0 + RECT_H, BLUE},                     // below rect
     };
     std::uint32_t fail = 0;
     for (std::uint32_t i = 0; i < sizeof(samples) / sizeof(samples[0]); ++i) {
@@ -220,13 +222,13 @@ void dma2d_blit_gate() noexcept {
     namespace disco = lvglpp::disco;
     constexpr std::uint32_t W = disco::display::PANEL_W;
     constexpr std::uint32_t BW = 120, BH = 20;
-    constexpr std::uint32_t SX = 10,  SY = 390;   // spans seam at y=400
-    constexpr std::uint32_t DX = 330, DY = 20;    // inside GREEN quadrant
+    constexpr std::uint32_t SX = 10, SY = 390; // spans seam at y=400
+    constexpr std::uint32_t DX = 330, DY = 20; // inside GREEN quadrant
 
     auto* fb = reinterpret_cast<volatile std::uint32_t*>(
         disco::display::FRAMEBUFFER_BASE);
-    const bool ok = disco::dma2d::blit(fb + SY * W + SX, W,
-                                       fb + DY * W + DX, W, BW, BH);
+    const bool ok =
+        disco::dma2d::blit(fb + SY * W + SX, W, fb + DY * W + DX, W, BW, BH);
     *d3(0x90) = ok ? 0x600D'B117u : 0xBAD0'B117u;
 
     std::uint32_t mismatches = 0;
@@ -251,11 +253,13 @@ void dma2d_async_gate() noexcept {
     namespace d2 = lvglpp::disco::dma2d;
     constexpr std::uint32_t W = disco::display::PANEL_W;
     constexpr std::uint32_t H = disco::display::PANEL_H;
-    struct Rect { std::uint32_t x, y, argb; };
+    struct Rect {
+        std::uint32_t x, y, argb;
+    };
     constexpr Rect rects[] = {
-        {40,  40,  0xFFFF'FF00u},   // yellow,  RED quadrant
-        {220, 380, 0xFF00'FFFFu},   // cyan,    spans the center seams
-        {400, 720, 0xFFFF'8000u},   // orange,  WHITE quadrant
+        {40, 40, 0xFFFF'FF00u},   // yellow,  RED quadrant
+        {220, 380, 0xFF00'FFFFu}, // cyan,    spans the center seams
+        {400, 720, 0xFFFF'8000u}, // orange,  WHITE quadrant
     };
 
     d2::enable_irq();
@@ -267,7 +271,10 @@ void dma2d_async_gate() noexcept {
             static_cast<disco::FrameBuffer&&>(fb), r.x, r.y, 40, 40, r.argb);
         bool latched = false;
         for (std::uint32_t i = 0; i < 100'000'000u; ++i) {
-            if (d2::take_complete()) { latched = true; break; }
+            if (d2::take_complete()) {
+                latched = true;
+                break;
+            }
         }
         fb = inflight.try_release();
         ok = ok && latched && fb.valid();
@@ -323,7 +330,8 @@ void emit_dump(const lvglpp::playit::DumpSpec& spec) noexcept {
                 const std::int32_t y = spec.y + row;
                 const bool in = x >= 0 && x < W && y >= 0 && y < H;
                 put_hex_u32(in ? fb[y * W + x] : 0u);
-                if (col + 1 < spec.width) disco::usart::put(" ");
+                if (col + 1 < spec.width)
+                    disco::usart::put(" ");
             }
             disco::usart::put("\r\n");
         }
@@ -348,25 +356,25 @@ std::uint32_t g_clicks = 0;
     // dispatcher live for the life of the pump.
     // Styled for blind D-dump verification (PLAT-02e-3b): every
     // surface a distinct, greppable ARGB value.
-    constexpr cc::Color NAVY  {16,  24,  48,  255};  // FF101830
-    constexpr cc::Color FACE  {200, 60,  60,  255};  // FFC83C3C
-    constexpr cc::Color WHITE {255, 255, 255, 255};  // FFFFFFFF
+    constexpr cc::Color NAVY{16, 24, 48, 255};     // FF101830
+    constexpr cc::Color FACE{200, 60, 60, 255};    // FFC83C3C
+    constexpr cc::Color WHITE{255, 255, 255, 255}; // FFFFFFFF
 
     static cc::WidgetNode root = [&] {
         auto cont = std::make_unique<wi::Container>(cc::Rect{0, 0, 480, 800});
         cont->style.bg_color = NAVY;
         cc::WidgetNode node{std::move(cont), "root"};
 
-        auto title = std::make_unique<wi::Label>(
-            std::string{"lvglpp"}, cc::Rect{40, 40, 200, 32});
+        auto title = std::make_unique<wi::Label>(std::string{"lvglpp"},
+                                                 cc::Rect{40, 40, 200, 32});
         title->style.bg_color = NAVY;
-        title->text_color     = WHITE;
+        title->text_color = WHITE;
         node.add_child(cc::WidgetNode{std::move(title), "title"});
 
-        auto btn = std::make_unique<wi::Button>(
-            std::string{"Dark"}, cc::Rect{40, 600, 200, 64});
+        auto btn = std::make_unique<wi::Button>(std::string{"Dark"},
+                                                cc::Rect{40, 600, 200, 64});
         btn->style().bg_color = FACE;
-        btn->text_color()     = WHITE;
+        btn->text_color() = WHITE;
         btn->set_on_click([](wi::Button&) { *d3(0xC0) = ++g_clicks; });
         node.add_child(cc::WidgetNode{std::move(btn), "dark_mode"});
         return node;
@@ -377,9 +385,8 @@ std::uint32_t g_clicks = 0;
     // PLAT-02d/02e test pattern + gate rects are intentionally
     // painted over — from here on, serial D dumps show real widgets.
     static lvglpp::disco::FrameBuffer fb{
-        disco::display::FRAMEBUFFER_BASE,
-        disco::display::PANEL_W, disco::display::PANEL_H,
-        disco::display::PANEL_W};
+        disco::display::FRAMEBUFFER_BASE, disco::display::PANEL_W,
+        disco::display::PANEL_H, disco::display::PANEL_W};
     static lvglpp::disco::DiscoRenderer renderer{fb};
     root.draw(renderer);
 
@@ -404,11 +411,12 @@ std::uint32_t g_clicks = 0;
             if (busy != 0u && prev_busy == 0u) {
                 ++presents;
                 const std::uint32_t now = disco::regs::DWT.ref().cyccnt;
-                interval      = now - last_edge_cyc;
+                interval = now - last_edge_cyc;
                 last_edge_cyc = now;
-                interval_ema  = interval_ema == 0u
-                    ? interval
-                    : interval_ema - (interval_ema >> 3) + (interval >> 3);
+                interval_ema =
+                    interval_ema == 0u
+                        ? interval
+                        : interval_ema - (interval_ema >> 3) + (interval >> 3);
             }
             prev_busy = busy;
         }
@@ -424,9 +432,11 @@ std::uint32_t g_clicks = 0;
                         // framebuffer reader); everything else goes
                         // through the real host-tested Dispatcher.
                         if (std::get_if<pi::command::Status>(&*cmd)) {
-                            send_response(pi::response::Status{{tick, presents}});
+                            send_response(
+                                pi::response::Status{{tick, presents}});
                         } else if (const auto* d =
-                                       std::get_if<pi::command::DumpPixels>(&*cmd)) {
+                                       std::get_if<pi::command::DumpPixels>(
+                                           &*cmd)) {
                             emit_dump(d->spec);
                         } else {
                             send_response(dispatcher.dispatch(*cmd));
@@ -442,10 +452,10 @@ std::uint32_t g_clicks = 0;
             } else if (len < sizeof(line)) {
                 line[len++] = ch;
             } else {
-                len = 0;  // oversize line: drop, resync at newline
+                len = 0; // oversize line: drop, resync at newline
             }
         }
-        if ((tick & 0xFFFu) == 0) {  // relay refresh, ~per-ms scale
+        if ((tick & 0xFFFu) == 0) { // relay refresh, ~per-ms scale
             *d3(0xA0) = lines;
             *d3(0xA4) = g_clicks;
             *d3(0xA8) = disco::usart::rx_overruns();
@@ -461,24 +471,22 @@ std::uint32_t g_clicks = 0;
 } // namespace
 
 int main() {
-    lvglpp::disco::clocks::init();          // 0xA11C_0005
-    lvglpp::disco::pinmux::mux_fmc_pins();  // 0xA11C_0007
-    lvglpp::disco::sdram::init();            // 0xA11C_0009
+    lvglpp::disco::clocks::init();         // 0xA11C_0005
+    lvglpp::disco::pinmux::mux_fmc_pins(); // 0xA11C_0007
+    lvglpp::disco::sdram::init();          // 0xA11C_0009
 
     fill_pattern();
-    capture_framebuffer(0x3800'1000u);       // pre-display CPU pattern
+    capture_framebuffer(0x3800'1000u); // pre-display CPU pattern
 
-    lvglpp::disco::display::init();          // 0xA11C_000B (+ LTDC retry diag)
+    lvglpp::disco::display::init(); // 0xA11C_000B (+ LTDC retry diag)
 
     relay_status();
 
-    dma2d_first_fill();                      // 0xA11C_000D on success
+    dma2d_first_fill(); // 0xA11C_000D on success
     dma2d_blit_gate();
-    dma2d_async_gate();                      // PLAT-02e-2 ISR latch path
-    capture_framebuffer(0x3800'5000u);       // post-DMA2D blind capture
+    dma2d_async_gate();                // PLAT-02e-2 ISR latch path
+    capture_framebuffer(0x3800'5000u); // post-DMA2D blind capture
 
     lvglpp::disco::usart::init();
-    serial_pump();                           // never returns
+    serial_pump(); // never returns
 }
-
-

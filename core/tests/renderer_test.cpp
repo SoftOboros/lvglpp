@@ -18,7 +18,7 @@ namespace {
 // Test-only renderer that records every fill_rect call.
 struct RecordingRenderer : Renderer {
     struct Op {
-        Rect  rect;
+        Rect rect;
         Color color;
         bool operator==(const Op&) const noexcept = default;
     };
@@ -28,22 +28,20 @@ struct RecordingRenderer : Renderer {
         ops.push_back(Op{rect, color});
     }
 
-    void draw_text(std::int32_t /*x*/,
-                   std::int32_t /*y*/,
-                   std::string_view /*text*/,
-                   Color /*color*/) override {
+    void draw_text(std::int32_t /*x*/, std::int32_t /*y*/,
+                   std::string_view /*text*/, Color /*color*/) override {
         // Not exercised by the default-impl tests; intentionally empty.
     }
 };
 
 void test_blend_rect_default_calls_fill_rect() {
     RecordingRenderer r;
-    Rect  rect{1, 2, 30, 40};
+    Rect rect{1, 2, 30, 40};
     Color color{50, 60, 70, 80};
 
     r.blend_rect(rect, color);
     assert(r.ops.size() == 1);
-    assert(r.ops[0].rect  == rect);
+    assert(r.ops[0].rect == rect);
     assert(r.ops[0].color == color);
 }
 
@@ -85,13 +83,12 @@ void test_draw_pixels_short_buffer_skips_oob() {
     // rlvgl/core/src/renderer.rs:36 (`if let Some(&c) =
     // pixels.get(idx)`).
     std::array<Color, 2> pixels{Color{9, 9, 9, 9}, Color{8, 8, 8, 8}};
-    r.draw_pixels(0, 0,
-                  std::span<const Color>{pixels.data(), pixels.size()},
-                  2, 2);
+    r.draw_pixels(0, 0, std::span<const Color>{pixels.data(), pixels.size()}, 2,
+                  2);
     assert(r.ops.size() == 2);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_blend_rect_default_calls_fill_rect();

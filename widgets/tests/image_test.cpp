@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <string_view>
 
-
 namespace lc = lvglpp::core;
 namespace lw = lvglpp::widgets;
 
@@ -41,7 +40,7 @@ void test_golden_2x2() {
         lc::Color{0, 0, 255, 255}, lc::Color{255, 255, 255, 255}};
     lw::Image img{lc::Rect{3, 4, 2, 2}, 2, 2,
                   std::span<const lc::Color>{pixels}};
-    img.style.alpha = 0;  // suppress the bg fill; isolate the blit
+    img.style.alpha = 0; // suppress the bg fill; isolate the blit
 
     MemorySurface surf;
     img.draw(surf);
@@ -62,7 +61,7 @@ void test_passive_and_accessors() {
     assert(!img.handle_event(lc::Event{lc::event::PressRelease{0, 0}}));
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_golden_2x2();

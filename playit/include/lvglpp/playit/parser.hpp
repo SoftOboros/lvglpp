@@ -39,6 +39,6 @@ namespace lvglpp::playit {
 [[nodiscard]] std::optional<Command>
 parse_command(std::string_view line) noexcept;
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_PARSER_HPP
+#endif // LVGLPP_PLAYIT_PARSER_HPP

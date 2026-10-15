@@ -22,11 +22,11 @@ namespace lvglpp::playit {
 
 // Mirrors rlvgl/playit/src/command.rs:138.
 struct DumpSpec {
-    std::int32_t  x      = 0;
-    std::int32_t  y      = 0;
-    std::uint16_t width  = 1;   // clamped 1..=40 by the parser
-    std::uint16_t height = 1;   // clamped 1..=40 by the parser
-    std::uint8_t  frames = 1;   // clamped 1..=4 by the parser
+    std::int32_t x = 0;
+    std::int32_t y = 0;
+    std::uint16_t width = 1;  // clamped 1..=40 by the parser
+    std::uint16_t height = 1; // clamped 1..=40 by the parser
+    std::uint8_t frames = 1;  // clamped 1..=4 by the parser
 
     constexpr bool operator==(const DumpSpec&) const noexcept = default;
 };
@@ -62,7 +62,7 @@ struct InjectTagged {
     // borrows: lifetime tied to the input line that fed the parser.
     // Must not outlive that buffer.
     std::string_view tag{};
-    EventSpec        event{};
+    EventSpec event{};
     constexpr bool operator==(const InjectTagged&) const noexcept = default;
 };
 
@@ -92,24 +92,16 @@ struct Extension {
     constexpr bool operator==(const Extension&) const noexcept = default;
 };
 
-}  // namespace command
+} // namespace command
 
 // Sum type over every wire-protocol command. Mirrors the variant set
 // in rlvgl/playit/src/command.rs:7.
-using Command = std::variant<
-    command::Inject,
-    command::InjectTagged,
-    command::QueryBounds,
-    command::QueryExists,
-    command::QueryChildCount,
-    command::DumpPixels,
-    command::Status,
-    command::RecordStart,
-    command::RecordStop,
-    command::RecordDump,
-    command::Extension
->;
+using Command =
+    std::variant<command::Inject, command::InjectTagged, command::QueryBounds,
+                 command::QueryExists, command::QueryChildCount,
+                 command::DumpPixels, command::Status, command::RecordStart,
+                 command::RecordStop, command::RecordDump, command::Extension>;
 
-}  // namespace lvglpp::playit
+} // namespace lvglpp::playit
 
-#endif  // LVGLPP_PLAYIT_COMMAND_HPP
+#endif // LVGLPP_PLAYIT_COMMAND_HPP

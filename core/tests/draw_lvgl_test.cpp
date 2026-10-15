@@ -17,7 +17,8 @@ struct Recorder {
     std::vector<lvglpp::LvArea> flushed;
 };
 
-void on_flush(lv_display_t* display, const lv_area_t* area, std::uint8_t* /*px_map*/) {
+void on_flush(lv_display_t* display, const lv_area_t* area,
+              std::uint8_t* /*px_map*/) {
     auto* recorder = static_cast<Recorder*>(lv_display_get_user_data(display));
     if (recorder != nullptr && area != nullptr) {
         recorder->flushed.push_back(lvglpp::LvArea::from_lv(*area));
@@ -33,24 +34,22 @@ struct Fixture {
     Fixture() : display{lvglpp::LvDisplay::make(96, 64)} {
         display.set_default();
         lv_display_set_user_data(display.borrow_raw(), &recorder);
-        display.set_buffers(draw_buffer.data(),
-                            nullptr,
+        display.set_buffers(draw_buffer.data(), nullptr,
                             static_cast<std::uint32_t>(draw_buffer.size()),
                             LV_DISPLAY_RENDER_MODE_PARTIAL);
         display.set_flush_callback(on_flush);
     }
 
     [[nodiscard]] lvglpp::ObjectView active_screen() const noexcept {
-        return lvglpp::ObjectView{lv_display_get_screen_active(display.borrow_raw())};
+        return lvglpp::ObjectView{
+            lv_display_get_screen_active(display.borrow_raw())};
     }
 };
 
 std::array<std::uint8_t, 16> make_argb8888_pixels() {
     return std::array<std::uint8_t, 16>{
-        0xFF, 0xFF, 0x00, 0x00,
-        0xFF, 0x00, 0xFF, 0x00,
-        0xFF, 0x00, 0x00, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+        0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     };
 }
 
@@ -117,10 +116,12 @@ void test_image_descriptor_and_widget(Fixture& fixture) {
     assert(descriptor.borrow_raw()->header.h == 2);
     assert(descriptor.borrow_raw()->header.stride ==
            lv_draw_buf_width_to_stride(2, LV_COLOR_FORMAT_ARGB8888));
-    assert(lvglpp::image_source_type(descriptor.borrow()) == LV_IMAGE_SRC_VARIABLE);
+    assert(lvglpp::image_source_type(descriptor.borrow()) ==
+           LV_IMAGE_SRC_VARIABLE);
 
     auto owned_pixels = make_argb8888_pixels();
-    std::vector<std::uint8_t> owned_data(owned_pixels.begin(), owned_pixels.end());
+    std::vector<std::uint8_t> owned_data(owned_pixels.begin(),
+                                         owned_pixels.end());
     auto owned_descriptor = lvglpp::LvImageDescriptor::owned(
         2, 2, LV_COLOR_FORMAT_ARGB8888, std::move(owned_data));
     assert(owned_descriptor.owns_data());
@@ -227,7 +228,7 @@ void test_move_and_release(Fixture& fixture) {
     lv_obj_delete(raw_image);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     lvglpp::Runtime runtime;

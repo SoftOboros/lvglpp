@@ -28,7 +28,7 @@
 #include <string_view>
 
 #include "lvglpp/core/renderer.hpp"
-#include "lvglpp/core/widget.hpp"  // Color, Rect
+#include "lvglpp/core/widget.hpp" // Color, Rect
 
 namespace lvglpp::core {
 
@@ -44,9 +44,9 @@ namespace lvglpp::core {
 // glyph storage that lives elsewhere (typically a static array in a
 // generated translation unit, or a memory-mapped flash region).
 struct BitmapFont {
-    std::uint8_t glyph_width  = 0;
+    std::uint8_t glyph_width = 0;
     std::uint8_t glyph_height = 0;
-    std::uint8_t scale        = 1;
+    std::uint8_t scale = 1;
     // borrows: glyph blob; lifetime is the application's. Mirrors
     // rlvgl's &'static [u8].
     std::span<const std::uint8_t> data{};
@@ -64,14 +64,12 @@ struct BitmapFont {
     // Render a single character at (x, y). Mirrors
     // rlvgl/core/src/bitmap_font.rs:39 — same indexing math, same
     // MSB-first bit order, same scale-replication via fill_rect.
-    void draw_char(Renderer& renderer,
-                   std::int32_t x,
-                   std::int32_t y,
-                   char32_t ch,
-                   Color color) const {
-        if (ch < 0x20U || ch > 0x7EU) return;  // non-printable
-        const auto idx = static_cast<std::size_t>(
-            static_cast<std::uint32_t>(ch) - 0x20U);
+    void draw_char(Renderer& renderer, std::int32_t x, std::int32_t y,
+                   char32_t ch, Color color) const {
+        if (ch < 0x20U || ch > 0x7EU)
+            return; // non-printable
+        const auto idx =
+            static_cast<std::size_t>(static_cast<std::uint32_t>(ch) - 0x20U);
         const std::size_t bits_per_glyph =
             static_cast<std::size_t>(glyph_width) *
             static_cast<std::size_t>(glyph_height);
@@ -80,10 +78,9 @@ struct BitmapFont {
 
         for (std::size_t row = 0; row < glyph_height; ++row) {
             for (std::size_t col = 0; col < glyph_width; ++col) {
-                const std::size_t bit =
-                    bit_offset + row * glyph_width + col;
+                const std::size_t bit = bit_offset + row * glyph_width + col;
                 const std::size_t byte_idx = bit / 8U;
-                const std::size_t bit_idx  = 7U - (bit % 8U);
+                const std::size_t bit_idx = 7U - (bit % 8U);
                 if (byte_idx < data.size() &&
                     ((data[byte_idx] >> bit_idx) & 1U) != 0U) {
                     renderer.fill_rect(
@@ -105,11 +102,8 @@ struct BitmapFont {
     // Args:
     //   text: borrows; UTF-8. Non-ASCII codepoints are skipped per
     //         draw_char's printable-range check.
-    void draw_str(Renderer& renderer,
-                  std::int32_t x,
-                  std::int32_t y,
-                  std::string_view text,
-                  Color color) const {
+    void draw_str(Renderer& renderer, std::int32_t x, std::int32_t y,
+                  std::string_view text, Color color) const {
         const auto advance = scaled_width() + static_cast<std::int32_t>(scale);
         std::int32_t cx = x;
         for (char ch : text) {
@@ -117,22 +111,23 @@ struct BitmapFont {
             // skipped because draw_char's range check filters them.
             // BitmapFont is ASCII-only by design (use PackedFont for
             // Unicode).
-            draw_char(renderer, cx, y, static_cast<char32_t>(static_cast<unsigned char>(ch)), color);
+            draw_char(renderer, cx, y,
+                      static_cast<char32_t>(static_cast<unsigned char>(ch)),
+                      color);
             cx += advance;
         }
     }
 
     // Render a string advancing along y (rotated displays). Mirrors
     // rlvgl/core/src/bitmap_font.rs:83.
-    void draw_str_y(Renderer& renderer,
-                    std::int32_t x,
-                    std::int32_t y,
-                    std::string_view text,
-                    Color color) const {
+    void draw_str_y(Renderer& renderer, std::int32_t x, std::int32_t y,
+                    std::string_view text, Color color) const {
         const auto advance = scaled_width() + static_cast<std::int32_t>(scale);
         std::int32_t cy = y;
         for (char ch : text) {
-            draw_char(renderer, x, cy, static_cast<char32_t>(static_cast<unsigned char>(ch)), color);
+            draw_char(renderer, x, cy,
+                      static_cast<char32_t>(static_cast<unsigned char>(ch)),
+                      color);
             cy += advance;
         }
     }
@@ -143,12 +138,12 @@ struct BitmapFont {
 // ---------------------------------------------------------------------------
 
 struct GlyphMetric {
-    char32_t      ch           = 0;
-    std::uint16_t width        = 0;
-    std::uint16_t height       = 0;
-    std::uint16_t advance_fp16 = 0;  // Q12.4 fixed-point pixel advance
-    std::uint32_t offset       = 0;
-    std::int16_t  ymin         = 0;
+    char32_t ch = 0;
+    std::uint16_t width = 0;
+    std::uint16_t height = 0;
+    std::uint16_t advance_fp16 = 0; // Q12.4 fixed-point pixel advance
+    std::uint32_t offset = 0;
+    std::int16_t ymin = 0;
 
     constexpr bool operator==(const GlyphMetric&) const noexcept = default;
 };
@@ -160,25 +155,24 @@ struct GlyphMetric {
 // Ownership: non-owning view. Both spans borrow.
 struct PackedFont {
     std::uint16_t height = 0;
-    std::int16_t  ascent = 0;
+    std::int16_t ascent = 0;
     // borrows: sorted by codepoint for binary search.
-    std::span<const GlyphMetric>   glyphs{};
+    std::span<const GlyphMetric> glyphs{};
     // borrows: raw 8-bpp grayscale glyph bitmap data.
-    std::span<const std::uint8_t>  data{};
+    std::span<const std::uint8_t> data{};
 
     // Look up a glyph by codepoint. Returns nullptr if the codepoint
     // is not in the font. Mirrors rlvgl's binary_search_by_key.
     [[nodiscard]] const GlyphMetric* glyph(char32_t ch) const noexcept {
         auto it = std::lower_bound(
             glyphs.begin(), glyphs.end(), ch,
-            [](const GlyphMetric& g, char32_t c) noexcept {
-                return g.ch < c;
-            });
-        if (it == glyphs.end() || it->ch != ch) return nullptr;
+            [](const GlyphMetric& g, char32_t c) noexcept { return g.ch < c; });
+        if (it == glyphs.end() || it->ch != ch)
+            return nullptr;
         return &*it;
     }
 };
 
-}  // namespace lvglpp::core
+} // namespace lvglpp::core
 
-#endif  // LVGLPP_CORE_FONT_HPP
+#endif // LVGLPP_CORE_FONT_HPP

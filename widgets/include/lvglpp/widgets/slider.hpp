@@ -22,17 +22,13 @@ namespace lvglpp::widgets {
 
 class Slider final : public ::lvglpp::core::Widget {
 public:
-    Slider(::lvglpp::core::Rect bounds,
-           std::int32_t min,
+    Slider(::lvglpp::core::Rect bounds, std::int32_t min,
            std::int32_t max) noexcept
-        : bounds_{bounds},
-          min_{min},
-          max_{max},
-          value_{min} {}
+        : bounds_{bounds}, min_{min}, max_{max}, value_{min} {}
 
     [[nodiscard]] std::int32_t value() const noexcept { return value_; }
-    [[nodiscard]] std::int32_t min()   const noexcept { return min_; }
-    [[nodiscard]] std::int32_t max()   const noexcept { return max_; }
+    [[nodiscard]] std::int32_t min() const noexcept { return min_; }
+    [[nodiscard]] std::int32_t max() const noexcept { return max_; }
 
     // §5.2 — clamps to [min, max].
     void set_value(std::int32_t v) noexcept {
@@ -51,25 +47,26 @@ public:
 
     void draw(::lvglpp::core::Renderer& renderer) const override;
 
-    [[nodiscard]] bool handle_event(
-        const ::lvglpp::core::Event& event) override;
+    [[nodiscard]] bool
+    handle_event(const ::lvglpp::core::Event& event) override;
 
 private:
     [[nodiscard]] std::int32_t position_from_value() const noexcept {
         const std::int32_t range = max_ - min_;
-        if (range == 0) return bounds_.x;
+        if (range == 0)
+            return bounds_.x;
         const float ratio =
             static_cast<float>(value_ - min_) / static_cast<float>(range);
-        return bounds_.x +
-               static_cast<std::int32_t>(ratio * static_cast<float>(bounds_.width));
+        return bounds_.x + static_cast<std::int32_t>(
+                               ratio * static_cast<float>(bounds_.width));
     }
 
     ::lvglpp::core::Rect bounds_;
-    std::int32_t         min_;
-    std::int32_t         max_;
-    std::int32_t         value_;
+    std::int32_t min_;
+    std::int32_t max_;
+    std::int32_t value_;
 };
 
-}  // namespace lvglpp::widgets
+} // namespace lvglpp::widgets
 
-#endif  // LVGLPP_WIDGETS_SLIDER_HPP
+#endif // LVGLPP_WIDGETS_SLIDER_HPP

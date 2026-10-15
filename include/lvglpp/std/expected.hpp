@@ -22,34 +22,30 @@
 
 namespace lvglpp {
 
-template <class T, class E>
-using expected = std::expected<T, E>;
+template <class T, class E> using expected = std::expected<T, E>;
 
-template <class E>
-using unexpected = std::unexpected<E>;
+template <class E> using unexpected = std::unexpected<E>;
 
 using std::unexpect_t;
 using std::unexpect;
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#else  // polyfill path
+#else // polyfill path
 
 #include <lvglpp_expected.hpp>
 
 namespace lvglpp {
 
-template <class T, class E>
-using expected = ::lvglpp::detail::expected<T, E>;
+template <class T, class E> using expected = ::lvglpp::detail::expected<T, E>;
 
-template <class E>
-using unexpected = ::lvglpp::detail::unexpected<E>;
+template <class E> using unexpected = ::lvglpp::detail::unexpected<E>;
 
 using ::lvglpp::detail::unexpect_t;
 using ::lvglpp::detail::unexpect;
 
-}  // namespace lvglpp
+} // namespace lvglpp
 
-#endif  // <expected> selection
+#endif // <expected> selection
 
-#endif  // LVGLPP_STD_EXPECTED_HPP
+#endif // LVGLPP_STD_EXPECTED_HPP

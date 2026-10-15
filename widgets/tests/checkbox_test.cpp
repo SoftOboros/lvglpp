@@ -20,7 +20,10 @@ struct RecordingRenderer : lc::Renderer {
     int text_calls = 0;
     void fill_rect(lc::Rect, lc::Color) override { ++fill_calls; }
     void blend_rect(lc::Rect, lc::Color) override { ++blend_calls; }
-    void draw_text(std::int32_t, std::int32_t, std::string_view, lc::Color) override { ++text_calls; }
+    void draw_text(std::int32_t, std::int32_t, std::string_view,
+                   lc::Color) override {
+        ++text_calls;
+    }
 };
 
 void test_checkbox_defaults() {
@@ -80,7 +83,8 @@ void test_checkbox_draw_unchecked_emits_bg_box_text() {
     RecordingRenderer r;
     lw::Checkbox c{std::string{"x"}, lc::Rect{0, 0, 100, 30}};
     c.draw(r);
-    // Default style: opaque white bg → 1 fill_rect for bg, 1 for box, 0 for check, 1 draw_text.
+    // Default style: opaque white bg → 1 fill_rect for bg, 1 for box, 0 for
+    // check, 1 draw_text.
     assert(r.fill_calls == 2);
     assert(r.text_calls == 1);
 }
@@ -95,7 +99,7 @@ void test_checkbox_draw_checked_adds_inner_fill() {
     assert(r.text_calls == 1);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_checkbox_defaults();

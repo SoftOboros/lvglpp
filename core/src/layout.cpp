@@ -16,32 +16,28 @@ namespace {
     return object.empty() ? nullptr : object.borrow_raw();
 }
 
-void set_style_num(LvStyle& style,
-                   lv_style_prop_t prop,
+void set_style_num(LvStyle& style, lv_style_prop_t prop,
                    std::int32_t value) noexcept {
     lv_style_value_t style_value{};
     style_value.num = value;
     style.set_prop(prop, style_value);
 }
 
-void set_style_ptr(LvStyle& style,
-                   lv_style_prop_t prop,
+void set_style_ptr(LvStyle& style, lv_style_prop_t prop,
                    const void* value) noexcept {
     lv_style_value_t style_value{};
     style_value.ptr = value;
     style.set_prop(prop, style_value);
 }
 
-void set_local_num(ObjectView object,
-                   lv_style_prop_t prop,
-                   std::int32_t value,
+void set_local_num(ObjectView object, lv_style_prop_t prop, std::int32_t value,
                    StyleSelector selector) noexcept {
     lv_style_value_t style_value{};
     style_value.num = value;
     set_local_style_prop(object, prop, style_value, selector);
 }
 
-}  // namespace
+} // namespace
 
 SizeValue SizeValue::percent(std::int32_t value) noexcept {
     return SizeValue{lv_pct(value)};
@@ -56,8 +52,7 @@ GridTrackList::GridTrackList(std::span<const std::int32_t> tracks) {
     assign(tracks);
 }
 
-GridTrackList GridTrackList::from_tracks(
-    std::span<const std::int32_t> tracks) {
+GridTrackList GridTrackList::from_tracks(std::span<const std::int32_t> tracks) {
     return GridTrackList{tracks};
 }
 
@@ -80,9 +75,7 @@ std::span<const std::int32_t> GridTrackList::values() const noexcept {
     return tracks_;
 }
 
-bool GridTrackList::empty() const noexcept {
-    return track_count() == 0;
-}
+bool GridTrackList::empty() const noexcept { return track_count() == 0; }
 
 std::size_t GridTrackList::track_count() const noexcept {
     return tracks_.empty() ? 0 : tracks_.size() - 1;
@@ -243,26 +236,18 @@ void set_align(ObjectView object, Align align) noexcept {
     }
 }
 
-void align(ObjectView object,
-           Align align,
-           std::int32_t x_offset,
+void align(ObjectView object, Align align, std::int32_t x_offset,
            std::int32_t y_offset) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_align(raw, to_lv(align), x_offset, y_offset);
     }
 }
 
-void align_to(ObjectView object,
-              ObjectView base,
-              Align align,
-              std::int32_t x_offset,
-              std::int32_t y_offset) noexcept {
+void align_to(ObjectView object, ObjectView base, Align align,
+              std::int32_t x_offset, std::int32_t y_offset) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
-        lv_obj_align_to(raw,
-                        base.empty() ? nullptr : base.borrow_raw(),
-                        to_lv(align),
-                        x_offset,
-                        y_offset);
+        lv_obj_align_to(raw, base.empty() ? nullptr : base.borrow_raw(),
+                        to_lv(align), x_offset, y_offset);
     }
 }
 
@@ -304,13 +289,12 @@ void set_flex_flow(ObjectView object, FlexFlow flow) noexcept {
     }
 }
 
-void set_flex_align(ObjectView object,
-                    FlexAlign main_place,
+void set_flex_align(ObjectView object, FlexAlign main_place,
                     FlexAlign cross_place,
                     FlexAlign track_cross_place) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
-        lv_obj_set_flex_align(
-            raw, to_lv(main_place), to_lv(cross_place), to_lv(track_cross_place));
+        lv_obj_set_flex_align(raw, to_lv(main_place), to_lv(cross_place),
+                              to_lv(track_cross_place));
     }
 }
 
@@ -322,43 +306,33 @@ void set_flex_grow(ObjectView object, std::uint8_t grow) noexcept {
 #endif
 
 #if LV_USE_GRID
-void set_grid_descriptor_array(ObjectView object,
-                               const GridTrackList& columns,
+void set_grid_descriptor_array(ObjectView object, const GridTrackList& columns,
                                const GridTrackList& rows) noexcept {
-    set_grid_descriptor_array(
-        object, GridTrackView{columns.borrow_raw()}, GridTrackView{rows.borrow_raw()});
+    set_grid_descriptor_array(object, GridTrackView{columns.borrow_raw()},
+                              GridTrackView{rows.borrow_raw()});
 }
 
-void set_grid_descriptor_array(ObjectView object,
-                               GridTrackView columns,
+void set_grid_descriptor_array(ObjectView object, GridTrackView columns,
                                GridTrackView rows) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_set_grid_dsc_array(raw, columns.borrow_raw(), rows.borrow_raw());
     }
 }
 
-void set_grid_align(ObjectView object,
-                    GridAlign column_align,
+void set_grid_align(ObjectView object, GridAlign column_align,
                     GridAlign row_align) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
         lv_obj_set_grid_align(raw, to_lv(column_align), to_lv(row_align));
     }
 }
 
-void set_grid_cell(ObjectView object,
-                   GridAlign column_align,
-                   std::int32_t column_position,
-                   std::int32_t column_span,
-                   GridAlign row_align,
-                   std::int32_t row_position,
+void set_grid_cell(ObjectView object, GridAlign column_align,
+                   std::int32_t column_position, std::int32_t column_span,
+                   GridAlign row_align, std::int32_t row_position,
                    std::int32_t row_span) noexcept {
     if (lv_obj_t* raw = raw_or_null(object)) {
-        lv_obj_set_grid_cell(raw,
-                             to_lv(column_align),
-                             column_position,
-                             column_span,
-                             to_lv(row_align),
-                             row_position,
+        lv_obj_set_grid_cell(raw, to_lv(column_align), column_position,
+                             column_span, to_lv(row_align), row_position,
                              row_span);
     }
 }
@@ -424,26 +398,22 @@ void style_set_layout(LvStyle& style, LayoutKind layout) noexcept {
     set_style_num(style, LV_STYLE_LAYOUT, to_lv(layout));
 }
 
-void local_style_set_width(ObjectView object,
-                           SizeValue width,
+void local_style_set_width(ObjectView object, SizeValue width,
                            StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_WIDTH, to_lv(width), selector);
 }
 
-void local_style_set_height(ObjectView object,
-                            SizeValue height,
+void local_style_set_height(ObjectView object, SizeValue height,
                             StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_HEIGHT, to_lv(height), selector);
 }
 
-void local_style_set_align(ObjectView object,
-                           Align align,
+void local_style_set_align(ObjectView object, Align align,
                            StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_ALIGN, to_lv(align), selector);
 }
 
-void local_style_set_pad_all(ObjectView object,
-                             std::int32_t value,
+void local_style_set_pad_all(ObjectView object, std::int32_t value,
                              StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_PAD_TOP, value, selector);
     set_local_num(object, LV_STYLE_PAD_BOTTOM, value, selector);
@@ -451,8 +421,7 @@ void local_style_set_pad_all(ObjectView object,
     set_local_num(object, LV_STYLE_PAD_RIGHT, value, selector);
 }
 
-void local_style_set_margin_all(ObjectView object,
-                                std::int32_t value,
+void local_style_set_margin_all(ObjectView object, std::int32_t value,
                                 StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_MARGIN_TOP, value, selector);
     set_local_num(object, LV_STYLE_MARGIN_BOTTOM, value, selector);
@@ -460,20 +429,17 @@ void local_style_set_margin_all(ObjectView object,
     set_local_num(object, LV_STYLE_MARGIN_RIGHT, value, selector);
 }
 
-void local_style_set_row_gap(ObjectView object,
-                             std::int32_t value,
+void local_style_set_row_gap(ObjectView object, std::int32_t value,
                              StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_PAD_ROW, value, selector);
 }
 
-void local_style_set_column_gap(ObjectView object,
-                                std::int32_t value,
+void local_style_set_column_gap(ObjectView object, std::int32_t value,
                                 StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_PAD_COLUMN, value, selector);
 }
 
-void local_style_set_layout(ObjectView object,
-                            LayoutKind layout,
+void local_style_set_layout(ObjectView object, LayoutKind layout,
                             StyleSelector selector) noexcept {
     set_local_num(object, LV_STYLE_LAYOUT, to_lv(layout), selector);
 }
@@ -524,7 +490,8 @@ void style_set_grid_cell_column_position(LvStyle& style,
     set_style_num(style, LV_STYLE_GRID_CELL_COLUMN_POS, position);
 }
 
-void style_set_grid_cell_column_span(LvStyle& style, std::int32_t span) noexcept {
+void style_set_grid_cell_column_span(LvStyle& style,
+                                     std::int32_t span) noexcept {
     set_style_num(style, LV_STYLE_GRID_CELL_COLUMN_SPAN, span);
 }
 
@@ -546,4 +513,4 @@ void style_set_grid_cell_y_align(LvStyle& style, GridAlign align) noexcept {
 }
 #endif
 
-}  // namespace lvglpp
+} // namespace lvglpp

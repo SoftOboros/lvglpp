@@ -26,6 +26,6 @@ namespace lvglpp::core::fonts {
 // borrows the static glyph blob held in src/fonts/font_6x10.cpp.
 extern const BitmapFont FONT_6X10;
 
-}  // namespace lvglpp::core::fonts
+} // namespace lvglpp::core::fonts
 
-#endif  // LVGLPP_CORE_FONTS_FONT_6X10_HPP
+#endif // LVGLPP_CORE_FONTS_FONT_6X10_HPP

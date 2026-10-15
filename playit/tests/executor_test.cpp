@@ -33,7 +33,8 @@ struct MemoryTransport final : lp::Transport {
     std::vector<std::uint8_t> out_bytes;
 
     [[nodiscard]] std::optional<std::uint8_t> read_byte() noexcept override {
-        if (in_bytes.empty()) return std::nullopt;
+        if (in_bytes.empty())
+            return std::nullopt;
         std::uint8_t b = in_bytes.front();
         in_bytes.pop_front();
         return b;
@@ -57,20 +58,20 @@ struct MemoryTransport final : lp::Transport {
 };
 
 struct Fixture {
-    int                button_clicks = 0;
-    lc::WidgetNode     root;
+    int button_clicks = 0;
+    lc::WidgetNode root;
 
     Fixture() {
-        auto root_filler = std::make_unique<lw::Label>(
-            std::string{""}, lc::Rect{-1, -1, 0, 0});
+        auto root_filler = std::make_unique<lw::Label>(std::string{""},
+                                                       lc::Rect{-1, -1, 0, 0});
         root = lc::WidgetNode{std::move(root_filler), "root"};
 
-        auto label = std::make_unique<lw::Label>(
-            std::string{"hi"}, lc::Rect{0, 0, 100, 20});
+        auto label = std::make_unique<lw::Label>(std::string{"hi"},
+                                                 lc::Rect{0, 0, 100, 20});
         root.add_child(lc::WidgetNode{std::move(label), "status"});
 
-        auto btn = std::make_unique<lw::Button>(
-            std::string{"OK"}, lc::Rect{10, 30, 80, 40});
+        auto btn = std::make_unique<lw::Button>(std::string{"OK"},
+                                                lc::Rect{10, 30, 80, 40});
         btn->set_on_click([this](lw::Button&) { ++button_clicks; });
         root.add_child(lc::WidgetNode{std::move(btn), "ok"});
     }
@@ -131,7 +132,7 @@ void test_executor_partial_line_accumulates_across_polls() {
     lp::Executor exec{transport, dispatcher};
 
     transport.feed("QE:");
-    assert(exec.poll() == 0);                       // no '\n' yet
+    assert(exec.poll() == 0); // no '\n' yet
     assert(transport.out_bytes.empty());
     transport.feed("status\n");
     assert(exec.poll() == 1);
@@ -176,7 +177,7 @@ void test_executor_long_line_overflow() {
     assert(transport.drain_response() == "ERR: line too long\r\n");
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_executor_roundtrip_status();
